@@ -1,0 +1,20 @@
+#pragma once
+
+enum Token
+{
+    TOKEN_START_PROGRAM
+    , TOKEN_END_PROGRAM
+    , TOKEN_DATA
+    , TOKEN_COMMAND
+};
+
+enum ObjectType
+{
+    OBJECT_STRING
+    ,OBJECT_INTEGER
+    ,OBJECT_LIST
+    ,OBJECT_COMMAND
+    ,OBJECT_PROGRAM
+    ,OBJECT_TOKEN 
+};
+

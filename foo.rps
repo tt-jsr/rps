@@ -1,0 +1,9 @@
+import std
+
+<<
+10
+ADD
+>>
+addtest STO
+999
+
