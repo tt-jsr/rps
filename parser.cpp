@@ -110,12 +110,22 @@ again:
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_PROGRAM));
     else if (w == ">>")
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_PROGRAM));
+    else if (w == "[")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_LIST));
+    else if (w == "]")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_LIST));
     else if (w == "IFT")
         optr.reset(new Command(w, &IFT));
     else if (w == "IFTE")
         optr.reset(new Command(w, &IFTE));
     else if (w == "ADD")
         optr.reset(new Command(w, &ADD));
+    else if (w == "SUB")
+        optr.reset(new Command(w, &SUB));
+    else if (w == "MUL")
+        optr.reset(new Command(w, &MUL));
+    else if (w == "DIV")
+        optr.reset(new Command(w, &DIV));
     else if (w == "DROP")
         optr.reset(new Command(w, &DROP));
     else if (w == "DROPN")
@@ -136,6 +146,35 @@ again:
     return true;
 }
 
+void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
+{
+    ObjectPtr optr;
+    while(GetObject(machine, src, optr))
+    {
+        if (optr->token == TOKEN_END_LIST)
+        {
+            return;
+        }
+        else if (optr->token == TOKEN_START_PROGRAM)
+        {
+            ProgramPtr pptr;
+            pptr.reset(new Program());
+            src.prompt = ">> ";
+            ParseProgram(machine, pptr, src);    // recurse
+            src.prompt = "[] ";
+            optr = pptr;
+        }
+        else if (optr->token == TOKEN_START_LIST)
+        {
+            ListPtr lp;
+            lp.reset(new List());
+            ParseList(machine, lp, src);    // recurse
+            optr = lp;
+        }
+        lptr->items.push_back(optr);           
+    }
+}
+
 void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
 {
     ObjectPtr optr;
@@ -145,12 +184,21 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
         {
             return;
         }
-        if (optr->token == TOKEN_START_PROGRAM)
+        else if (optr->token == TOKEN_START_PROGRAM)
         {
-            ProgramPtr pptr;
-            pptr.reset(new Program());
-            ParseProgram(machine, pptr, src);    // recurse
-            optr = pptr;
+            ProgramPtr pp;
+            pp.reset(new Program());
+            ParseProgram(machine, pp, src);    // recurse
+            optr = pp;
+        }
+        else if (optr->token == TOKEN_START_LIST)
+        {
+            ListPtr lp;
+            lp.reset(new List());
+            src.prompt = "[] ";
+            ParseList(machine, lp, src);    // recurse
+            src.prompt = ">> ";
+            optr = lp;
         }
         pptr->program.push_back(optr);           
     }
@@ -163,6 +211,15 @@ void Parser::Parse(Machine& machine, Source& src)
         ObjectPtr optr;
         while(GetObject(machine, src, optr))
         {
+            if (optr->token == TOKEN_START_LIST)
+            {
+                src.prompt = "[] ";
+                ListPtr lptr;
+                lptr.reset(new List());
+                ParseList(machine, lptr, src);
+                src.prompt = "> ";
+                optr = lptr;
+            }
             if (optr->token == TOKEN_START_PROGRAM)
             {
                 src.prompt = ">> ";

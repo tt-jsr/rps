@@ -6,6 +6,8 @@ enum Token
     , TOKEN_END_PROGRAM
     , TOKEN_DATA
     , TOKEN_COMMAND
+    , TOKEN_START_LIST
+    , TOKEN_END_LIST
 };
 
 enum ObjectType

@@ -15,6 +15,9 @@ void VIEW(Machine&);
  * Math commands
  */
 void ADD(Machine& machine);
+void SUB(Machine& machine);
+void MUL(Machine& machine);
+void DIV(Machine& machine);
 
 /*
  * Variables commands

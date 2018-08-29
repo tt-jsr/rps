@@ -19,4 +19,5 @@ public:
     bool GetObject(Machine&, Source&, ObjectPtr& optr);
     void Parse(Machine& machine, Source&);
     void ParseProgram(Machine&, ProgramPtr& pptr, Source& src);
+    void ParseList(Machine&, ListPtr& pptr, Source& src);
 };

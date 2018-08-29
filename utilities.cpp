@@ -24,6 +24,13 @@ ProgramPtr MakeProgram()
     return pp;
 }
 
+ListPtr MakeList()
+{
+    ListPtr lp;
+    lp.reset(new List());
+    return lp;
+}
+
 ObjectPtr Clone(ObjectPtr& optr)
 {
     switch (optr->type)
@@ -40,6 +47,13 @@ ObjectPtr Clone(ObjectPtr& optr)
             IntegerPtr ip = MakeInteger();
             ip->value = ((Integer *)optr.get())->value;
             return ip;
+        }
+        break;
+    case OBJECT_LIST:
+        {
+            ListPtr lp = MakeList();
+            lp->items = ((List *)optr.get())->items;
+            return lp;
         }
         break;
     case OBJECT_PROGRAM:
@@ -66,6 +80,19 @@ std::string ToStr(ObjectPtr& optr)
         return std::to_string(((Integer *)optr.get())->value);
     case OBJECT_COMMAND:
         return ((Command *)optr.get())->value;
+    case OBJECT_LIST:
+        {
+            std::stringstream strm;
+            List *lp = (List *)optr.get();
+            strm << "[ ";
+            for (ObjectPtr& op : lp->items)
+            {
+                strm << ToStr(op) << ", ";
+            }
+            strm << " ]";
+            return strm.str();
+        }
+        break;
     case OBJECT_PROGRAM:
         {
             std::stringstream strm;
