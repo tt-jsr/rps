@@ -31,7 +31,7 @@ ListPtr MakeList()
     return lp;
 }
 
-ObjectPtr Clone(ObjectPtr& optr)
+ObjectPtr Clone(ObjectPtr optr)
 {
     switch (optr->type)
     {
@@ -85,9 +85,16 @@ std::string ToStr(ObjectPtr& optr)
             std::stringstream strm;
             List *lp = (List *)optr.get();
             strm << "[ ";
-            for (ObjectPtr& op : lp->items)
+            if (lp->items.size() < 30)
             {
-                strm << ToStr(op) << ", ";
+                for (ObjectPtr& op : lp->items)
+                {
+                    strm << ToStr(op) << ", ";
+                }
+            }
+            else
+            {
+                strm << "...";
             }
             strm << " ]";
             return strm.str();
@@ -98,9 +105,16 @@ std::string ToStr(ObjectPtr& optr)
             std::stringstream strm;
             Program *pp = (Program *)optr.get();
             strm << "<< ";
-            for (ObjectPtr& op : pp->program)
+            if (pp->program.size() < 30)
             {
-                strm << ToStr(op) << " ";
+                for (ObjectPtr& op : pp->program)
+                {
+                    strm << ToStr(op) << " ";
+                }
+            }
+            else
+            {
+                strm << "...";
             }
             strm << " >>";
             return strm.str();

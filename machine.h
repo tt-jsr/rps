@@ -20,8 +20,8 @@ public:
     void pop(std::string&);
     void push(const std::string&);
     void pop(ObjectPtr&);
+    void pop(ListPtr&);
+    void push(ListPtr&);
 };
 
-void EVAL(Machine&);
-void CALL(Machine&);
 

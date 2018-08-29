@@ -12,12 +12,14 @@ public:
     Object(ObjectType t, Token tok)
     :type(t)
     ,token(tok)
+    ,bSuppressInteractivePrint(false)
     {}
 
     ~Object() {}
 
     ObjectType type;
     Token token;
+    bool bSuppressInteractivePrint;
 };
 
 typedef std::shared_ptr<Object> ObjectPtr;

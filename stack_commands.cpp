@@ -42,8 +42,7 @@ void SWAP(Machine& machine)
 void DUP(Machine& machine)
 {
     ObjectPtr optr = machine.peek(0);
-    ObjectPtr op = Clone(optr);
-    machine.push(op);
+    machine.push(optr);
 }
 
 void VIEW(Machine& machine)

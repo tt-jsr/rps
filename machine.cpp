@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <cassert>
+#include <memory>
 #include "token.h"
 #include "object.h"
 #include "module.h"
@@ -82,6 +83,27 @@ void Machine::push(int64_t v)
     ObjectPtr optr;
     optr.reset(new Integer(v));
     stack_.push_back(optr);
+}
+
+void Machine::pop(ListPtr& lp)
+{
+    if (stack_.empty())
+        throw std::runtime_error("stack underflow");
+    ObjectPtr& optr = stack_.back();
+    if (optr->type == OBJECT_LIST)
+    {
+        lp = std::static_pointer_cast<List>(optr);;
+        stack_.pop_back();
+        return;
+    }
+    push(optr);
+    throw std::runtime_error("Not a list");
+}
+
+void Machine::push(ListPtr& lp)
+{
+    ObjectPtr op = lp;
+    push(op);
 }
 
 void Machine::pop(std::string& v)

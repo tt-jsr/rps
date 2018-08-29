@@ -132,13 +132,30 @@ again:
         optr.reset(new Command(w, &DROPN));
     else if (w == "SWAP")
         optr.reset(new Command(w, &SWAP));
+    else if (w == "DUP")
+        optr.reset(new Command(w, &DUP));
     else if (w == "EVAL")
         optr.reset(new Command(w, &EVAL));
     else if (w == "CALL")
         optr.reset(new Command(w, &CALL));
+    else if (w == "GET")
+        optr.reset(new Command(w, &GET));
+    else if (w == "APPEND")
+        optr.reset(new Command(w, &APPEND));
+    else if (w == "ERASE")
+        optr.reset(new Command(w, &ERASE));
+    else if (w == "CLEAR")
+        optr.reset(new Command(w, &CLEAR));
+    else if (w == "INSERT")
+        optr.reset(new Command(w, &INSERT));
+    else if (w == "SIZE")
+        optr.reset(new Command(w, &SIZE));
     else if (w == "VIEW")
+    {
         optr.reset(new Command(w, &VIEW));
-    else if (w[0] >= '0' && w[0] <= '9')
+        optr->bSuppressInteractivePrint = true;
+    }
+    else if ((w[0] >= '0' && w[0] <= '9') || w[0] == '-' )
         optr.reset(new Integer(strtol(w.c_str(), nullptr, 10)));
     else
         optr.reset(new String(w));
@@ -230,7 +247,7 @@ void Parser::Parse(Machine& machine, Source& src)
                 optr = pptr;
             }
 
-            if (src.interactive && optr->token == TOKEN_COMMAND)
+            if (src.interactive && optr->token == TOKEN_COMMAND && !optr->bSuppressInteractivePrint)
             {
                 machine.push(optr);           
                 if (!machine.stack_.empty())

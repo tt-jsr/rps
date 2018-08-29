@@ -33,9 +33,20 @@ void IFT(Machine& machine);
 void IFTE(Machine& machine);
 
 /*
+ * List commands
+ */
+void APPEND(Machine&);
+void GET(Machine&);
+void INSERT(Machine&);
+void ERASE(Machine&);
+void CLEAR(Machine&);
+void SIZE(Machine&);
+
+/*
  * Misc commands
  */
 void EVAL(Machine&);
+void CALL(Machine&);
 
 
 
