@@ -126,3 +126,22 @@ std::string ToStr(ObjectPtr& optr)
         break;
     }
 }
+
+bool ToBool(ObjectPtr optr)
+{
+    switch(optr->type)
+    {
+    case OBJECT_STRING:
+        return !((String *)optr.get())->value.empty();
+    case OBJECT_INTEGER:
+        return ((Integer *)optr.get())->value != 0;
+    case OBJECT_LIST:
+        return !((List *)optr.get())->items.empty();
+    case OBJECT_PROGRAM:
+        return false;
+    case OBJECT_COMMAND:
+        assert(false);
+        break;
+    }
+}
+

@@ -102,30 +102,11 @@ again:
         machine.current_module_ = modname;
         goto again;
     }
+    // Stack commands
     if (w == "STO")
         optr.reset(new Command(w, &STO));
     else if (w == "RCL")
         optr.reset(new Command(w, &RCL));
-    else if (w == "<<")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_PROGRAM));
-    else if (w == ">>")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_PROGRAM));
-    else if (w == "[")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_LIST));
-    else if (w == "]")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_LIST));
-    else if (w == "IFT")
-        optr.reset(new Command(w, &IFT));
-    else if (w == "IFTE")
-        optr.reset(new Command(w, &IFTE));
-    else if (w == "ADD")
-        optr.reset(new Command(w, &ADD));
-    else if (w == "SUB")
-        optr.reset(new Command(w, &SUB));
-    else if (w == "MUL")
-        optr.reset(new Command(w, &MUL));
-    else if (w == "DIV")
-        optr.reset(new Command(w, &DIV));
     else if (w == "DROP")
         optr.reset(new Command(w, &DROP));
     else if (w == "DROPN")
@@ -134,10 +115,49 @@ again:
         optr.reset(new Command(w, &SWAP));
     else if (w == "DUP")
         optr.reset(new Command(w, &DUP));
-    else if (w == "EVAL")
-        optr.reset(new Command(w, &EVAL));
-    else if (w == "CALL")
-        optr.reset(new Command(w, &CALL));
+    else if (w == "PICK")
+        optr.reset(new Command(w, &PICK));
+    else if (w == "VIEW")
+    {
+        optr.reset(new Command(w, &VIEW));
+        optr->bSuppressInteractivePrint = true;
+    }
+
+    // Logical operators
+    else if (w == "EQ")
+        optr.reset(new Command(w, &EQ));
+    else if (w == "NEQ")
+        optr.reset(new Command(w, &NEQ));
+    else if (w == "LT")
+        optr.reset(new Command(w, &LT));
+    else if (w == "LTEQ")
+        optr.reset(new Command(w, &LTEQ));
+    else if (w == "GT")
+        optr.reset(new Command(w, &GT));
+    else if (w == "GTEQ")
+        optr.reset(new Command(w, &GTEQ));
+    else if (w == "AND")
+        optr.reset(new Command(w, &AND));
+    else if (w == "OR")
+        optr.reset(new Command(w, &OR));
+
+    // Math commands
+    else if (w == "ADD")
+        optr.reset(new Command(w, &ADD));
+    else if (w == "SUB")
+        optr.reset(new Command(w, &SUB));
+    else if (w == "MUL")
+        optr.reset(new Command(w, &MUL));
+    else if (w == "DIV")
+        optr.reset(new Command(w, &DIV));
+
+    // Control commands
+    else if (w == "IFT")
+        optr.reset(new Command(w, &IFT));
+    else if (w == "IFTE")
+        optr.reset(new Command(w, &IFTE));
+
+    // List commands
     else if (w == "GET")
         optr.reset(new Command(w, &GET));
     else if (w == "APPEND")
@@ -150,11 +170,22 @@ again:
         optr.reset(new Command(w, &INSERT));
     else if (w == "SIZE")
         optr.reset(new Command(w, &SIZE));
-    else if (w == "VIEW")
-    {
-        optr.reset(new Command(w, &VIEW));
-        optr->bSuppressInteractivePrint = true;
-    }
+
+    // Execution commands
+    else if (w == "EVAL")
+        optr.reset(new Command(w, &EVAL));
+    else if (w == "CALL")
+        optr.reset(new Command(w, &CALL));
+
+    // tokens
+    else if (w == "<<")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_PROGRAM));
+    else if (w == ">>")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_PROGRAM));
+    else if (w == "[")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_LIST));
+    else if (w == "]")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_LIST));
     else if ((w[0] >= '0' && w[0] <= '9') || w[0] == '-' )
         optr.reset(new Integer(strtol(w.c_str(), nullptr, 10)));
     else

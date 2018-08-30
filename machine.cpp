@@ -145,10 +145,8 @@ ObjectPtr& Machine::peek(size_t n)
 }
 
 /****************************************************************/
-void EVAL(Machine& machine)
+void EVAL(Machine& machine, ObjectPtr optr)
 {
-    ObjectPtr optr;
-    machine.pop(optr);
     switch(optr->type)
     {
     case OBJECT_STRING:
@@ -173,6 +171,13 @@ void EVAL(Machine& machine)
         assert(false);
         break;
     }
+}
+
+void EVAL(Machine& machine)
+{
+    ObjectPtr optr;
+    machine.pop(optr);
+    EVAL(machine, optr);
 }
 
 void CALL(Machine& machine)

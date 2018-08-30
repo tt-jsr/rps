@@ -45,6 +45,25 @@ void DUP(Machine& machine)
     machine.push(optr);
 }
 
+void PICK(Machine& machine)
+{
+    int64_t level;
+    machine.pop(level);
+
+    if (machine.stack_.size() <= level)
+    {
+        machine.push(level);
+        throw std::runtime_error("PICK: stack underflow");
+    }
+    int64_t idx = machine.stack_.size() - level - 1;
+    if (idx < 0 || idx >= machine.stack_.size())
+    {
+        machine.push(level);
+        throw std::runtime_error("PICK: Out of range");
+    }
+    machine.push(machine.stack_[idx]);
+}
+
 void VIEW(Machine& machine)
 {
     size_t n = machine.stack_.size() - 1;;

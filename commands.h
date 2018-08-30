@@ -9,6 +9,7 @@ void DROP(Machine& machine);
 void DROPN(Machine& machine);
 void SWAP(Machine& machine);
 void DUP(Machine& machine);
+void PICK(Machine&);
 void VIEW(Machine&);
 
 /*
@@ -33,6 +34,19 @@ void IFT(Machine& machine);
 void IFTE(Machine& machine);
 
 /*
+ * Logical Operators
+ */
+void EQ(Machine&);
+void NEQ(Machine&);
+void LT(Machine&);
+void LTEQ(Machine&);
+void GT(Machine&);
+void GTEQ(Machine&);
+void NOT(Machine&);
+void AND(Machine&);
+void OR(Machine&);
+
+/*
  * List commands
  */
 void APPEND(Machine&);
@@ -46,6 +60,7 @@ void SIZE(Machine&);
  * Misc commands
  */
 void EVAL(Machine&);
+void EVAL(Machine&, ObjectPtr);
 void CALL(Machine&);
 
 
