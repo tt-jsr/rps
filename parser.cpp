@@ -103,10 +103,6 @@ again:
         goto again;
     }
     // Stack commands
-    if (w == "STO")
-        optr.reset(new Command(w, &STO));
-    else if (w == "RCL")
-        optr.reset(new Command(w, &RCL));
     else if (w == "DROP")
         optr.reset(new Command(w, &DROP));
     else if (w == "DROPN")
@@ -117,6 +113,8 @@ again:
         optr.reset(new Command(w, &DUP));
     else if (w == "PICK")
         optr.reset(new Command(w, &PICK));
+    else if (w == "ROLL")
+        optr.reset(new Command(w, &ROLL));
     else if (w == "VIEW")
     {
         optr.reset(new Command(w, &VIEW));
@@ -140,6 +138,14 @@ again:
         optr.reset(new Command(w, &AND));
     else if (w == "OR")
         optr.reset(new Command(w, &OR));
+
+    // Variable commands
+    if (w == "STO")
+        optr.reset(new Command(w, &STO));
+    else if (w == "RCL")
+        optr.reset(new Command(w, &RCL));
+    else if (w == "VARNAMES")
+        optr.reset(new Command(w, &VARNAMES));
 
     // Math commands
     else if (w == "ADD")
@@ -226,6 +232,7 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
 void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
 {
     ObjectPtr optr;
+    pptr->module_name = machine.current_module_;
     while(GetObject(machine, src, optr))
     {
         if (optr->token == TOKEN_END_PROGRAM)
@@ -278,14 +285,24 @@ void Parser::Parse(Machine& machine, Source& src)
                 optr = pptr;
             }
 
-            if (src.interactive && optr->token == TOKEN_COMMAND && !optr->bSuppressInteractivePrint)
+            if (optr->token == TOKEN_COMMAND)
             {
-                machine.push(optr);           
-                if (!machine.stack_.empty())
+                try
                 {
-                    ObjectPtr& optr = machine.peek();
-                    std::string s = ToStr(optr);
-                    std::cout << s << std::endl;
+                    EVAL(machine, optr);
+                }
+                catch (std::exception& e)
+                {
+                    std::cout << e.what() << std::endl;
+                }
+                if (src.interactive && !optr->bSuppressInteractivePrint)
+                {
+                    if (!machine.stack_.empty())
+                    {
+                        ObjectPtr& optr = machine.peek();
+                        std::string s = ToStr(optr);
+                        std::cout << s << std::endl;
+                    }
                 }
             }
             else

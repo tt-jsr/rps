@@ -1,9 +1,9 @@
 import std
 
-<<
-10
-ADD
->>
-addtest STO
-999
+<< 5 10 ADD "fifteen" STO >>
+prog1 STO
+
+<< 100 prog1 CALL SUB >>
+prog2 STO
+
 

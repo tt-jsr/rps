@@ -64,9 +64,28 @@ void PICK(Machine& machine)
     machine.push(machine.stack_[idx]);
 }
 
+void ROLL(Machine& machine)
+{
+    int64_t level;
+    machine.pop(level);
+
+    if (machine.stack_.size() <= level)
+    {
+        machine.push(level);
+        throw std::runtime_error("PICK: stack underflow");
+    }
+    int64_t idx = machine.stack_.size() - level - 1;
+    if (idx < 0 || idx >= machine.stack_.size())
+    {
+        machine.push(level);
+        throw std::runtime_error("PICK: Out of range");
+    }
+    std::swap(machine.stack_[idx], machine.stack_.back());
+}
+
 void VIEW(Machine& machine)
 {
-    size_t n = machine.stack_.size() - 1;;
+    size_t n = machine.stack_.size() - 1;
     for (auto it = machine.stack_.begin(); it != machine.stack_.end(); ++it)
     {
         std::cout << n << ":" << ToStr(*it) << std::endl;

@@ -10,6 +10,7 @@ void DROPN(Machine& machine);
 void SWAP(Machine& machine);
 void DUP(Machine& machine);
 void PICK(Machine&);
+void ROLL(Machine&);
 void VIEW(Machine&);
 
 /*
@@ -25,6 +26,7 @@ void DIV(Machine& machine);
  */
 void STO(Machine& machine);
 void RCL(Machine& machine);
+void VARNAMES(Machine& machine);
 
 /*
  * Control commands

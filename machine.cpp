@@ -24,33 +24,8 @@ void Machine::CreateModule(const std::string& name)
 
 void Machine::push(ObjectPtr& optr)
 {
-    switch(optr->type)
-    {
-    case OBJECT_STRING:
-        stack_.push_back(optr);
-        break;
-    case OBJECT_INTEGER:
-        stack_.push_back(optr);
-        break;
-    case OBJECT_LIST:
-        stack_.push_back(optr);
-        break;
-    case OBJECT_PROGRAM:
-        stack_.push_back(optr);
-        break;
-    case OBJECT_COMMAND:
-        {
-            try
-            {
-                Command *pCommand = (Command *)optr.get();
-                (*pCommand->funcptr)(*this);
-            }
-            catch (std::exception& e)
-            {
-                std::cout << "Exception: " << e.what() << std::endl;
-            }
-        }
-    }
+    assert(optr->type != OBJECT_COMMAND);
+    stack_.push_back(optr);
 }
 
 
@@ -161,13 +136,30 @@ void EVAL(Machine& machine, ObjectPtr optr)
     case OBJECT_PROGRAM:
         {
             Program *p = (Program *)optr.get();
+            std::string modname = machine.current_module_;
+            machine.current_module_ = p->module_name;
             for (ObjectPtr& op : p->program)
             {
-                machine.push(op);
+                try
+                {
+                    EVAL(machine, op);
+                }
+                catch (std::exception& e)
+                {
+                    machine.current_module_ = modname;
+                    throw;
+                }
             }
+            machine.current_module_ = modname;
         }
         break;
     case OBJECT_COMMAND:
+        {
+            Command *pCommand = (Command *)optr.get();
+            (*pCommand->funcptr)(machine);
+        }
+        break;
+    default:
         assert(false);
         break;
     }

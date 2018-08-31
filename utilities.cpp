@@ -85,11 +85,14 @@ std::string ToStr(ObjectPtr& optr)
             std::stringstream strm;
             List *lp = (List *)optr.get();
             strm << "[ ";
+            ObjectPtr *pLast = &lp->items.back();
             if (lp->items.size() < 30)
             {
                 for (ObjectPtr& op : lp->items)
                 {
-                    strm << ToStr(op) << ", ";
+                    strm << ToStr(op);
+                    if (&op != pLast)
+                        strm << ", ";
                 }
             }
             else
