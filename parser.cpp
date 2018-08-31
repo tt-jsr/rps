@@ -140,7 +140,7 @@ again:
         optr.reset(new Command(w, &OR));
 
     // Variable commands
-    if (w == "STO")
+    else if (w == "STO")
         optr.reset(new Command(w, &STO));
     else if (w == "RCL")
         optr.reset(new Command(w, &RCL));
