@@ -2,6 +2,8 @@
 #include <cassert>
 #include <sstream>
 #include "object.h"
+#include "module.h"
+#include "machine.h"
 
 StringPtr MakeString()
 {
@@ -70,7 +72,7 @@ ObjectPtr Clone(ObjectPtr optr)
     }
 }
 
-std::string ToStr(ObjectPtr& optr)
+std::string ToStr(Machine& machine, ObjectPtr optr)
 {
     switch (optr->type)
     {
@@ -85,21 +87,44 @@ std::string ToStr(ObjectPtr& optr)
             std::stringstream strm;
             List *lp = (List *)optr.get();
             strm << "[ ";
-            ObjectPtr *pLast = &lp->items.back();
-            if (lp->items.size() < 30)
+            size_t max = std::min(lp->items.size(), machine.list_maxcount);
+            size_t count = 0;
+            for (auto it = lp->items.begin(); count < max; ++it)
             {
-                for (ObjectPtr& op : lp->items)
-                {
-                    strm << ToStr(op);
-                    if (&op != pLast)
-                        strm << ", ";
-                }
+                ++count;
+                strm << ToStr(machine, *it);
+                if (count < lp->items.size())
+                    strm << ", ";
             }
-            else
+            if (count < lp->items.size() )
             {
                 strm << "...";
             }
             strm << " ]";
+            return strm.str();
+        }
+        break;
+    case OBJECT_MAP:
+        {
+            std::stringstream strm;
+            Map *mp = (Map *)optr.get();
+            strm << "{ ";
+            size_t max = std::min(mp->items.size(), machine.list_maxcount);
+            size_t count = 0;
+            for (auto it = mp->items.begin(); count < max; ++it)
+            {
+                ++count;
+                std::string k = ToStr(machine, it->first);
+                std::string v = ToStr(machine, it->second);
+                strm << k << ":" << v;
+                if (count < mp->items.size())
+                    strm << ", ";
+            }
+            if (count < mp->items.size())
+            {
+                strm << "...";
+            }
+            strm << " }";
             return strm.str();
         }
         break;
@@ -112,7 +137,7 @@ std::string ToStr(ObjectPtr& optr)
             {
                 for (ObjectPtr& op : pp->program)
                 {
-                    strm << ToStr(op) << " ";
+                    strm << ToStr(machine, op) << " ";
                 }
             }
             else
@@ -130,6 +155,28 @@ std::string ToStr(ObjectPtr& optr)
     }
 }
 
+std::string ToType(Machine&, ObjectPtr optr)
+{
+    switch (optr->type)
+    {
+    case OBJECT_STRING:
+        return "S";
+    case OBJECT_INTEGER:
+        return "I";
+    case OBJECT_COMMAND:
+        return "C";
+    case OBJECT_LIST:
+        return "L";
+    case OBJECT_MAP:
+        return "M";
+    case OBJECT_PROGRAM:
+        return "P";
+    default:
+        assert(false);
+        throw std::runtime_error("Clone: Unknown type");
+        break;
+    }
+}
 bool ToBool(ObjectPtr optr)
 {
     switch(optr->type)

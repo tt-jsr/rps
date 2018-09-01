@@ -1,5 +1,8 @@
 #pragma once
 
+class Machine;
+
+
 StringPtr MakeString();
 IntegerPtr MakeInteger();
 ProgramPtr MakeProgram();
@@ -8,4 +11,5 @@ ObjectPtr Clone(ObjectPtr);
 
 bool ToBool(ObjectPtr);
 
-std::string ToStr(ObjectPtr&);
+std::string ToStr(Machine&, ObjectPtr);
+std::string ToType(Machine&, ObjectPtr);

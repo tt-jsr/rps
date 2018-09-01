@@ -87,7 +87,32 @@ void VARNAMES(Machine& machine)
     for (; itVars != itEnd; ++itVars)
     {
         StringPtr sp = MakeString();
-        sp->value = itVars->first;
+        sp->value = modname + "." + itVars->first;
+        lp->items.push_back(sp);
+    }
+    machine.push(lp);
+}
+
+void VARTYPES(Machine& machine)
+{
+    if (machine.stack_.size() < 1)
+        throw std::runtime_error("VARTYPES requires an argument");
+    std::string modname;
+    machine.pop(modname);
+    auto it = machine.modules_.find(modname);
+    if (it == machine.modules_.end())
+    {
+        std::stringstream strm;
+        strm << "TYPES: Module " << modname << " not found";
+        throw std::runtime_error(strm.str().c_str());
+    }
+    auto itVars = it->second.variables_.begin();
+    auto itEnd = it->second.variables_.end();
+    ListPtr lp = MakeList();
+    for (; itVars != itEnd; ++itVars)
+    {
+        StringPtr sp = MakeString();
+        sp->value = ToType(machine, itVars->second) + ":" + modname + "." + itVars->first;
         lp->items.push_back(sp);
     }
     machine.push(lp);

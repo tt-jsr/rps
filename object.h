@@ -51,6 +51,15 @@ public:
 
 typedef std::shared_ptr<List> ListPtr;
 
+class Map : public Object
+{
+public:
+    Map() : Object(OBJECT_MAP, TOKEN_DATA) {}
+    std::unordered_map<ObjectPtr, ObjectPtr> items;
+};
+
+typedef std::shared_ptr<Map> MapPtr;
+
 class Command : public Object
 {
 public:

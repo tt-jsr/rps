@@ -146,6 +146,8 @@ again:
         optr.reset(new Command(w, &RCL));
     else if (w == "VARNAMES")
         optr.reset(new Command(w, &VARNAMES));
+    else if (w == "VARTYPES")
+        optr.reset(new Command(w, &VARTYPES));
 
     // Math commands
     else if (w == "ADD")
@@ -176,12 +178,20 @@ again:
         optr.reset(new Command(w, &INSERT));
     else if (w == "SIZE")
         optr.reset(new Command(w, &SIZE));
+    else if (w == "FIRST")
+        optr.reset(new Command(w, &FIRST));
+    else if (w == "SECOND")
+        optr.reset(new Command(w, &SECOND));
 
     // Execution commands
     else if (w == "EVAL")
         optr.reset(new Command(w, &EVAL));
     else if (w == "CALL")
         optr.reset(new Command(w, &CALL));
+
+    // Environment
+    else if (w == "MODULES")
+        optr.reset(new Command(w, &MODULES));
 
     // tokens
     else if (w == "<<")
@@ -300,7 +310,7 @@ void Parser::Parse(Machine& machine, Source& src)
                     if (!machine.stack_.empty())
                     {
                         ObjectPtr& optr = machine.peek();
-                        std::string s = ToStr(optr);
+                        std::string s = ToStr(machine, optr);
                         std::cout << s << std::endl;
                     }
                 }

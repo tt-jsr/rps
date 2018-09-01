@@ -27,6 +27,7 @@ void DIV(Machine& machine);
 void STO(Machine& machine);
 void RCL(Machine& machine);
 void VARNAMES(Machine& machine);
+void VARTYPES(Machine& machine);
 
 /*
  * Control commands
@@ -57,6 +58,8 @@ void INSERT(Machine&);
 void ERASE(Machine&);
 void CLEAR(Machine&);
 void SIZE(Machine&);
+void FIRST(Machine&);
+void SECOND(Machine&);
 
 /*
  * Misc commands
@@ -64,6 +67,7 @@ void SIZE(Machine&);
 void EVAL(Machine&);
 void EVAL(Machine&, ObjectPtr);
 void CALL(Machine&);
+void MODULES(Machine&);
 
 
 

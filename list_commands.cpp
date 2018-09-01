@@ -23,8 +23,6 @@ void APPEND(Machine& machine)
         throw std::runtime_error("APPEND: requires List argument");
     machine.pop(optr);
     machine.pop(lp);
-    if (!lp.unique())
-        lp = std::static_pointer_cast<List>(Clone(lp));
     lp->items.push_back(optr);
     machine.push(lp);
 }
@@ -80,8 +78,6 @@ void INSERT(Machine& machine)
         machine.push(op);
         throw std::runtime_error("INSERT: Index out of range");
     }
-    if (!lp.unique())
-        lp = std::static_pointer_cast<List>(Clone(lp));
     lp->items.insert(lp->items.begin()+idx, op);
     machine.push(lp);
 }
@@ -108,8 +104,6 @@ void ERASE(Machine& machine)
         machine.push(idx);
         throw std::runtime_error("ERASE: Index out of range");
     }
-    if (!lp.unique())
-        lp = std::static_pointer_cast<List>(Clone(lp));
     lp->items.erase(lp->items.begin() + idx);
     machine.push(lp);
 }
@@ -122,8 +116,6 @@ void CLEAR(Machine& machine)
     if (machine.peek(0)->type != OBJECT_LIST)
         throw std::runtime_error("CLEAR: requires List argument");
     machine.pop(lp);
-    if (!lp.unique())
-        lp = std::static_pointer_cast<List>(Clone(lp));
     lp->items.clear();
     machine.push(lp);
 }
@@ -140,6 +132,24 @@ void SIZE(Machine& machine)
     machine.push(sz);
 }
 
+void FIRST(Machine& machine)
+{
+    if (machine.stack_.size() < 1)
+        throw std::runtime_error("FIRST requires list argument");
+    if (machine.peek(0)->type != OBJECT_LIST)
+        throw std::runtime_error("FIRST: requires List argument");
+    machine.push(0);
+    GET(machine);
+}
 
+void SECOND(Machine& machine)
+{
+    if (machine.stack_.size() < 1)
+        throw std::runtime_error("SECOND requires list argument");
+    if (machine.peek(0)->type != OBJECT_LIST)
+        throw std::runtime_error("SECOND: requires List argument");
+    machine.push(1);
+    GET(machine);
+}
 
 

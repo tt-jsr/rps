@@ -10,8 +10,12 @@
 #include "module.h"
 #include "machine.h"
 #include "commands.h"
+#include "utilities.h"
 
 Machine::Machine()
+: list_maxcount(20)
+, map_maxcount(20)
+, debug(true) 
 {
 }
 
@@ -50,7 +54,9 @@ void Machine::pop(int64_t& v)
         return;
     }
     push(optr);
-    throw std::runtime_error("Not an integer");
+    std::stringstream strm;
+    strm << "pop: Expected integer, got: " << ToStr(*this, optr);
+    throw std::runtime_error(strm.str().c_str());
 }
 
 void Machine::push(int64_t v)
@@ -72,7 +78,9 @@ void Machine::pop(ListPtr& lp)
         return;
     }
     push(optr);
-    throw std::runtime_error("Not a list");
+    std::stringstream strm;
+    strm << "pop: Expected list, got: " << ToStr(*this, optr);
+    throw std::runtime_error(strm.str().c_str());
 }
 
 void Machine::push(ListPtr& lp)
@@ -94,7 +102,9 @@ void Machine::pop(std::string& v)
         return;
     }
     push(optr);
-    throw std::runtime_error("Not a string");
+    std::stringstream strm;
+    strm << "pop: Expected string, got: " << ToStr(*this, optr);
+    throw std::runtime_error(strm.str().c_str());
 }
 
 void Machine::push(const std::string& v)
@@ -178,3 +188,14 @@ void CALL(Machine& machine)
     EVAL(machine);
 }
 
+void MODULES(Machine& machine)
+{
+    ListPtr lp = MakeList();
+    for (auto& pr : machine.modules_)
+    {
+        StringPtr sp = MakeString();
+        sp->value = pr.first;
+        lp->items.push_back(sp);
+    }
+    machine.push(lp);
+}

@@ -88,7 +88,7 @@ void VIEW(Machine& machine)
     size_t n = machine.stack_.size() - 1;
     for (auto it = machine.stack_.begin(); it != machine.stack_.end(); ++it)
     {
-        std::cout << n << ":" << ToStr(*it) << std::endl;
+        std::cout << n << ":" << ToStr(machine, *it) << std::endl;
         --n;
     }
 }

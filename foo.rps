@@ -6,4 +6,10 @@ prog1 STO
 << 100 prog1 CALL SUB >>
 prog2 STO
 
-
+<<
+LT
+<< 5 500 MUL >>
+<< -5 500 MUL >>
+IFTE
+>>
+testfoo STO
