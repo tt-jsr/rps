@@ -5,6 +5,7 @@
 #include <sstream>
 #include <cassert>
 #include <memory>
+#include <algorithm>
 #include "token.h"
 #include "object.h"
 #include "module.h"
@@ -29,42 +30,73 @@ void APPEND(Machine& machine)
 
 void GET(Machine& machine)
 {
-    ListPtr lp;
-    int64_t idx;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("GET requires two arguments");
-    if (machine.peek(0)->type != OBJECT_INTEGER)
-        throw std::runtime_error("GET: requires Integer argument");
-    if (machine.peek(1)->type != OBJECT_LIST)
-        throw std::runtime_error("GET: requires List argument");
-    machine.pop(idx);
-    machine.pop(lp);
-    if (idx < 0)
+    if (machine.peek(1)->type == OBJECT_LIST)
     {
-        idx = lp->items.size() + idx;
+        if (machine.peek(0)->type != OBJECT_INTEGER)
+            throw std::runtime_error("GET: requires Integer argument for List");
+        ListPtr lp;
+        int64_t idx;
+
+        machine.pop(idx);
+        machine.pop(lp);
+        if (idx < 0)
+        {
+            idx = lp->items.size() + idx;
+        }
+        if (idx < 0 || idx >= lp->items.size())
+        {
+            machine.push(lp);
+            machine.push(idx);
+            throw std::runtime_error("GET: Index out of range for List");
+        }
+        ObjectPtr p = lp->items[idx];
+        machine.push(p);
+        return;
     }
-    if (idx < 0 || idx >= lp->items.size())
-    {
-        machine.push(lp);
-        machine.push(idx);
-        throw std::runtime_error("GET: Index out of range");
-    }
-    ObjectPtr p = lp->items[idx];
-    machine.push(p);
+    throw std::runtime_error("GET: requires List argument");
 }
 
-void INSERT(Machine& machine)
+void FIND(Machine& machine)
 {
+    if (machine.stack_.size() < 3)
+        throw std::runtime_error("FIND requires three arguments");
+    if (machine.peek(2)->type == OBJECT_MAP)
+    {
+        if (machine.peek(1)->type != OBJECT_INTEGER && machine.peek(0)->type != OBJECT_STRING)
+            throw std::runtime_error("GET: requires Integer or String argument for Map");
+        ObjectPtr key;
+        MapPtr mp;
+        ObjectPtr onError;
+
+        machine.pop(onError);
+        machine.pop(key);
+        machine.pop(mp);
+        auto it = mp->items.find(key);
+        if (it == mp->items.end())
+            EVAL(machine, onError);
+        else
+            machine.push(it->second);
+        return;
+    }
+    throw std::runtime_error("FIND: requires Map argument");
+}
+
+void LIST_INSERT(Machine& machine)
+{
+    if (machine.stack_.size() < 3)
+        throw std::runtime_error("List insert: stack underflow");
+    if (machine.peek(2)->type != OBJECT_LIST)
+        throw std::runtime_error("List insert: Requires list at level2");
+    if (machine.peek(1)->type != OBJECT_INTEGER)
+        throw std::runtime_error("List insert: requires Integer argument");
+
     ListPtr lp;
     int64_t idx;
-    ObjectPtr op;
-    if (machine.stack_.size() < 3)
-        throw std::runtime_error("INSERT requires three arguments");
-    if (machine.peek(1)->type != OBJECT_INTEGER)
-        throw std::runtime_error("INSERT: requires Integer argument");
-    if (machine.peek(2)->type != OBJECT_LIST)
-        throw std::runtime_error("INSERT: requires List argument");
-    machine.pop(op);
+    ObjectPtr element;
+
+    machine.pop(element);
     machine.pop(idx);
     machine.pop(lp);
     if (idx < 0)
@@ -75,61 +107,117 @@ void INSERT(Machine& machine)
     {
         machine.push(lp);
         machine.push(idx);
-        machine.push(op);
-        throw std::runtime_error("INSERT: Index out of range");
+        machine.push(element);
+        throw std::runtime_error("List insert: Index out of range");
     }
-    lp->items.insert(lp->items.begin()+idx, op);
+    lp->items.insert(lp->items.begin()+idx, element);
     machine.push(lp);
+}
+
+void MAP_INSERT(Machine& machine)
+{
+    if (machine.stack_.size() < 2)
+        throw std::runtime_error("Map insert: stack underflow");
+    if (machine.peek(1)->type != OBJECT_MAP)
+        throw std::runtime_error("Map insert: Requires map at level 1");
+    if (machine.peek(0)->type != OBJECT_LIST)
+        throw std::runtime_error("Map insert: Requires List at level 0");
+
+    MapPtr mp;
+    ListPtr kv;
+    machine.pop(kv);
+    machine.pop(mp);
+    mp->items[kv->items[0]] =  kv->items[1];
+    machine.push(mp);
 }
 
 void ERASE(Machine& machine)
 {
-    ListPtr lp;
-    int64_t idx;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("ERASE requires two arguments");
-    if (machine.peek(0)->type != OBJECT_INTEGER)
-        throw std::runtime_error("ERASE: requires Integer argument");
-    if (machine.peek(1)->type != OBJECT_LIST)
-        throw std::runtime_error("ERASE: requires List argument");
-    machine.pop(idx);
-    machine.pop(lp);
-    if (idx < 0)
+    if (machine.peek(1)->type == OBJECT_LIST)
     {
-        idx = lp->items.size() + idx;
-    }
-    if (idx < 0 || idx >= lp->items.size())
-    {
+        if (machine.peek(0)->type != OBJECT_INTEGER)
+            throw std::runtime_error("ERASE: requires Integer argument for List");
+
+        ListPtr lp;
+        int64_t idx;
+        machine.pop(idx);
+        machine.pop(lp);
+        if (idx < 0)
+        {
+            idx = lp->items.size() + idx;
+        }
+        if (idx < 0 || idx >= lp->items.size())
+        {
+            machine.push(lp);
+            machine.push(idx);
+            throw std::runtime_error("ERASE: Index out of range for List");
+        }
+        lp->items.erase(lp->items.begin() + idx);
         machine.push(lp);
-        machine.push(idx);
-        throw std::runtime_error("ERASE: Index out of range");
+        return;
     }
-    lp->items.erase(lp->items.begin() + idx);
-    machine.push(lp);
+    if (machine.peek(1)->type == OBJECT_MAP)
+    {
+        if (machine.peek(0)->type != OBJECT_INTEGER && machine.peek(0)->type != OBJECT_STRING)
+            throw std::runtime_error("ERASE: requires String or Integer argument for Map");
+
+        MapPtr mp;
+        ObjectPtr key;
+        machine.pop(key);
+        machine.pop(mp);
+        mp->items.erase(key);
+        machine.push(mp);
+        return;
+    }
+    throw std::runtime_error("ERASE: requires List  or Map argument");
 }
 
 void CLEAR(Machine& machine)
 {
-    ListPtr lp;
     if (machine.stack_.size() < 1)
         throw std::runtime_error("CLEAR requires a List argument");
-    if (machine.peek(0)->type != OBJECT_LIST)
-        throw std::runtime_error("CLEAR: requires List argument");
-    machine.pop(lp);
-    lp->items.clear();
-    machine.push(lp);
+    if (machine.peek(0)->type == OBJECT_LIST)
+    {
+        ListPtr lp;
+        machine.pop(lp);
+        lp->items.clear();
+        machine.push(lp);
+        return;
+    }
+    if (machine.peek(0)->type == OBJECT_MAP)
+    {
+        MapPtr mp;
+        machine.pop(mp);
+        mp->items.clear();
+        machine.push(mp);
+        return;
+    }
+    throw std::runtime_error("CLEAR: requires List or Map argument");
 }
 
 void SIZE(Machine& machine)
 {
-    ListPtr lp;
     if (machine.stack_.size() < 1)
         throw std::runtime_error("SIZE requires a List argument");
-    if (machine.peek(0)->type != OBJECT_LIST)
-        throw std::runtime_error("SIZE: requires List argument");
-    machine.pop(lp);
-    int64_t sz = lp->items.size();
-    machine.push(sz);
+    if (machine.peek(0)->type == OBJECT_LIST)
+    {
+        ListPtr lp;
+        machine.pop(lp);
+        int64_t sz = lp->items.size();
+        machine.push(sz);
+        return;
+    }
+    if (machine.peek(0)->type == OBJECT_MAP)
+    {
+        MapPtr mp;
+        machine.pop(mp);
+        int64_t sz = mp->items.size();
+        machine.push(sz);
+        return;
+    }
+    throw std::runtime_error("SIZE: requires List or Map argument");
 }
 
 void FIRST(Machine& machine)
@@ -150,6 +238,60 @@ void SECOND(Machine& machine)
         throw std::runtime_error("SECOND: requires List argument");
     machine.push(1);
     GET(machine);
+}
+
+void TOLIST(Machine& machine)
+{
+    ListPtr lp;
+    lp = MakeList();
+    int64_t num;
+    machine.pop(num);
+    while (num--)
+    {
+        ObjectPtr obj;
+        machine.pop(obj);
+        lp->items.push_back(obj);
+    }
+    std::reverse(lp->items.begin(), lp->items.end());
+    machine.push(lp);
+}
+
+void TOMAP(Machine& machine)
+{
+    MapPtr mp;
+    mp = MakeMap();
+    int64_t num;
+    machine.pop(num);
+    while (num--)
+    {
+        ListPtr lp;
+        machine.pop(lp);
+        mp->items[lp->items[0]] = lp->items[1];
+    }
+    machine.push(mp);
+}
+
+void FROMLIST(Machine& machine)
+{
+    ListPtr lp;
+    machine.pop(lp);
+    for (ObjectPtr op : lp->items)
+    {
+        machine.push(op);
+    }
+}
+
+void FROMMAP(Machine& machine)
+{
+    MapPtr mp;
+    machine.pop(mp);
+    for (auto& pr :mp->items)
+    {
+        ListPtr lp = MakeList();
+        lp->items.push_back(pr.first);
+        lp->items.push_back(pr.second);
+        machine.push(lp);
+    }
 }
 
 

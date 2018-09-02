@@ -72,15 +72,17 @@ void ROLL(Machine& machine)
     if (machine.stack_.size() <= level)
     {
         machine.push(level);
-        throw std::runtime_error("PICK: stack underflow");
+        throw std::runtime_error("ROLL: stack underflow");
     }
     int64_t idx = machine.stack_.size() - level - 1;
     if (idx < 0 || idx >= machine.stack_.size())
     {
         machine.push(level);
-        throw std::runtime_error("PICK: Out of range");
+        throw std::runtime_error("ROLL: Out of range");
     }
-    std::swap(machine.stack_[idx], machine.stack_.back());
+    ObjectPtr obj = machine.stack_[idx];
+    machine.stack_.erase(machine.stack_.begin()+idx);
+    machine.stack_.push_back(obj);
 }
 
 void VIEW(Machine& machine)

@@ -26,6 +26,8 @@ public:
     void pop(ObjectPtr&);
     void pop(ListPtr&);
     void push(ListPtr&);
+    void pop(MapPtr&);
+    void push(MapPtr&);
 };
 
 

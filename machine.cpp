@@ -89,6 +89,29 @@ void Machine::push(ListPtr& lp)
     push(op);
 }
 
+void Machine::pop(MapPtr& mp)
+{
+    if (stack_.empty())
+        throw std::runtime_error("stack underflow");
+    ObjectPtr& optr = stack_.back();
+    if (optr->type == OBJECT_MAP)
+    {
+        mp = std::static_pointer_cast<Map>(optr);;
+        stack_.pop_back();
+        return;
+    }
+    push(optr);
+    std::stringstream strm;
+    strm << "pop: Expected Map, got: " << ToStr(*this, optr);
+    throw std::runtime_error(strm.str().c_str());
+}
+
+void Machine::push(MapPtr& mp)
+{
+    ObjectPtr op = mp;
+    push(op);
+}
+
 void Machine::pop(std::string& v)
 {
     if (stack_.empty())

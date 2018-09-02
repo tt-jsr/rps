@@ -164,6 +164,8 @@ again:
         optr.reset(new Command(w, &IFT));
     else if (w == "IFTE")
         optr.reset(new Command(w, &IFTE));
+    else if (w == "TRYCATCH")
+        optr.reset(new Command(w, &TRYCATCH));
 
     // List commands
     else if (w == "GET")
@@ -174,14 +176,26 @@ again:
         optr.reset(new Command(w, &ERASE));
     else if (w == "CLEAR")
         optr.reset(new Command(w, &CLEAR));
-    else if (w == "INSERT")
-        optr.reset(new Command(w, &INSERT));
+    else if (w == "LIST-INSERT")
+        optr.reset(new Command(w, &LIST_INSERT));
+    else if (w == "MAP-INSERT")
+        optr.reset(new Command(w, &MAP_INSERT));
     else if (w == "SIZE")
         optr.reset(new Command(w, &SIZE));
+    else if (w == "FIND")
+        optr.reset(new Command(w, &FIND));
     else if (w == "FIRST")
         optr.reset(new Command(w, &FIRST));
     else if (w == "SECOND")
         optr.reset(new Command(w, &SECOND));
+    else if (w == "TOLIST")
+        optr.reset(new Command(w, &TOLIST));
+    else if (w == "TOMAP")
+        optr.reset(new Command(w, &TOMAP));
+    else if (w == "FROMLIST")
+        optr.reset(new Command(w, &FROMLIST));
+    else if (w == "FROMMAP")
+        optr.reset(new Command(w, &FROMMAP));
 
     // Execution commands
     else if (w == "EVAL")

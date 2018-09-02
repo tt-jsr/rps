@@ -1,6 +1,7 @@
 #include <memory>
 #include <cassert>
 #include <sstream>
+#include <unordered_map>
 #include "object.h"
 #include "module.h"
 #include "machine.h"
@@ -31,6 +32,13 @@ ListPtr MakeList()
     ListPtr lp;
     lp.reset(new List());
     return lp;
+}
+
+MapPtr MakeMap()
+{
+    MapPtr mp;
+    mp.reset(new Map());
+    return mp;
 }
 
 ObjectPtr Clone(ObjectPtr optr)

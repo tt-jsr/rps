@@ -24,6 +24,8 @@ public:
 
 typedef std::shared_ptr<Object> ObjectPtr;
 
+bool operator==(ObjectPtr, ObjectPtr);
+
 class String : public Object
 {
 public:

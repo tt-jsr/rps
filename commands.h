@@ -32,9 +32,9 @@ void VARTYPES(Machine& machine);
 /*
  * Control commands
  */
-
 void IFT(Machine& machine);
 void IFTE(Machine& machine);
+void TRYCATCH(Machine& machine);
 
 /*
  * Logical Operators
@@ -54,12 +54,18 @@ void OR(Machine&);
  */
 void APPEND(Machine&);
 void GET(Machine&);
-void INSERT(Machine&);
+void FIND(Machine&);
+void LIST_INSERT(Machine&);
+void MAP_INSERT(Machine&);
 void ERASE(Machine&);
 void CLEAR(Machine&);
 void SIZE(Machine&);
 void FIRST(Machine&);
 void SECOND(Machine&);
+void TOLIST(Machine&);
+void TOMAP(Machine&);
+void FROMLIST(Machine&);
+void FROMMAP(Machine&);
 
 /*
  * Misc commands
