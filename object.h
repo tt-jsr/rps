@@ -9,7 +9,7 @@ class Machine;
 class Object
 {
 public:
-    Object(ObjectType t, Token tok)
+    Object(ObjectType t, TokenType tok)
     :type(t)
     ,token(tok)
     ,bSuppressInteractivePrint(false)
@@ -18,7 +18,7 @@ public:
     ~Object() {}
 
     ObjectType type;
-    Token token;
+    TokenType token;
     bool bSuppressInteractivePrint;
 };
 

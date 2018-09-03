@@ -27,7 +27,7 @@ void SkipWhitespace(Source& src)
     }
 }
 
-void CollectQuoted(Source& src, std::string& out)
+void CollectQuoted(Source& src, Token& token)
 {
     assert(*src.it == '\"');
     ++src.it;
@@ -40,186 +40,298 @@ void CollectQuoted(Source& src, std::string& out)
                 ++src.it;
                 return;
             }
-            out.push_back(*src.it);
+            token.value.push_back(*src.it);
             ++src.it;
         }
         src.Read();
     }
 }
 
-void Collect(Source& src, std::string& out, bool& quoted)
+void CollectIdentifier(Source& src, Token& token)
 {
-    quoted = false;
-    out.clear();
-    SkipWhitespace(src);
     while (src.it != src.line.end())
     {
-        if (*src.it == '\"')
+        if (isalnum(*src.it))
+            token.value.push_back(*src.it);
+        else if (isdigit(*src.it))
+            token.value.push_back(*src.it);
+        else if (*src.it == '.' || *src.it == '_' || *src.it == '-')
+            token.value.push_back(*src.it);
+        else if (*src.it == ' ')
+            return;
+        else if (*src.it == '#')
         {
-            CollectQuoted(src, out);
-            quoted = true;
+            src.it = src.line.end();
             return;
         }
-        if (*src.it == ' ' || *src.it == '\t')
-            return;
-        out.push_back(*src.it);
+        else
+        {
+            std::stringstream strm;
+            strm << "Identifier received unexpected \'" << *src.it << "\'";
+            throw std::runtime_error(strm.str().c_str());
+        }
         ++src.it;
+    }
+}
+
+void CollectInteger(Source& src, Token& token)
+{
+    while (src.it != src.line.end())
+    {
+        if (isdigit(*src.it))
+            token.value.push_back(*src.it);
+        else if (*src.it == ' ')
+            return;
+        else if (*src.it == '#')
+        {
+            src.it = src.line.end();
+            return;
+        }
+        else
+        {
+            std::stringstream strm;
+            strm << "Integer received unexpected \'" << *src.it << "\'";
+            throw std::runtime_error(strm.str().c_str());
+        }
+        ++src.it;
+    }
+}
+void GetToken(Source& src, Token& token)
+{
+    token.value.clear();
+    SkipWhitespace(src);
+    if (*src.it == '\"')
+    {
+        CollectQuoted(src, token);
+        token.token = TOKEN_STRING;
+        return;
+    }
+    if (isdigit(*src.it) || *src.it == '-')
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        CollectInteger(src, token);
+        token.token = TOKEN_INTEGER;
+        return;
+    }
+    if (isalpha(*src.it))
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        CollectIdentifier(src, token);
+        token.token = TOKEN_STRING;
+        return;
+    }
+    if (*src.it == '[')
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        token.token = TOKEN_START_LIST;
+        return;
+    }
+    if (*src.it == '{')
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        token.token = TOKEN_START_MAP;
+        return;
+    }
+    if (*src.it == ']')
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        token.token = TOKEN_END_LIST;
+        return;
+    }
+    if (*src.it == '}')
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        token.token = TOKEN_END_MAP;
+        return;
+    }
+    if (*src.it == '<')
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        if (*src.it != '<')
+            throw std::runtime_error("Expected \'<\' in input");
+        token.value.push_back(*src.it);
+        ++src.it;
+        token.token = TOKEN_START_PROGRAM;
+        return;
+    }
+    if (*src.it == '>')
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        if (*src.it != '>')
+            throw std::runtime_error("Expected \'>\' in input");
+        token.value.push_back(*src.it);
+        ++src.it;
+        token.token = TOKEN_END_PROGRAM;
+        return;
+    }
+    if (*src.it == '#')
+    {
+        src.it = src.line.end();
+        token.token = TOKEN_COMMENT;
     }
 }
 
 bool Parser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
 {
 again:
-    std::string w;
-    bool quoted;
-    Collect(src, w, quoted);
-    if (w.empty() && (src.it == src.line.end()))
+    Token token;
+    GetToken(src, token);
+    if (token.value.empty() && (src.it == src.line.end()))
         return false;
-    if (quoted)
-    {
-        optr.reset(new String(w));
-        return true;
-    }
-    if (w == "import")
-    {
-        std::string filename;
-        std::string modulename;
-        Collect(src, modulename, quoted);
-        std::ifstream ifs;
-        filename = modulename + ".rps";
-        ifs.open(filename);
-        if (!ifs.is_open())
-        {
-            std::stringstream strm;
-            strm << "import: cannot open " << filename;
-            throw std::runtime_error(strm.str());
-        }
-        Source srcImport(ifs);
-        std::string modname = machine.current_module_;
-        machine.current_module_ = modulename;
-        machine.CreateModule(modulename);
-        Parse(machine, srcImport);
-        machine.current_module_ = modname;
-        goto again;
-    }
-    // Stack commands
-    else if (w == "DROP")
-        optr.reset(new Command(w, &DROP));
-    else if (w == "DROPN")
-        optr.reset(new Command(w, &DROPN));
-    else if (w == "SWAP")
-        optr.reset(new Command(w, &SWAP));
-    else if (w == "DUP")
-        optr.reset(new Command(w, &DUP));
-    else if (w == "PICK")
-        optr.reset(new Command(w, &PICK));
-    else if (w == "ROLL")
-        optr.reset(new Command(w, &ROLL));
-    else if (w == "VIEW")
-    {
-        optr.reset(new Command(w, &VIEW));
-        optr->bSuppressInteractivePrint = true;
-    }
+    if (token.token == TOKEN_INTEGER)
+        optr.reset(new Integer(strtol(token.value.c_str(), nullptr, 10)));
 
-    // Logical operators
-    else if (w == "EQ")
-        optr.reset(new Command(w, &EQ));
-    else if (w == "NEQ")
-        optr.reset(new Command(w, &NEQ));
-    else if (w == "LT")
-        optr.reset(new Command(w, &LT));
-    else if (w == "LTEQ")
-        optr.reset(new Command(w, &LTEQ));
-    else if (w == "GT")
-        optr.reset(new Command(w, &GT));
-    else if (w == "GTEQ")
-        optr.reset(new Command(w, &GTEQ));
-    else if (w == "AND")
-        optr.reset(new Command(w, &AND));
-    else if (w == "OR")
-        optr.reset(new Command(w, &OR));
-
-    // Variable commands
-    else if (w == "STO")
-        optr.reset(new Command(w, &STO));
-    else if (w == "RCL")
-        optr.reset(new Command(w, &RCL));
-    else if (w == "VARNAMES")
-        optr.reset(new Command(w, &VARNAMES));
-    else if (w == "VARTYPES")
-        optr.reset(new Command(w, &VARTYPES));
-
-    // Math commands
-    else if (w == "ADD")
-        optr.reset(new Command(w, &ADD));
-    else if (w == "SUB")
-        optr.reset(new Command(w, &SUB));
-    else if (w == "MUL")
-        optr.reset(new Command(w, &MUL));
-    else if (w == "DIV")
-        optr.reset(new Command(w, &DIV));
-
-    // Control commands
-    else if (w == "IFT")
-        optr.reset(new Command(w, &IFT));
-    else if (w == "IFTE")
-        optr.reset(new Command(w, &IFTE));
-    else if (w == "TRYCATCH")
-        optr.reset(new Command(w, &TRYCATCH));
-
-    // List commands
-    else if (w == "GET")
-        optr.reset(new Command(w, &GET));
-    else if (w == "APPEND")
-        optr.reset(new Command(w, &APPEND));
-    else if (w == "ERASE")
-        optr.reset(new Command(w, &ERASE));
-    else if (w == "CLEAR")
-        optr.reset(new Command(w, &CLEAR));
-    else if (w == "LIST-INSERT")
-        optr.reset(new Command(w, &LIST_INSERT));
-    else if (w == "MAP-INSERT")
-        optr.reset(new Command(w, &MAP_INSERT));
-    else if (w == "SIZE")
-        optr.reset(new Command(w, &SIZE));
-    else if (w == "FIND")
-        optr.reset(new Command(w, &FIND));
-    else if (w == "FIRST")
-        optr.reset(new Command(w, &FIRST));
-    else if (w == "SECOND")
-        optr.reset(new Command(w, &SECOND));
-    else if (w == "TOLIST")
-        optr.reset(new Command(w, &TOLIST));
-    else if (w == "TOMAP")
-        optr.reset(new Command(w, &TOMAP));
-    else if (w == "FROMLIST")
-        optr.reset(new Command(w, &FROMLIST));
-    else if (w == "FROMMAP")
-        optr.reset(new Command(w, &FROMMAP));
-
-    // Execution commands
-    else if (w == "EVAL")
-        optr.reset(new Command(w, &EVAL));
-    else if (w == "CALL")
-        optr.reset(new Command(w, &CALL));
-
-    // Environment
-    else if (w == "MODULES")
-        optr.reset(new Command(w, &MODULES));
-
-    // tokens
-    else if (w == "<<")
+    else if (token.token == TOKEN_START_PROGRAM)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_PROGRAM));
-    else if (w == ">>")
+    else if (token.token == TOKEN_END_PROGRAM)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_PROGRAM));
-    else if (w == "[")
+    else if (token.token == TOKEN_START_LIST)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_LIST));
-    else if (w == "]")
+    else if (token.token == TOKEN_END_LIST)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_LIST));
-    else if ((w[0] >= '0' && w[0] <= '9') || w[0] == '-' )
-        optr.reset(new Integer(strtol(w.c_str(), nullptr, 10)));
-    else
-        optr.reset(new String(w));
+    else if (token.token == TOKEN_START_MAP)
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_MAP));
+    else if (token.token == TOKEN_END_MAP)
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_MAP));
+    if (token.token == TOKEN_STRING)
+    {
+        if (token.value == "import")
+        {
+            std::string filename;
+            Token modulename;
+            GetToken(src, modulename);
+            std::ifstream ifs;
+            filename = modulename.value + ".rps";
+            ifs.open(filename);
+            if (!ifs.is_open())
+            {
+                std::stringstream strm;
+                strm << "import: cannot open " << filename;
+                throw std::runtime_error(strm.str());
+            }
+            Source srcImport(ifs);
+            std::string modname = machine.current_module_;
+            machine.current_module_ = modulename.value;
+            machine.CreateModule(modulename.value);
+            Parse(machine, srcImport);
+            machine.current_module_ = modname;
+            goto again;
+        }
+        // Stack commands
+        else if (token.value == "DROP")
+            optr.reset(new Command(token.value, &DROP));
+        else if (token.value == "DROPN")
+            optr.reset(new Command(token.value, &DROPN));
+        else if (token.value == "SWAP")
+            optr.reset(new Command(token.value, &SWAP));
+        else if (token.value == "DUP")
+            optr.reset(new Command(token.value, &DUP));
+        else if (token.value == "PICK")
+            optr.reset(new Command(token.value, &PICK));
+        else if (token.value == "ROLL")
+            optr.reset(new Command(token.value, &ROLL));
+        else if (token.value == "VIEW")
+        {
+            optr.reset(new Command(token.value, &VIEW));
+            optr->bSuppressInteractivePrint = true;
+        }
+
+        // Logical operators
+        else if (token.value == "EQ")
+            optr.reset(new Command(token.value, &EQ));
+        else if (token.value == "NEQ")
+            optr.reset(new Command(token.value, &NEQ));
+        else if (token.value == "LT")
+            optr.reset(new Command(token.value, &LT));
+        else if (token.value == "LTEQ")
+            optr.reset(new Command(token.value, &LTEQ));
+        else if (token.value == "GT")
+            optr.reset(new Command(token.value, &GT));
+        else if (token.value == "GTEQ")
+            optr.reset(new Command(token.value, &GTEQ));
+        else if (token.value == "AND")
+            optr.reset(new Command(token.value, &AND));
+        else if (token.value == "OR")
+            optr.reset(new Command(token.value, &OR));
+
+        // Variable commands
+        else if (token.value == "STO")
+            optr.reset(new Command(token.value, &STO));
+        else if (token.value == "RCL")
+            optr.reset(new Command(token.value, &RCL));
+        else if (token.value == "VARNAMES")
+            optr.reset(new Command(token.value, &VARNAMES));
+        else if (token.value == "VARTYPES")
+            optr.reset(new Command(token.value, &VARTYPES));
+
+        // Math commands
+        else if (token.value == "ADD")
+            optr.reset(new Command(token.value, &ADD));
+        else if (token.value == "SUB")
+            optr.reset(new Command(token.value, &SUB));
+        else if (token.value == "MUL")
+            optr.reset(new Command(token.value, &MUL));
+        else if (token.value == "DIV")
+            optr.reset(new Command(token.value, &DIV));
+
+        // Control commands
+        else if (token.value == "IFT")
+            optr.reset(new Command(token.value, &IFT));
+        else if (token.value == "IFTE")
+            optr.reset(new Command(token.value, &IFTE));
+        else if (token.value == "TRYCATCH")
+            optr.reset(new Command(token.value, &TRYCATCH));
+
+        // List commands
+        else if (token.value == "GET")
+            optr.reset(new Command(token.value, &GET));
+        else if (token.value == "APPEND")
+            optr.reset(new Command(token.value, &APPEND));
+        else if (token.value == "ERASE")
+            optr.reset(new Command(token.value, &ERASE));
+        else if (token.value == "CLEAR")
+            optr.reset(new Command(token.value, &CLEAR));
+        else if (token.value == "LIST-INSERT")
+            optr.reset(new Command(token.value, &LIST_INSERT));
+        else if (token.value == "MAP-INSERT")
+            optr.reset(new Command(token.value, &MAP_INSERT));
+        else if (token.value == "SIZE")
+            optr.reset(new Command(token.value, &SIZE));
+        else if (token.value == "FIND")
+            optr.reset(new Command(token.value, &FIND));
+        else if (token.value == "FIRST")
+            optr.reset(new Command(token.value, &FIRST));
+        else if (token.value == "SECOND")
+            optr.reset(new Command(token.value, &SECOND));
+        else if (token.value == "TOLIST")
+            optr.reset(new Command(token.value, &TOLIST));
+        else if (token.value == "TOMAP")
+            optr.reset(new Command(token.value, &TOMAP));
+        else if (token.value == "FROMLIST")
+            optr.reset(new Command(token.value, &FROMLIST));
+        else if (token.value == "FROMMAP")
+            optr.reset(new Command(token.value, &FROMMAP));
+
+        // Execution commands
+        else if (token.value == "EVAL")
+            optr.reset(new Command(token.value, &EVAL));
+        else if (token.value == "CALL")
+            optr.reset(new Command(token.value, &CALL));
+
+        // Environment
+        else if (token.value == "MODULES")
+            optr.reset(new Command(token.value, &MODULES));
+        else
+            optr.reset(new String(token.value));
+    }
 
     return true;
 }

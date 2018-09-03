@@ -15,17 +15,6 @@ IFTE
 testfoo STO
 
 <<
-apple
-{ apple:red, banana:yellow }
-0
-GET
-<< 0 NEQ >>
-PRINT
-IFT
->>
-
-
-<<
 10
 [ 1 2 3 4 5 ]
 GET

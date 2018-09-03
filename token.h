@@ -1,6 +1,6 @@
 #pragma once
 
-enum Token
+enum TokenType
 {
     TOKEN_START_PROGRAM
     , TOKEN_END_PROGRAM
@@ -8,6 +8,17 @@ enum Token
     , TOKEN_COMMAND
     , TOKEN_START_LIST
     , TOKEN_END_LIST
+    , TOKEN_START_MAP
+    , TOKEN_END_MAP
+    , TOKEN_INTEGER
+    , TOKEN_STRING
+    , TOKEN_COMMENT
+};
+
+struct Token
+{
+    std::string value;
+    TokenType token;
 };
 
 enum ObjectType

@@ -24,16 +24,8 @@ void STO(Machine& machine)
         varname = s.substr(n);
     }
     machine.pop(optr);
-    auto itModule = machine.modules_.find(modname);
-    if (itModule == machine.modules_.end())
-    {
-        std::stringstream strm;
-        strm << "STO Module " << modname << " not found";
-        machine.push(optr);
-        machine.push(s);
-        throw std::runtime_error(strm.str().c_str());
-    }
-    itModule->second.variables_.emplace(varname, optr);
+    Module& module = machine.modules_[modname];
+    module.variables_[varname] = optr;
 }
 
 void RCL(Machine& machine)
