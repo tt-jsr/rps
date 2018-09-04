@@ -201,7 +201,15 @@ again:
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_MAP));
     else if (token.token == TOKEN_END_MAP)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_MAP));
-    if (token.token == TOKEN_STRING)
+    else if (token.value == "IF")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_IF));
+    else if (token.value == "THEN")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_THEN));
+    else if (token.value == "ELSE")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_ELSE));
+    else if (token.value == "ENDIF")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_ENDIF));
+    else if (token.token == TOKEN_STRING)
     {
         if (token.value == "import")
         {
@@ -336,6 +344,62 @@ again:
     return true;
 }
 
+void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
+{
+    ObjectPtr optr;
+    std::vector<ObjectPtr> *pVec = &ifptr->cond;
+    while(GetObject(machine, src, optr))
+    {
+        if (optr->token == TOKEN_ENDIF)
+        {
+            return;
+        }
+        else if (optr->token == TOKEN_THEN)
+        {
+            pVec = &ifptr->then;
+            src.prompt = "THEN: ";
+        }
+        else if (optr->token == TOKEN_ELSE)
+        {
+            pVec = &ifptr->els;
+            src.prompt = "ELSE: ";
+        }
+        else if (optr->token == TOKEN_IF)
+        {
+            IfPtr ifp;
+            ifp.reset(new If());
+            std::string savePrompt = src.prompt;
+            src.prompt = "IF: ";
+            ParseIf(machine, ifp, src);    // recurse
+            src.prompt = savePrompt;
+        }
+        else if (optr->token == TOKEN_START_PROGRAM)
+        {
+            ProgramPtr pptr;
+            pptr.reset(new Program());
+            std::string savePrompt = src.prompt;
+            src.prompt = ">> ";
+            ParseProgram(machine, pptr, src);    // recurse
+            src.prompt = savePrompt;
+            optr = pptr;
+            pVec->push_back(optr);           
+        }
+        else if (optr->token == TOKEN_START_LIST)
+        {
+            ListPtr lp;
+            lp.reset(new List());
+            std::string savePrompt = src.prompt;
+            src.prompt = "[] ";
+            ParseList(machine, lp, src);    // recurse
+            src.prompt = savePrompt;
+            optr = lp;
+            pVec->push_back(optr);           
+        }
+        else
+            pVec->push_back(optr);           
+    }
+}
+
 void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
 {
     ObjectPtr optr;
@@ -391,6 +455,15 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
             src.prompt = ">> ";
             optr = lp;
         }
+        else if (optr->token == TOKEN_IF)
+        {
+            IfPtr ifp;
+            ifp.reset(new If());
+            src.prompt = "IF: ";
+            ParseIf(machine, ifp, src);    // recurse
+            src.prompt = ">> ";
+            optr = ifp;
+        }
         pptr->program.push_back(optr);           
     }
 }
@@ -421,7 +494,32 @@ void Parser::Parse(Machine& machine, Source& src)
                 optr = pptr;
             }
 
-            if (optr->token == TOKEN_COMMAND)
+            if (optr->token == TOKEN_IF)
+            {
+                src.prompt = "IF: ";
+                IfPtr ifptr;
+                ifptr.reset(new If());
+                ParseIf(machine, ifptr, src);
+                src.prompt = "> ";
+                try
+                {
+                    EVAL(machine, ifptr);
+                }
+                catch (std::exception& e)
+                {
+                    std::cout << e.what() << std::endl;
+                }
+                if (src.interactive && !optr->bSuppressInteractivePrint)
+                {
+                    if (!machine.stack_.empty())
+                    {
+                        ObjectPtr& optr = machine.peek();
+                        std::string s = ToStr(machine, optr);
+                        std::cout << s << std::endl;
+                    }
+                }
+            }
+            else if (optr->token == TOKEN_COMMAND)
             {
                 try
                 {

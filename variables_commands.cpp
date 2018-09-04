@@ -13,6 +13,12 @@ void STO(Machine& machine)
 {
     std::string s;
     ObjectPtr optr;
+    if (machine.peek(0)->type != OBJECT_STRING)
+    {
+        std::stringstream strm;
+        strm << "STO expected string, got " << ToStr(machine, machine.peek(0));
+        throw std::runtime_error(strm.str().c_str());
+    }
     machine.pop(s);
     std::string modname = machine.current_module_;
     std::string varname = s;
@@ -31,6 +37,12 @@ void STO(Machine& machine)
 void RCL(Machine& machine)
 {
     std::string s;
+    if (machine.peek(0)->type != OBJECT_STRING)
+    {
+        std::stringstream strm;
+        strm << "RCL expected string, got " << ToStr(machine, machine.peek(0));
+        throw std::runtime_error(strm.str().c_str());
+    }
     machine.pop(s);
     std::string modname = machine.current_module_;
     std::string varname = s;

@@ -153,6 +153,14 @@ ObjectPtr& Machine::peek(size_t n)
 }
 
 /****************************************************************/
+void Execute(Machine& machine, std::vector<ObjectPtr>& vec)
+{
+    for (ObjectPtr& op : vec)
+    {
+        EVAL(machine, op);
+    }
+}
+
 void EVAL(Machine& machine, ObjectPtr optr)
 {
     switch(optr->type)
@@ -171,19 +179,28 @@ void EVAL(Machine& machine, ObjectPtr optr)
             Program *p = (Program *)optr.get();
             std::string modname = machine.current_module_;
             machine.current_module_ = p->module_name;
-            for (ObjectPtr& op : p->program)
+            try
             {
-                try
-                {
-                    EVAL(machine, op);
-                }
-                catch (std::exception& e)
-                {
-                    machine.current_module_ = modname;
-                    throw;
-                }
+                Execute(machine, p->program);
+            }
+            catch (std::exception& e)
+            {
+                machine.current_module_ = modname;
+                throw;
             }
             machine.current_module_ = modname;
+        }
+        break;
+    case OBJECT_IF:
+        {
+            ObjectPtr ob;
+            If *p = (If *)optr.get();
+            Execute(machine, p->cond);
+            machine.pop(ob);
+            if (ToBool(ob))
+                Execute(machine, p->then);
+            else
+                Execute(machine, p->els);
         }
         break;
     case OBJECT_COMMAND:
@@ -193,6 +210,7 @@ void EVAL(Machine& machine, ObjectPtr optr)
         }
         break;
     default:
+        std::cout << "=== EVAL: " << ToStr(machine, optr) << std::endl;
         assert(false);
         break;
     }

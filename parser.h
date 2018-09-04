@@ -20,4 +20,5 @@ public:
     void Parse(Machine& machine, Source&);
     void ParseProgram(Machine&, ProgramPtr& pptr, Source& src);
     void ParseList(Machine&, ListPtr& pptr, Source& src);
+    void ParseIf(Machine&, IfPtr& ifptr, Source& src);
 };

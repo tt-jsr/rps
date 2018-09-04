@@ -1,6 +1,7 @@
 #include <memory>
 #include <cassert>
 #include <sstream>
+#include <iostream>
 #include <unordered_map>
 #include "object.h"
 #include "module.h"
@@ -156,7 +157,11 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
             return strm.str();
         }
         break;
+    case OBJECT_IF:
+        return "IF";
+        break;
     default:
+        std::cout << "=== ToStr: " << optr->token << std::endl;
         assert(false);
         throw std::runtime_error("Clone: Unknown type");
         break;

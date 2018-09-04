@@ -88,3 +88,13 @@ public:
 typedef std::shared_ptr<Program> ProgramPtr;
 
 
+class If : public Object
+{
+public:
+    If() : Object(OBJECT_IF, TOKEN_STATEMENT) {}
+    std::vector<ObjectPtr> cond;
+    std::vector<ObjectPtr> then;
+    std::vector<ObjectPtr> els;
+};
+
+typedef std::shared_ptr<If> IfPtr;

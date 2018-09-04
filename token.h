@@ -6,6 +6,7 @@ enum TokenType
     , TOKEN_END_PROGRAM
     , TOKEN_DATA
     , TOKEN_COMMAND
+    , TOKEN_STATEMENT
     , TOKEN_START_LIST
     , TOKEN_END_LIST
     , TOKEN_START_MAP
@@ -13,6 +14,10 @@ enum TokenType
     , TOKEN_INTEGER
     , TOKEN_STRING
     , TOKEN_COMMENT
+    , TOKEN_IF
+    , TOKEN_THEN
+    , TOKEN_ELSE
+    , TOKEN_ENDIF
 };
 
 struct Token
@@ -30,5 +35,6 @@ enum ObjectType
     ,OBJECT_COMMAND
     ,OBJECT_PROGRAM
     ,OBJECT_TOKEN 
+    ,OBJECT_IF
 };
 
