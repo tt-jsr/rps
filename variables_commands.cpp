@@ -74,6 +74,7 @@ void RCL(Machine& machine)
         throw std::runtime_error(strm.str().c_str());
     }
     ObjectPtr optr;
+    machine.pop(s);
     RCL(machine, s, optr);
     machine.push(optr);
 }

@@ -294,4 +294,15 @@ void FROMMAP(Machine& machine)
     }
 }
 
+void CREATELIST(Machine& machine)
+{
+    ListPtr lp = MakeList();
+    machine.push(lp);
+}
+
+void CREATEMAP(Machine& machine)
+{
+    MapPtr mp = MakeMap();
+    machine.push(mp);
+}
 

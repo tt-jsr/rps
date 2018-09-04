@@ -327,6 +327,10 @@ again:
             optr.reset(new Command(token.value, &FROMLIST));
         else if (token.value == "FROMMAP")
             optr.reset(new Command(token.value, &FROMMAP));
+        else if (token.value == "CREATE-LIST")
+            optr.reset(new Command(token.value, &CREATELIST));
+        else if (token.value == "CREATE-MAP")
+            optr.reset(new Command(token.value, &CREATEMAP));
 
         // Functional
         else if (token.value == "APPLY")

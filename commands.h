@@ -67,6 +67,8 @@ void TOLIST(Machine&);
 void TOMAP(Machine&);
 void FROMLIST(Machine&);
 void FROMMAP(Machine&);
+void CREATELIST(Machine&);
+void CREATEMAP(Machine&);
 
 /* Functional
 L1: List
