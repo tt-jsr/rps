@@ -26,6 +26,7 @@ void DIV(Machine& machine);
  */
 void STO(Machine& machine);
 void RCL(Machine& machine);
+void RCL(Machine& machine, const std::string& name, ObjectPtr& out);
 void VARNAMES(Machine& machine);
 void VARTYPES(Machine& machine);
 
@@ -66,6 +67,18 @@ void TOLIST(Machine&);
 void TOMAP(Machine&);
 void FROMLIST(Machine&);
 void FROMMAP(Machine&);
+
+/* Functional
+L1: List
+L0: function name
+
+Apply calls the function given in L0 to each item in the list at L1
+If the function pushes one value,  a list will be the result in  L0.
+If the function pushes multiple values, a list of lists will be in L0.
+If the function pushes no values, nothing will be returned in  L0
+*/
+
+void APPLY(Machine& machine);
 
 /*
  * Misc commands

@@ -87,7 +87,6 @@ public:
 
 typedef std::shared_ptr<Program> ProgramPtr;
 
-
 class If : public Object
 {
 public:
@@ -98,3 +97,4 @@ public:
 };
 
 typedef std::shared_ptr<If> IfPtr;
+

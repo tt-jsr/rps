@@ -328,6 +328,9 @@ again:
         else if (token.value == "FROMMAP")
             optr.reset(new Command(token.value, &FROMMAP));
 
+        // Functional
+        else if (token.value == "APPLY")
+            optr.reset(new Command(token.value, &APPLY));
         // Execution commands
         else if (token.value == "EVAL")
             optr.reset(new Command(token.value, &EVAL));
