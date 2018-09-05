@@ -12,6 +12,7 @@ void DUP(Machine& machine);
 void PICK(Machine&);
 void ROLL(Machine&);
 void VIEW(Machine&);
+void VIEW(Machine&, size_t n);
 
 /*
  * Math commands
@@ -27,6 +28,8 @@ void DIV(Machine& machine);
 void STO(Machine& machine);
 void RCL(Machine& machine);
 void RCL(Machine& machine, const std::string& name, ObjectPtr& out);
+void STOL(Machine& machine);
+void RCLL(Machine& machine);
 void VARNAMES(Machine& machine);
 void VARTYPES(Machine& machine);
 
@@ -89,6 +92,7 @@ void EVAL(Machine&);
 void EVAL(Machine&, ObjectPtr);
 void CALL(Machine&);
 void MODULES(Machine&);
+void CLONE(Machine&);
 
 
 

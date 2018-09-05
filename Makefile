@@ -12,5 +12,5 @@ rps : $(OBJS) $(DEPS)
 	$(CC) $(CPPFLAGS) -o $@ $(OBJS) $(LIBS)
 
 clean: 
-	rm $(OBJS) 
+	rm $(OBJS) rps 
 

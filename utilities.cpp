@@ -74,6 +74,13 @@ ObjectPtr Clone(ObjectPtr optr)
             return pp;
         }
         break;
+    case OBJECT_MAP:
+        {
+            MapPtr mp = MakeMap();
+            *mp = *((Map *)optr.get());
+            return mp;
+        }
+        break;
     default:
         assert(false);
         throw std::runtime_error("Clone: Unknown type");
@@ -163,7 +170,7 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
     default:
         std::cout << "=== ToStr: " << optr->token << std::endl;
         assert(false);
-        throw std::runtime_error("Clone: Unknown type");
+        throw std::runtime_error("ToSTr: Unknown type");
         break;
     }
 }

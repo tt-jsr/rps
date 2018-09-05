@@ -10,9 +10,7 @@ public:
     std::unordered_map<std::string, Module> modules_;
     std::vector<ObjectPtr> stack_;
     std::string current_module_;
-    size_t list_maxcount;
-    size_t map_maxcount;
-    bool debug;
+    ProgramPtr current_program;
 
     void CreateModule(const std::string& name);
 
@@ -28,6 +26,11 @@ public:
     void push(ListPtr&);
     void pop(MapPtr&);
     void push(MapPtr&);
+
+    // settings
+    size_t list_maxcount;
+    size_t map_maxcount;
+    bool debug;
 };
 
 

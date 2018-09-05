@@ -34,6 +34,29 @@ void STO(Machine& machine)
     module.variables_[varname] = optr;
 }
 
+void STOL(Machine& machine)
+{
+    std::string s;
+    ObjectPtr optr;
+    if (machine.stack_.size() < 2)
+    {
+        throw std::runtime_error("STOL: Requires string at L0 and object at L1");
+    }
+    if (machine.peek(0)->type != OBJECT_STRING)
+    {
+        std::stringstream strm;
+        strm << "STOL expected string, got " << ToStr(machine, machine.peek(0));
+        throw std::runtime_error(strm.str().c_str());
+    }
+    if (machine.current_program.get() == nullptr)
+    {
+        throw std::runtime_error("STOL: Requires current program context");
+    }
+    machine.pop(s);
+    machine.pop(optr);
+    machine.current_program->locals[s] = optr;
+}
+
 void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
 {
     std::string modname = machine.current_module_;
@@ -77,6 +100,36 @@ void RCL(Machine& machine)
     machine.pop(s);
     RCL(machine, s, optr);
     machine.push(optr);
+}
+
+void RCLL(Machine& machine)
+{
+    std::string varname;
+    ObjectPtr optr;
+    if (machine.stack_.size() < 1)
+    {
+        throw std::runtime_error("RCCL: Requires string at L0");
+    }
+    if (machine.peek(0)->type != OBJECT_STRING)
+    {
+        std::stringstream strm;
+        strm << "RCLL expected string, got " << ToStr(machine, machine.peek(0));
+        throw std::runtime_error(strm.str().c_str());
+    }
+    if (machine.current_program.get() == nullptr)
+    {
+        throw std::runtime_error("RCCL: Requires current program context");
+    }
+    machine.pop(varname);
+    auto itVar = machine.current_program->locals.find(varname);
+    if (itVar == machine.current_program->locals.end())
+    {
+        machine.push(varname);
+        std::stringstream strm;
+        strm << "RCLL local Variable " << varname << " not found";
+        throw std::runtime_error(strm.str().c_str());
+    }
+    machine.push(itVar->second);
 }
 
 void VARNAMES(Machine& machine)

@@ -18,6 +18,7 @@ enum TokenType
     , TOKEN_THEN
     , TOKEN_ELSE
     , TOKEN_ENDIF
+    , TOKEN_EOL
 };
 
 struct Token

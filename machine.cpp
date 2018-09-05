@@ -176,19 +176,24 @@ void EVAL(Machine& machine, ObjectPtr optr)
         break;
     case OBJECT_PROGRAM:
         {
-            Program *p = (Program *)optr.get();
-            std::string modname = machine.current_module_;
-            machine.current_module_ = p->module_name;
+            ProgramPtr prev_program = machine.current_program;
+            machine.current_program = std::static_pointer_cast<Program>(optr);
+            std::string prev_module = machine.current_module_;
+            machine.current_module_ = machine.current_program->module_name;
             try
             {
-                Execute(machine, p->program);
+                Execute(machine, machine.current_program->program);
+                machine.current_program->locals.clear();
+                machine.current_module_ = prev_module;
+                machine.current_program = prev_program;
             }
             catch (std::exception& e)
             {
-                machine.current_module_ = modname;
+                machine.current_program->locals.clear();
+                machine.current_module_ = prev_module;
+                machine.current_program = prev_program;
                 throw;
             }
-            machine.current_module_ = modname;
         }
         break;
     case OBJECT_IF:
@@ -239,4 +244,13 @@ void MODULES(Machine& machine)
         lp->items.push_back(sp);
     }
     machine.push(lp);
+}
+
+void CLONE(Machine& machine)
+{
+    if (machine.stack_.size() < 1)
+        throw std::runtime_error("CLONE: Requires item on stack");
+
+    ObjectPtr optr = Clone(machine.stack_[machine.stack_.size()-1]);
+    machine.push(optr);
 }

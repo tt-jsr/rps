@@ -85,14 +85,19 @@ void ROLL(Machine& machine)
     machine.stack_.push_back(obj);
 }
 
-void VIEW(Machine& machine)
+void VIEW(Machine& machine, size_t depth)
 {
-    size_t n = machine.stack_.size() - 1;
-    for (auto it = machine.stack_.begin(); it != machine.stack_.end(); ++it)
+    int n = std::min(depth, machine.stack_.size() - 1);
+    while(n >= 0)
     {
-        std::cout << n << ":" << ToStr(machine, *it) << std::endl;
+        std::cout << n << ":" << ToStr(machine, machine.peek(n)) << std::endl;
         --n;
     }
+}
+
+void VIEW(Machine& machine)
+{
+    VIEW(machine, 20);
 }
 
 

@@ -205,6 +205,7 @@ void SIZE(Machine& machine)
     {
         ListPtr lp;
         machine.pop(lp);
+        machine.push(lp);
         int64_t sz = lp->items.size();
         machine.push(sz);
         return;
@@ -213,6 +214,7 @@ void SIZE(Machine& machine)
     {
         MapPtr mp;
         machine.pop(mp);
+        machine.push(mp);
         int64_t sz = mp->items.size();
         machine.push(sz);
         return;

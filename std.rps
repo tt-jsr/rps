@@ -1,3 +1,10 @@
-1000 thousand STO
-2000 two_thousand STO
+[ [ 1 hello ] [ 2 cruel ] [ 3 world ] ]
+{ }
+<< m STOL 
+<< 
 
+
+[ k v ]
+{}
+<< ->m 
+<< 
