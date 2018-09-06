@@ -30,6 +30,7 @@ void RCL(Machine& machine);
 void RCL(Machine& machine, const std::string& name, ObjectPtr& out);
 void STOL(Machine& machine);
 void RCLL(Machine& machine);
+void RCLL(Machine& machine, const std::string& name, ObjectPtr& out);
 void VARNAMES(Machine& machine);
 void VARTYPES(Machine& machine);
 
@@ -84,6 +85,12 @@ If the function pushes no values, nothing will be returned in  L0
 */
 
 void APPLY(Machine& machine);
+
+// IO commands
+void PRINT(Machine&);
+
+// String commands
+void FORMAT(Machine&);
 
 /*
  * Misc commands

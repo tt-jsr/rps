@@ -359,7 +359,15 @@ again:
         // Environment
         else if (token.value == "MODULES")
             optr.reset(new Command(token.value, &MODULES));
-        else
+
+        // String
+        else if (token.value == "FORMAT")
+            optr.reset(new Command(token.value, &FORMAT));
+
+        // IO
+        else if (token.value == "PRINT")
+            optr.reset(new Command(token.value, &PRINT));
+        else 
             optr.reset(new String(token.value));
     }
 

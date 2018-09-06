@@ -90,7 +90,7 @@ void LIST_INSERT(Machine& machine)
     if (machine.peek(2)->type != OBJECT_LIST)
         throw std::runtime_error("List insert: Requires list at level2");
     if (machine.peek(1)->type != OBJECT_INTEGER)
-        throw std::runtime_error("List insert: requires Integer argument");
+        throw std::runtime_error("List insert: requires Integer at L1");
 
     ListPtr lp;
     int64_t idx;
@@ -205,7 +205,6 @@ void SIZE(Machine& machine)
     {
         ListPtr lp;
         machine.pop(lp);
-        machine.push(lp);
         int64_t sz = lp->items.size();
         machine.push(sz);
         return;
@@ -214,7 +213,6 @@ void SIZE(Machine& machine)
     {
         MapPtr mp;
         machine.pop(mp);
-        machine.push(mp);
         int64_t sz = mp->items.size();
         machine.push(sz);
         return;

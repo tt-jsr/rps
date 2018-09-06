@@ -87,6 +87,8 @@ void ROLL(Machine& machine)
 
 void VIEW(Machine& machine, size_t depth)
 {
+    if (machine.stack_.size() == 0)
+        return;
     int n = std::min(depth, machine.stack_.size() - 1);
     while(n >= 0)
     {

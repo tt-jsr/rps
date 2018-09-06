@@ -8,6 +8,7 @@
 #include "module.h"
 #include "machine.h"
 #include "utilities.h"
+#include "commands.h"
 
 void STO(Machine& machine)
 {
@@ -104,8 +105,6 @@ void RCL(Machine& machine)
 
 void RCLL(Machine& machine)
 {
-    std::string varname;
-    ObjectPtr optr;
     if (machine.stack_.size() < 1)
     {
         throw std::runtime_error("RCCL: Requires string at L0");
@@ -116,20 +115,28 @@ void RCLL(Machine& machine)
         strm << "RCLL expected string, got " << ToStr(machine, machine.peek(0));
         throw std::runtime_error(strm.str().c_str());
     }
+
+    std::string varname;
+    ObjectPtr optr;
+    machine.pop(varname);
+    RCLL(machine, varname, optr);
+    machine.push(optr);
+}
+
+void RCLL(Machine& machine, const std::string& name, ObjectPtr& out)
+{
     if (machine.current_program.get() == nullptr)
     {
         throw std::runtime_error("RCCL: Requires current program context");
     }
-    machine.pop(varname);
-    auto itVar = machine.current_program->locals.find(varname);
+    auto itVar = machine.current_program->locals.find(name);
     if (itVar == machine.current_program->locals.end())
     {
-        machine.push(varname);
         std::stringstream strm;
-        strm << "RCLL local Variable " << varname << " not found";
+        strm << "RCLL local Variable " << name << " not found";
         throw std::runtime_error(strm.str().c_str());
     }
-    machine.push(itVar->second);
+    out = itVar->second;
 }
 
 void VARNAMES(Machine& machine)
