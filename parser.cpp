@@ -243,6 +243,8 @@ again:
             goto again;
         }
         // Stack commands
+        else if (token.value == "CLRSTK")
+            optr.reset(new Command(token.value, &CLRSTK));
         else if (token.value == "DROP")
             optr.reset(new Command(token.value, &DROP));
         else if (token.value == "DROPN")
@@ -367,6 +369,8 @@ again:
         // IO
         else if (token.value == "PRINT")
             optr.reset(new Command(token.value, &PRINT));
+        else if (token.value == "PROMPT")
+            optr.reset(new Command(token.value, &PROMPT));
         else 
             optr.reset(new String(token.value));
     }

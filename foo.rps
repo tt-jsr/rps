@@ -52,3 +52,5 @@ test1-list APPLY
 VIEW
 test1-insert APPLY
 
+"ls -lrth"
+POPEN

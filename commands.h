@@ -7,6 +7,7 @@ class Machine;
  * */
 void DROP(Machine& machine);
 void DROPN(Machine& machine);
+void CLRSTK(Machine& machine);
 void SWAP(Machine& machine);
 void DUP(Machine& machine);
 void PICK(Machine&);
@@ -88,6 +89,7 @@ void APPLY(Machine& machine);
 
 // IO commands
 void PRINT(Machine&);
+void PROMPT(Machine&);
 
 // String commands
 void FORMAT(Machine&);

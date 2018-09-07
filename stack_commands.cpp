@@ -102,6 +102,9 @@ void VIEW(Machine& machine)
     VIEW(machine, 20);
 }
 
-
+void CLRSTK(Machine& machine)
+{
+    machine.stack_.clear();
+}
 
 
