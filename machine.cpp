@@ -154,11 +154,11 @@ void Execute(Machine& machine, std::vector<ObjectPtr>& vec)
     for (ObjectPtr& op : vec)
     {
         //std::cout << "=== machine::Execute vecsize: " << vec.size() << std::endl;
-        EVAL(machine, op);
+        Execute(machine, op);
     }
 }
 
-void EVAL(Machine& machine, ObjectPtr optr)
+void Execute(Machine& machine, ObjectPtr optr)
 {
     //std::cout << "=== machine:::EVAL str: " << ToStr(machine, optr) << std::endl;
     switch(optr->type)
@@ -173,26 +173,7 @@ void EVAL(Machine& machine, ObjectPtr optr)
         machine.push(optr);
         break;
     case OBJECT_PROGRAM:
-        {
-            ProgramPtr prev_program = machine.current_program;
-            machine.current_program = std::static_pointer_cast<Program>(optr);
-            std::string prev_module = machine.current_module_;
-            machine.current_module_ = machine.current_program->module_name;
-            try
-            {
-                Execute(machine, machine.current_program->program);
-                machine.current_program->locals.clear();
-                machine.current_module_ = prev_module;
-                machine.current_program = prev_program;
-            }
-            catch (std::exception& e)
-            {
-                machine.current_program->locals.clear();
-                machine.current_module_ = prev_module;
-                machine.current_program = prev_program;
-                throw;
-            }
-        }
+        machine.push(optr);
         break;
     case OBJECT_IF:
         {
@@ -248,6 +229,58 @@ void EVAL(Machine& machine, ObjectPtr optr)
         {
             Command *pCommand = (Command *)optr.get();
             (*pCommand->funcptr)(machine);
+        }
+        break;
+    case OBJECT_TOKEN:
+        break;
+    default:
+        std::cout << "=== EVAL: " << ToStr(machine, optr) << std::endl;
+        assert(false);
+        break;
+    }
+}
+
+void Execute(Machine& machine)
+{
+    ObjectPtr optr;
+    machine.pop(optr);
+    Execute(machine, optr);
+}
+
+void EVAL(Machine& machine, ObjectPtr optr)
+{
+    //std::cout << "=== machine:::EVAL str: " << ToStr(machine, optr) << std::endl;
+    switch(optr->type)
+    {
+    case OBJECT_STRING:
+        machine.push(optr);
+        break;
+    case OBJECT_INTEGER:
+        machine.push(optr);
+        break;
+    case OBJECT_LIST:
+        machine.push(optr);
+        break;
+    case OBJECT_PROGRAM:
+        {
+            ProgramPtr prev_program = machine.current_program;
+            machine.current_program = std::static_pointer_cast<Program>(optr);
+            std::string prev_module = machine.current_module_;
+            machine.current_module_ = machine.current_program->module_name;
+            try
+            {
+                Execute(machine, machine.current_program->program);
+                machine.current_program->locals.clear();
+                machine.current_module_ = prev_module;
+                machine.current_program = prev_program;
+            }
+            catch (std::exception& e)
+            {
+                machine.current_program->locals.clear();
+                machine.current_module_ = prev_module;
+                machine.current_program = prev_program;
+                throw;
+            }
         }
         break;
     case OBJECT_TOKEN:

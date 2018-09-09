@@ -623,7 +623,7 @@ void Parser::Parse(Machine& machine, Source& src)
                 src.prompt = "> ";
                 try
                 {
-                    EVAL(machine, forptr);
+                    Execute(machine, forptr);
                 }
                 catch (std::exception& e)
                 {
@@ -640,7 +640,7 @@ void Parser::Parse(Machine& machine, Source& src)
                 src.prompt = "> ";
                 try
                 {
-                    EVAL(machine, ifptr);
+                    Execute(machine, ifptr);
                 }
                 catch (std::exception& e)
                 {
@@ -651,7 +651,7 @@ void Parser::Parse(Machine& machine, Source& src)
             {
                 try
                 {
-                    EVAL(machine, optr);
+                    Execute(machine, optr);
                 }
                 catch (std::exception& e)
                 {
