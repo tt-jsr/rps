@@ -292,3 +292,14 @@ void CLONE(Machine& machine)
     ObjectPtr optr = Clone(machine.stack_[machine.stack_.size()-1]);
     machine.push(optr);
 }
+
+void throw_required(Machine& machine, const char *f, int level, ObjectType t)
+{
+    if (machine.peek(level)->type != t)
+    {
+        std::stringstream strm;
+        strm << f << ": Level " << level << " required to be a " 
+            << ObjectNames[t] << " got " << ObjectNames[machine.peek(level)->type];
+        throw std::runtime_error(strm.str().c_str());
+    }
+}

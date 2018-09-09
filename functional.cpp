@@ -15,10 +15,8 @@ void APPLY(Machine& machine)
 {
     if (machine.stack_.size() < 2)
         throw std::runtime_error("APPLY: Requires two arguments");
-    if (machine.peek(0)->type != OBJECT_PROGRAM)
-        throw std::runtime_error("APPLY: Level 0 required to be a program");
-    if (machine.peek(1)->type != OBJECT_LIST)
-        throw std::runtime_error("APPLY: Level 1 required to be a list");
+    throw_required(machine, "APPLY", 0, OBJECT_PROGRAM);
+    throw_required(machine, "APPLY", 1, OBJECT_LIST);
 
     ListPtr result = MakeList();
     ListPtr lp;

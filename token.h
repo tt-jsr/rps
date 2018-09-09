@@ -42,3 +42,13 @@ enum ObjectType
     ,OBJECT_FOR
 };
 
+static const char *ObjectNames[] = {
+    "String"
+    , "Integer"
+    , "Map"
+    , "Command"
+    , "Program"
+    , "Token"
+    , "If"
+    , "For"
+};

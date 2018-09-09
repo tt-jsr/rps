@@ -41,10 +41,8 @@ void MUL(Machine& machine)
     int64_t arg1, arg2;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("MUL requires two arguments");
-    if (machine.peek(0)->type != OBJECT_INTEGER)
-        throw std::runtime_error("MUL requires INTEGER arguments");
-    if (machine.peek(1)->type != OBJECT_INTEGER)
-        throw std::runtime_error("MUL requires INTEGER arguments");
+    throw_required(machine, "MUL", 0, OBJECT_INTEGER);
+    throw_required(machine, "MUL", 1, OBJECT_INTEGER);
     machine.pop(arg1);
     machine.pop(arg2);
     machine.push(arg1 * arg2);

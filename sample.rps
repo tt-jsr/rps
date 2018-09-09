@@ -1,15 +1,8 @@
 IF
     0 EQ
 THEN
-    "true" PRINT
-ELSE
-    "false" PRINT
-    1
-    IF
-        1 EQ
-    THEN
-        "nested true" PRINT
-    ELSE
-        "nested false" PRINT
-    ENDIF
+    [ 1 2 3 4 5 ]
+    << 5 MUL >>
+    APPLY
 ENDIF
+
