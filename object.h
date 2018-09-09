@@ -98,3 +98,12 @@ public:
 
 typedef std::shared_ptr<If> IfPtr;
 
+class For : public Object
+{
+public:
+    For() : Object(OBJECT_FOR, TOKEN_STATEMENT) {}
+    std::vector<ObjectPtr> program;
+};
+
+typedef std::shared_ptr<For> ForPtr;
+

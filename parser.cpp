@@ -57,7 +57,7 @@ void CollectIdentifier(Source& src, Token& token)
             token.value.push_back(*src.it);
         else if (*src.it == '.' || *src.it == '_' || *src.it == '-')
             token.value.push_back(*src.it);
-        else if (*src.it == ' ')
+        else if (*src.it == ' ' || *src.it == ';')
             return;
         else if (*src.it == '#')
         {
@@ -80,7 +80,7 @@ void CollectInteger(Source& src, Token& token)
     {
         if (isdigit(*src.it))
             token.value.push_back(*src.it);
-        else if (*src.it == ' ')
+        else if (*src.it == ' ' || *src.it == ';')
             return;
         else if (*src.it == '#')
         {
@@ -193,6 +193,8 @@ again:
     GetToken(src, token);
     if (token.value.empty() && (src.it == src.line.end()))
         return false;
+    //std::cout << "===GetObject: " << token.token << ":\"" << token.value << "\"" << std::endl;
+
     if (token.token == TOKEN_INTEGER)
         optr.reset(new Integer(strtol(token.value.c_str(), nullptr, 10)));
 
@@ -218,10 +220,15 @@ again:
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_ELSE));
     else if (token.value == "ENDIF")
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_ENDIF));
+    else if (token.value == "FOR")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_FOR));
+    else if (token.value == "ENDFOR")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_ENDFOR));
     else if (token.token == TOKEN_STRING)
     {
         if (token.value == "import")
         {
+            //std::cout << "=== importing " << std::endl;
             std::string filename;
             Token modulename;
             GetToken(src, modulename);
@@ -406,6 +413,19 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
             src.prompt = "IF: ";
             ParseIf(machine, ifp, src);    // recurse
             src.prompt = savePrompt;
+            optr = ifp;
+            pVec->push_back(optr);           
+        }
+        else if (optr->token == TOKEN_FOR)
+        {
+            ForPtr forptr;
+            forptr.reset(new For());
+            std::string savePrompt = src.prompt;
+            src.prompt = "FOR: ";
+            ParseFor(machine, forptr, src); 
+            src.prompt = savePrompt;
+            optr = forptr;
+            pVec->push_back(optr);           
         }
         else if (optr->token == TOKEN_START_PROGRAM)
         {
@@ -413,7 +433,7 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
             pptr.reset(new Program());
             std::string savePrompt = src.prompt;
             src.prompt = ">> ";
-            ParseProgram(machine, pptr, src);    // recurse
+            ParseProgram(machine, pptr, src);  
             src.prompt = savePrompt;
             optr = pptr;
             pVec->push_back(optr);           
@@ -431,6 +451,60 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
         }
         else
             pVec->push_back(optr);           
+    }
+}
+
+void Parser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
+{
+    ObjectPtr optr;
+    while(GetObject(machine, src, optr))
+    {
+        if (optr->token == TOKEN_ENDFOR)
+        {
+            return;
+        }
+        else if (optr->token == TOKEN_FOR)
+        {
+            ForPtr forp;
+            forp.reset(new For());
+            std::string savePrompt = src.prompt;
+            src.prompt = "FOR: ";
+            ParseFor(machine, forp, src);    // recurse
+            src.prompt = savePrompt;
+            optr = forp;
+        }
+        else if (optr->token == TOKEN_IF)
+        {
+            IfPtr ifp;
+            ifp.reset(new If());
+            std::string savePrompt = src.prompt;
+            src.prompt = "IF: ";
+            ParseIf(machine, ifp, src);    // recurse
+            src.prompt = savePrompt;
+            optr = ifp;
+        }
+        else if (optr->token == TOKEN_START_PROGRAM)
+        {
+            ProgramPtr pptr;
+            pptr.reset(new Program());
+            std::string savePrompt = src.prompt;
+            src.prompt = ">> ";
+            ParseProgram(machine, pptr, src);    // recurse
+            src.prompt = savePrompt;
+            optr = pptr;
+        }
+        else if (optr->token == TOKEN_START_LIST)
+        {
+            ListPtr lp;
+            lp.reset(new List());
+            std::string savePrompt = src.prompt;
+            src.prompt = "[] ";
+            ParseList(machine, lp, src);    // recurse
+            src.prompt = savePrompt;
+            optr = lp;
+        }
+        //std::cout << "=== ParseFor: " << ToStr(machine, optr) << std::endl;
+        forptr->program.push_back(optr);           
     }
 }
 
@@ -498,6 +572,16 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
             src.prompt = ">> ";
             optr = ifp;
         }
+        else if (optr->token == TOKEN_FOR)
+        {
+            ForPtr forptr;
+            forptr.reset(new For());
+            std::string savePrompt = src.prompt;
+            src.prompt = "FOR: ";
+            ParseFor(machine, forptr, src);    // recurse
+            src.prompt = savePrompt;
+            optr = forptr;
+        }
         pptr->program.push_back(optr);           
     }
 }
@@ -528,7 +612,26 @@ void Parser::Parse(Machine& machine, Source& src)
                 optr = pptr;
             }
 
-            if (optr->token == TOKEN_IF)
+
+        // Start of if/else
+            if (optr->token == TOKEN_FOR)
+            {
+                src.prompt = "FOR: ";
+                ForPtr forptr;
+                forptr.reset(new For());
+                ParseFor(machine, forptr, src);
+                src.prompt = "> ";
+                try
+                {
+                    EVAL(machine, forptr);
+                }
+                catch (std::exception& e)
+                {
+                    std::cout << e.what() << std::endl;
+                }
+            }
+
+            else if (optr->token == TOKEN_IF)
             {
                 src.prompt = "IF: ";
                 IfPtr ifptr;
@@ -544,7 +647,7 @@ void Parser::Parse(Machine& machine, Source& src)
                     std::cout << e.what() << std::endl;
                 }
             }
-            else if (optr->token == TOKEN_COMMAND)
+            else if (optr->type == OBJECT_COMMAND)
             {
                 try
                 {
@@ -591,7 +694,7 @@ void Source::Read()
         if (interactive)
             std::cout << prompt << std::flush;
         getline(istrm, line);
-        line += " ;";
+        line += ";";
         ++lineno;
         it = line.begin();
     }

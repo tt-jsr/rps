@@ -1,6 +1,25 @@
-[ [ 1 hello ] [ 2 cruel ] [ 3 world ] ]
-{ }
-<< m STOL 
-<< 
+<< v STOL
+IF
+    v RCLL
+    0 EQ
+THEN
+    [ 1 2 3 4 5 6 ]
+    FOR
+        5 MUL
+    ENDFOR
+ELSE
+    IF 
+        v RCLL
+        1 EQ
+    THEN
+        CREATE-MAP
+        [ first 10 ] MAP-INSERT
+        [ second 20 ] MAP-INSERT
+        [ third 30 ] MAP-INSERT
+        [ fourth 40 ] MAP-INSERT
+        mdata STO
+    ENDIF
+ENDIF
+>> testfunc  STO
 
 

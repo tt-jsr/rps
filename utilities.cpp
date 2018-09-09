@@ -165,12 +165,30 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
         }
         break;
     case OBJECT_IF:
-        return "IF";
+        {
+            std::stringstream strm;
+            strm << "IF";
+            return  strm.str();
+        }
+        break;
+    case OBJECT_FOR:
+        {
+            std::stringstream strm;
+            strm << "FOR";
+            return  strm.str();
+        }
+        break;
+    case OBJECT_TOKEN:
+        {
+            std::stringstream strm;
+            strm << "TOKEN: " << optr->token;
+            return  strm.str();
+        }
         break;
     default:
         std::cout << "=== ToStr: " << optr->token << std::endl;
         assert(false);
-        throw std::runtime_error("ToSTr: Unknown type");
+        throw std::runtime_error("ToStr: Unknown type");
         break;
     }
 }

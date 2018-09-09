@@ -7,17 +7,19 @@ enum TokenType
     , TOKEN_DATA
     , TOKEN_COMMAND
     , TOKEN_STATEMENT
-    , TOKEN_START_LIST
+    , TOKEN_START_LIST  // 5
     , TOKEN_END_LIST
     , TOKEN_START_MAP
     , TOKEN_END_MAP
     , TOKEN_INTEGER
-    , TOKEN_STRING
+    , TOKEN_STRING    // 10
     , TOKEN_COMMENT
     , TOKEN_IF
     , TOKEN_THEN
     , TOKEN_ELSE
-    , TOKEN_ENDIF
+    , TOKEN_ENDIF   // 15
+    , TOKEN_FOR
+    , TOKEN_ENDFOR
     , TOKEN_EOL
 };
 
@@ -37,5 +39,6 @@ enum ObjectType
     ,OBJECT_PROGRAM
     ,OBJECT_TOKEN 
     ,OBJECT_IF
+    ,OBJECT_FOR
 };
 

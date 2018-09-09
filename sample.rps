@@ -1,75 +1,15 @@
-stdlib.rpl import
-
-<<
-    "exec_type"
-    "order_id"
-    "account_id"
-    "user_id"
-    4
-    DefineExecutionReportFields
-    STO "erFields"
-    "erFields created"
-    print
->>
-footest STO
-
-<<
-    0
-    1 10
-    FOR I
-    I+
-    NEXT
->>
-fortest STO
-
- << 
-   << localVal 100 < >>
-   << "is less" print >>
-   << "is not less" print >>
-   IFTE
- >>
-iftest STO
-
-# The previous IF may have syntatic sugar:
-#<<
-#    IF
-#        localVal
-#        100
-#        <
-#    THEN
-#        "is less"
-#        print
-#    ELSE
-#        "is not less"
-#        print
-#    END
-#>>
-
-# The previous IF statement gets translated to:
-# << 
-#   << localVal 100 < >>
-#   << "is less" print >>
-#   << "is not less" print >>
-#   IFTE
-# >>
-
-<<
-    (_1, 5)   # First argument is from TOS, second arg is a 5, these are then pushed onto the stack
-    RCL Add
->>
-BindTest STO
-
-<< (_1, 5) Add>>
-
-main:
-    footest # load footest and call
-    footest RCL  # load footest and place object at TOS
-    footest RCL EVAL         # evaluate TOS, if program, call, otherwise does nothing
-    footest CALL             # same as footest RCL EVAL
-# call a function in stdlib.rpl
-    stdlib.foo RCL EVAL
-    stdlib.some_data RCL  # push module data from  stdlib
-    sample.module_data RCL # push module data from sample.rpl
-
-
-
+IF
+    0 EQ
+THEN
+    "true" PRINT
+ELSE
+    "false" PRINT
+    1
+    IF
+        1 EQ
+    THEN
+        "nested true" PRINT
+    ELSE
+        "nested false" PRINT
+    ENDIF
+ENDIF

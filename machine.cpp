@@ -15,7 +15,7 @@
 Machine::Machine()
 : list_maxcount(20)
 , map_maxcount(20)
-, debug(true) 
+, debug(false) 
 {
 }
 
@@ -29,6 +29,8 @@ void Machine::CreateModule(const std::string& name)
 void Machine::push(ObjectPtr& optr)
 {
     assert(optr->type != OBJECT_COMMAND);
+    if (debug)
+        std::cout << "push: " << ToStr(*this, optr) << std::endl;
     stack_.push_back(optr);
 }
 
@@ -38,6 +40,8 @@ void Machine::pop(ObjectPtr& optr)
     if (stack_.empty())
         throw std::runtime_error("stack underflow");
     optr = stack_.back();
+    if (debug)
+        std::cout << "pop: " << ToStr(*this, optr) << std::endl;
     stack_.pop_back();
 }
 
@@ -45,42 +49,38 @@ void Machine::pop(int64_t& v)
 {
     if (stack_.empty())
         throw std::runtime_error("stack underflow");
-    ObjectPtr& optr = stack_.back();
-    if (optr->type == OBJECT_INTEGER)
+    if (peek(0)->type != OBJECT_INTEGER)
     {
-        Integer *ip = (Integer *)optr.get();
-        v = ip->value;
-        stack_.pop_back();
-        return;
+        std::stringstream strm;
+        strm << "pop: Expected integer, got: " << ToStr(*this, peek(0));
+        throw std::runtime_error(strm.str().c_str());
     }
-    push(optr);
-    std::stringstream strm;
-    strm << "pop: Expected integer, got: " << ToStr(*this, optr);
-    throw std::runtime_error(strm.str().c_str());
+    ObjectPtr optr;
+    pop(optr);
+    Integer *ip = (Integer *)optr.get();
+    v = ip->value;
 }
 
 void Machine::push(int64_t v)
 {
     ObjectPtr optr;
     optr.reset(new Integer(v));
-    stack_.push_back(optr);
+    push(optr);
 }
 
 void Machine::pop(ListPtr& lp)
 {
     if (stack_.empty())
         throw std::runtime_error("stack underflow");
-    ObjectPtr& optr = stack_.back();
-    if (optr->type == OBJECT_LIST)
+    if (peek(0)->type != OBJECT_LIST)
     {
-        lp = std::static_pointer_cast<List>(optr);;
-        stack_.pop_back();
-        return;
+        std::stringstream strm;
+        strm << "pop: Expected list, got: " << ToStr(*this, peek());
+        throw std::runtime_error(strm.str().c_str());
     }
-    push(optr);
-    std::stringstream strm;
-    strm << "pop: Expected list, got: " << ToStr(*this, optr);
-    throw std::runtime_error(strm.str().c_str());
+    ObjectPtr optr;
+    pop(optr);
+    lp = std::static_pointer_cast<List>(optr);
 }
 
 void Machine::push(ListPtr& lp)
@@ -93,17 +93,15 @@ void Machine::pop(MapPtr& mp)
 {
     if (stack_.empty())
         throw std::runtime_error("stack underflow");
-    ObjectPtr& optr = stack_.back();
-    if (optr->type == OBJECT_MAP)
+    if (peek(0)->type != OBJECT_MAP)
     {
-        mp = std::static_pointer_cast<Map>(optr);;
-        stack_.pop_back();
-        return;
+        std::stringstream strm;
+        strm << "pop: Expected map, got: " << ToStr(*this, peek());
+        throw std::runtime_error(strm.str().c_str());
     }
-    push(optr);
-    std::stringstream strm;
-    strm << "pop: Expected Map, got: " << ToStr(*this, optr);
-    throw std::runtime_error(strm.str().c_str());
+    ObjectPtr optr;
+    pop(optr);
+    mp = std::static_pointer_cast<Map>(optr);
 }
 
 void Machine::push(MapPtr& mp)
@@ -116,18 +114,16 @@ void Machine::pop(std::string& v)
 {
     if (stack_.empty())
         throw std::runtime_error("stack underflow");
-    ObjectPtr& optr = stack_.back();
-    if (optr->type == OBJECT_STRING)
+    if (peek(0)->type != OBJECT_STRING)
     {
-        String *sp = (String *)optr.get();
-        v = sp->value;
-        stack_.pop_back();
-        return;
+        std::stringstream strm;
+        strm << "pop: Expected string, got: " << ToStr(*this, peek());
+        throw std::runtime_error(strm.str().c_str());
     }
-    push(optr);
-    std::stringstream strm;
-    strm << "pop: Expected string, got: " << ToStr(*this, optr);
-    throw std::runtime_error(strm.str().c_str());
+    ObjectPtr optr;
+    pop(optr);
+    String *sp = (String *)optr.get();
+    v = sp->value;
 }
 
 void Machine::push(const std::string& v)
@@ -157,22 +153,24 @@ void Execute(Machine& machine, std::vector<ObjectPtr>& vec)
 {
     for (ObjectPtr& op : vec)
     {
+        //std::cout << "=== machine::Execute vecsize: " << vec.size() << std::endl;
         EVAL(machine, op);
     }
 }
 
 void EVAL(Machine& machine, ObjectPtr optr)
 {
+    //std::cout << "=== machine:::EVAL str: " << ToStr(machine, optr) << std::endl;
     switch(optr->type)
     {
     case OBJECT_STRING:
-        machine.stack_.push_back(optr);
+        machine.push(optr);
         break;
     case OBJECT_INTEGER:
-        machine.stack_.push_back(optr);
+        machine.push(optr);
         break;
     case OBJECT_LIST:
-        machine.stack_.push_back(optr);
+        machine.push(optr);
         break;
     case OBJECT_PROGRAM:
         {
@@ -208,11 +206,51 @@ void EVAL(Machine& machine, ObjectPtr optr)
                 Execute(machine, p->els);
         }
         break;
+    case OBJECT_FOR:
+        {
+            ObjectPtr ob;
+            For *p = (For *)optr.get();
+            try
+            {
+                if (machine.stack_.size() == 0)
+                    std::cout << "FOR requires list or map at L0" << std::endl;
+                else if (machine.peek(0)->type == OBJECT_LIST)
+                {
+                    ListPtr lp;
+                    machine.pop(lp);
+                    for (ObjectPtr op : lp->items)
+                    {
+                        machine.push(op);
+                        Execute(machine, p->program);
+                    }
+                }
+                else if (machine.peek(0)->type == OBJECT_MAP)
+                {
+                    MapPtr mp;
+                    machine.pop(mp);
+                    for (auto& pr : mp->items)
+                    {
+                        ListPtr lp = MakeList();
+                        lp->items.push_back(pr.first);
+                        lp->items.push_back(pr.second);
+                        machine.push(lp);
+                        Execute(machine, p->program);
+                    }
+                }
+            }
+            catch (std::exception& e)
+            {
+                std::cout << e.what() << std::endl;
+            }
+        }
+        break;
     case OBJECT_COMMAND:
         {
             Command *pCommand = (Command *)optr.get();
             (*pCommand->funcptr)(machine);
         }
+        break;
+    case OBJECT_TOKEN:
         break;
     default:
         std::cout << "=== EVAL: " << ToStr(machine, optr) << std::endl;
