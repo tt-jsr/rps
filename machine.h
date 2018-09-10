@@ -34,6 +34,7 @@ public:
 };
 
 
+void stack_required(Machine& machine, const char *f, int depth);
 void throw_required(Machine& machine, const char *f, int level, ObjectType t);
 void Execute(Machine&);
 void Execute(Machine&, ObjectPtr);

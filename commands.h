@@ -93,6 +93,10 @@ void PROMPT(Machine&);
 
 // String commands
 void FORMAT(Machine&);
+void CAT(Machine&);
+void JOIN(Machine&);
+void SUBSTR(Machine&);
+void STRFIND(Machine&);
 
 /*
  * Misc commands

@@ -372,6 +372,14 @@ again:
         // String
         else if (token.value == "FORMAT")
             optr.reset(new Command(token.value, &FORMAT));
+        else if (token.value == "CAT")
+            optr.reset(new Command(token.value, &CAT));
+        else if (token.value == "JOIN")
+            optr.reset(new Command(token.value, &JOIN));
+        else if (token.value == "SUBSTR")
+            optr.reset(new Command(token.value, &SUBSTR));
+        else if (token.value == "STRFIND")
+            optr.reset(new Command(token.value, &STRFIND));
 
         // IO
         else if (token.value == "PRINT")

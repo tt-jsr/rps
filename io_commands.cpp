@@ -27,8 +27,7 @@ void PROMPT(Machine& machine)
     if (machine.stack_.size() < 1)
         throw std::runtime_error("INPUT: Requires string at L0");
 
-    if (machine.peek(0)->type != OBJECT_STRING)
-        throw std::runtime_error("INPUT: Requires string prompt at L0");
+    throw_required(machine, "PROMPT", 0, OBJECT_INTEGER);
 
     std::string prompt;
     machine.pop(prompt);

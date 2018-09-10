@@ -93,7 +93,7 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
     switch (optr->type)
     {
     case OBJECT_STRING:
-        return "\"" + ((String *)optr.get())->value + "\"";
+        return ((String *)optr.get())->value;
     case OBJECT_INTEGER:
         return std::to_string(((Integer *)optr.get())->value);
     case OBJECT_COMMAND:

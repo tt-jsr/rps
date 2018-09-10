@@ -14,12 +14,9 @@ void STO(Machine& machine)
 {
     std::string s;
     ObjectPtr optr;
-    if (machine.peek(0)->type != OBJECT_STRING)
-    {
-        std::stringstream strm;
-        strm << "STO expected string, got " << ToStr(machine, machine.peek(0));
-        throw std::runtime_error(strm.str().c_str());
-    }
+    stack_required(machine, "STO", 2);
+    throw_required(machine, "STO", 0, OBJECT_STRING);
+
     machine.pop(s);
     std::string modname = machine.current_module_;
     std::string varname = s;
@@ -39,16 +36,8 @@ void STOL(Machine& machine)
 {
     std::string s;
     ObjectPtr optr;
-    if (machine.stack_.size() < 2)
-    {
-        throw std::runtime_error("STOL: Requires string at L0 and object at L1");
-    }
-    if (machine.peek(0)->type != OBJECT_STRING)
-    {
-        std::stringstream strm;
-        strm << "STOL expected string, got " << ToStr(machine, machine.peek(0));
-        throw std::runtime_error(strm.str().c_str());
-    }
+    stack_required(machine, "STOL", 2);
+    throw_required(machine, "STOL", 0, OBJECT_STRING);
     if (machine.current_program.get() == nullptr)
     {
         throw std::runtime_error("STOL: Requires current program context");
@@ -91,12 +80,9 @@ void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
 void RCL(Machine& machine)
 {
     std::string s;
-    if (machine.peek(0)->type != OBJECT_STRING)
-    {
-        std::stringstream strm;
-        strm << "RCL expected string, got " << ToStr(machine, machine.peek(0));
-        throw std::runtime_error(strm.str().c_str());
-    }
+    stack_required(machine, "RCL", 1);
+    throw_required(machine, "RCL", 0, OBJECT_STRING);
+
     ObjectPtr optr;
     machine.pop(s);
     RCL(machine, s, optr);
@@ -105,16 +91,8 @@ void RCL(Machine& machine)
 
 void RCLL(Machine& machine)
 {
-    if (machine.stack_.size() < 1)
-    {
-        throw std::runtime_error("RCCL: Requires string at L0");
-    }
-    if (machine.peek(0)->type != OBJECT_STRING)
-    {
-        std::stringstream strm;
-        strm << "RCLL expected string, got " << ToStr(machine, machine.peek(0));
-        throw std::runtime_error(strm.str().c_str());
-    }
+    stack_required(machine, "RCLL", 1);
+    throw_required(machine, "RCLL", 0, OBJECT_STRING);
 
     std::string varname;
     ObjectPtr optr;
@@ -141,8 +119,8 @@ void RCLL(Machine& machine, const std::string& name, ObjectPtr& out)
 
 void VARNAMES(Machine& machine)
 {
-    if (machine.stack_.size() < 1)
-        throw std::runtime_error("VARNAMES requires an argument");
+    stack_required(machine, "VARNAMES", 1);
+    throw_required(machine, "VARNAMES", 0, OBJECT_STRING);
     std::string modname;
     machine.pop(modname);
     auto it = machine.modules_.find(modname);
@@ -166,8 +144,9 @@ void VARNAMES(Machine& machine)
 
 void VARTYPES(Machine& machine)
 {
-    if (machine.stack_.size() < 1)
-        throw std::runtime_error("VARTYPES requires an argument");
+    stack_required(machine, "VARTYPES", 1);
+    throw_required(machine, "VARTYPES", 0, OBJECT_STRING);
+
     std::string modname;
     machine.pop(modname);
     auto it = machine.modules_.find(modname);

@@ -336,3 +336,13 @@ void throw_required(Machine& machine, const char *f, int level, ObjectType t)
         throw std::runtime_error(strm.str().c_str());
     }
 }
+
+void stack_required(Machine& machine, const char *f, int depth)
+{
+    if (machine.stack_.size() < depth-1)
+    {
+        std::stringstream strm;
+        strm << f << ": Requires " << depth << " stacklevels";
+        throw std::runtime_error(strm.str().c_str());
+    }
+}

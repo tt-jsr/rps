@@ -1,8 +1,17 @@
+"hello cruel world"
+str STO
+str RCL
+0
+uel
+STRFIND
+"go into IF" PRINT
 IF
-    0 EQ
+    0 GTE
 THEN
-    [ 1 2 3 4 5 ]
-    << 5 MUL >>
-    APPLY
+    str RCL
+    SWAP
+    1000 SUBSTR
+ELSE
+    "not found"
 ENDIF
 
