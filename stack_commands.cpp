@@ -11,6 +11,7 @@
 #include "commands.h"
 #include "utilities.h"
 
+// obj =>
 void DROP(Machine& machine)
 {
     if (machine.stack_.empty())
@@ -18,6 +19,7 @@ void DROP(Machine& machine)
     machine.stack_.pop_back();
 }
 
+// obj, obj... int =>
 void DROPN(Machine& machine)
 {
     int64_t n;
@@ -28,6 +30,7 @@ void DROPN(Machine& machine)
         machine.stack_.pop_back();
 }
 
+// obj1 obj0 => obj0 obj1
 void SWAP(Machine& machine)
 {
     if (machine.stack_.size() < 2)
@@ -39,6 +42,7 @@ void SWAP(Machine& machine)
     machine.push(o2);
 }
 
+// obj => obj obj
 void DUP(Machine& machine)
 {
     ObjectPtr optr = machine.peek(0);
@@ -106,5 +110,11 @@ void CLRSTK(Machine& machine)
 {
     machine.stack_.clear();
 }
+
+void DEPTH(Machine& machine)
+{
+    machine.push(machine.stack_.size());
+}
+
 
 

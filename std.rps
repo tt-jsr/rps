@@ -1,24 +1,43 @@
-<< v STOL
-IF
-    v RCLL
-    0 EQ
-THEN
-    [ 1 2 3 4 5 6 ]
-    << 5 MUL >>
-    APPLY
-ELSE
-    IF 
-        v RCLL
-        1 EQ
-    THEN
-        CREATE-MAP
-        [ first 10 ] MAP-INSERT
-        [ second 20 ] MAP-INSERT
-        [ third 30 ] MAP-INSERT
-        [ fourth 40 ] MAP-INSERT
-        mdata STO
-    ENDIF
-ENDIF
->> testfunc  STO
+#Invoke less on a filename list element
+#[...]
+# idx
+<< idx STOL
+l STOL
+"less "
+l RCLL
+idx RCLL
+GET
+CAT
+!
+l RCLL
+>>
+interactive.less STO
+
+#####################################################
+#Invoke vim on a filename list element
+#[...]
+# idx
+<< idx STOL
+l STOL
+"vim "
+l RCLL
+idx RCLL
+GET
+CAT
+!
+l RCLL
+>>
+interactive.vim STO
+
+# Format list items into a numbers output
+<< DUP
+0 count STOL
+FOR
+    count RCLL
+    "%0: %1" FORMAT PRINT
+    1 ADD count STOL
+    DROP
+ENDFOR
+>> interactive.show STO
 
 

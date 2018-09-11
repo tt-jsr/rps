@@ -14,6 +14,7 @@ void PICK(Machine&);
 void ROLL(Machine&);
 void VIEW(Machine&);
 void VIEW(Machine&, size_t n);
+void DEPTH(Machine&);
 
 /*
  * Math commands
@@ -61,6 +62,7 @@ void OR(Machine&);
 void APPEND(Machine&);
 void GET(Machine&);
 void FIND(Machine&);
+void INSERT(Machine&);
 void LIST_INSERT(Machine&);
 void MAP_INSERT(Machine&);
 void ERASE(Machine&);
@@ -90,6 +92,8 @@ void APPLY(Machine& machine);
 // IO commands
 void PRINT(Machine&);
 void PROMPT(Machine&);
+void PREAD(Machine&);
+void SYSTEM(Machine&);
 
 // String commands
 void FORMAT(Machine&);

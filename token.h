@@ -20,6 +20,7 @@ enum TokenType
     , TOKEN_ENDIF   // 15
     , TOKEN_FOR
     , TOKEN_ENDFOR
+    , TOKEN_SYSTEM
     , TOKEN_EOL
 };
 

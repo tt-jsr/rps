@@ -11,11 +11,11 @@
 #include "commands.h"
 #include "utilities.h"
 
+// obj obj... "str" => "str"
 void FORMAT(Machine& machine)
 {
-    if (machine.stack_.size() < 1)
-        throw std::runtime_error("FORMAT: Requires format at L0");
-    throw_required(machine, "FORMAT", 0, OBJECT_INTEGER);
+    stack_required(machine, "FORMAT", 1);
+    throw_required(machine, "FORMAT", 0, OBJECT_STRING);
 
     std::string fmt;
     machine.pop(fmt);
@@ -74,6 +74,7 @@ void FORMAT(Machine& machine)
     machine.push(strm.str());
 }
 
+// "str" "str" => "str"
 void CAT(Machine& machine)
 {
     stack_required(machine, "CAT", 2);
@@ -86,6 +87,7 @@ void CAT(Machine& machine)
     machine.push(s2+s1);
 }
 
+// [list]  "str" => "str"
 void JOIN(Machine& machine)
 {
     stack_required(machine, "JOIN", 2);
@@ -108,6 +110,7 @@ void JOIN(Machine& machine)
     machine.push(strm.str());
 }
 
+// "str" startpos length => "str"
 void SUBSTR(Machine& machine)
 {
     stack_required(machine, "SUBSTR", 3);
@@ -125,6 +128,7 @@ void SUBSTR(Machine& machine)
     machine.push(s);
 }
 
+// "str"  "str"  => int
 void STRFIND(Machine& machine)
 {
     stack_required(machine, "FIND_FIRST", 3);

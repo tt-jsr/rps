@@ -13,7 +13,11 @@
 #include "commands.h"
 #include "utilities.h"
 
-
+// [list] "str"    => [list]
+// [list] int      => [list]
+// [list] <<prog>> => [list]
+// [list] {map}    => [list]
+// [list] [list]   => [list]
 void APPEND(Machine& machine)
 {
     ListPtr lp;
@@ -28,6 +32,7 @@ void APPEND(Machine& machine)
     machine.push(lp);
 }
 
+// [list] int(idx) => obj
 void GET(Machine& machine)
 {
     if (machine.stack_.size() < 2)
@@ -58,6 +63,8 @@ void GET(Machine& machine)
     throw std::runtime_error("GET: requires List argument");
 }
 
+// {map} "str" => obj
+// {map} int   => obj
 void FIND(Machine& machine)
 {
     if (machine.stack_.size() < 3)
@@ -83,14 +90,14 @@ void FIND(Machine& machine)
     throw std::runtime_error("FIND: requires Map argument");
 }
 
+// [list] idx value => [list]
+// idx: int
+// value: int | "str" | [list] | {map} | <<prog>>
 void LIST_INSERT(Machine& machine)
 {
-    if (machine.stack_.size() < 3)
-        throw std::runtime_error("List insert: stack underflow");
-    if (machine.peek(2)->type != OBJECT_LIST)
-        throw std::runtime_error("List insert: Requires list at level2");
-    if (machine.peek(1)->type != OBJECT_INTEGER)
-        throw std::runtime_error("List insert: requires Integer at L1");
+    stack_required(machine, "LIST-INSERT", 3);
+    throw_required(machine, "LIST-INSERT", 2, OBJECT_LIST);
+    throw_required(machine, "LIST-INSERT", 1, OBJECT_INTEGER);
 
     ListPtr lp;
     int64_t idx;
@@ -114,14 +121,16 @@ void LIST_INSERT(Machine& machine)
     machine.push(lp);
 }
 
+// {map} [list] => {map}
+//
+// list is a tuple of: [key, value]
+// key: int | "str"
+// value: int | "str" | {map} | [list] | <<prog>>
 void MAP_INSERT(Machine& machine)
 {
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("Map insert: stack underflow");
-    if (machine.peek(1)->type != OBJECT_MAP)
-        throw std::runtime_error("Map insert: Requires map at level 1");
-    if (machine.peek(0)->type != OBJECT_LIST)
-        throw std::runtime_error("Map insert: Requires List at level 0");
+    stack_required(machine, "MAP-INSERT",  2);
+    throw_required(machine, "MAP-INSERT",  1, OBJECT_MAP);
+    throw_required(machine, "MAP-INSERT",  0, OBJECT_LIST);
 
     MapPtr mp;
     ListPtr kv;
@@ -131,10 +140,32 @@ void MAP_INSERT(Machine& machine)
     machine.push(mp);
 }
 
+void INSERT(Machine& machine)
+{
+    if (machine.stack_.size() >= 3 
+            && machine.peek(2)->type == OBJECT_LIST 
+            && machine.peek(1)->type == OBJECT_INTEGER)
+    {
+        LIST_INSERT(machine);
+        return;
+    }
+    if (machine.stack_.size() >= 2 
+            && machine.peek(1)->type == OBJECT_MAP 
+            && machine.peek(0)->type == OBJECT_LIST)
+    {
+        MAP_INSERT(machine);
+        return;
+    }
+    std::runtime_error("INSERT: cannot detect map or list insert");
+}
+
+// [list] idx => [list]
+//    idx: int
+// {map} key => {map}
+//    key: int | "str"
 void ERASE(Machine& machine)
 {
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("ERASE requires two arguments");
+    stack_required(machine, "ERASE",  2);
     if (machine.peek(1)->type == OBJECT_LIST)
     {
         if (machine.peek(0)->type != OBJECT_INTEGER)
@@ -174,6 +205,8 @@ void ERASE(Machine& machine)
     throw std::runtime_error("ERASE: requires List  or Map argument");
 }
 
+// [list] => [list]
+// {map}  => {map}
 void CLEAR(Machine& machine)
 {
     if (machine.stack_.size() < 1)
@@ -197,6 +230,10 @@ void CLEAR(Machine& machine)
     throw std::runtime_error("CLEAR: requires List or Map argument");
 }
 
+// [list]    => int
+// {map}     => int
+// "str"     => int
+// <<prog>>  => int
 void SIZE(Machine& machine)
 {
     if (machine.stack_.size() < 1)
@@ -217,9 +254,26 @@ void SIZE(Machine& machine)
         machine.push(sz);
         return;
     }
-    throw std::runtime_error("SIZE: requires List or Map argument");
+    if (machine.peek(0)->type == OBJECT_STRING)
+    {
+        ObjectPtr optr;
+        machine.pop(optr);
+        int64_t sz = ((String *)optr.get())->value.size();
+        machine.push(sz);
+        return;
+    }
+    if (machine.peek(0)->type == OBJECT_PROGRAM)
+    {
+        ObjectPtr optr;
+        machine.pop(optr);
+        int64_t sz = ((Program *)optr.get())->program.size();
+        machine.push(sz);
+        return;
+    }
+    throw std::runtime_error("SIZE: requires [list], {map}, \"str\", or <<prog>> argument");
 }
 
+// [list] => obj
 void FIRST(Machine& machine)
 {
     if (machine.stack_.size() < 1)
@@ -230,6 +284,7 @@ void FIRST(Machine& machine)
     GET(machine);
 }
 
+// [list] => obj
 void SECOND(Machine& machine)
 {
     if (machine.stack_.size() < 1)
@@ -240,6 +295,7 @@ void SECOND(Machine& machine)
     GET(machine);
 }
 
+// obj, obj...  int => [list]
 void TOLIST(Machine& machine)
 {
     ListPtr lp;
@@ -256,6 +312,7 @@ void TOLIST(Machine& machine)
     machine.push(lp);
 }
 
+// [list], [list], [list]... int => {map}
 void TOMAP(Machine& machine)
 {
     MapPtr mp;
@@ -271,6 +328,7 @@ void TOMAP(Machine& machine)
     machine.push(mp);
 }
 
+// [list] => obj, obj. obj,...
 void FROMLIST(Machine& machine)
 {
     ListPtr lp;
@@ -281,6 +339,7 @@ void FROMLIST(Machine& machine)
     }
 }
 
+// {map} => [list], [list], [list], ...
 void FROMMAP(Machine& machine)
 {
     MapPtr mp;
@@ -294,12 +353,14 @@ void FROMMAP(Machine& machine)
     }
 }
 
+// => []
 void CREATELIST(Machine& machine)
 {
     ListPtr lp = MakeList();
     machine.push(lp);
 }
 
+// => {}
 void CREATEMAP(Machine& machine)
 {
     MapPtr mp = MakeMap();

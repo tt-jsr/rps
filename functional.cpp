@@ -11,6 +11,7 @@
 #include "commands.h"
 #include "utilities.h"
 
+// [list]   <<prog>>  =>  [list]
 void APPLY(Machine& machine)
 {
     if (machine.stack_.size() < 2)

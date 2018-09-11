@@ -8,11 +8,11 @@
 #include "module.h"
 #include "machine.h"
 
+// int int => int
 void ADD(Machine& machine)
 {
     int64_t arg1, arg2;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("ADD requires two arguments");
+    stack_required(machine, "ADD", 2);
     throw_required(machine, "ADD", 0, OBJECT_INTEGER);
     throw_required(machine, "ADD", 1, OBJECT_INTEGER);
     machine.pop(arg1);
@@ -20,11 +20,11 @@ void ADD(Machine& machine)
     machine.push(arg1 + arg2);
 }
 
+// int int => int
 void SUB(Machine& machine)
 {
     int64_t arg1, arg2;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("SUB requires two arguments");
+    stack_required(machine, "SUB", 2);
     throw_required(machine, "SUB", 0, OBJECT_INTEGER);
     throw_required(machine, "SUB", 1, OBJECT_INTEGER);
     machine.pop(arg1);
@@ -32,11 +32,11 @@ void SUB(Machine& machine)
     machine.push(arg2 - arg1);
 }
 
+// int int => int
 void MUL(Machine& machine)
 {
     int64_t arg1, arg2;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("MUL requires two arguments");
+    stack_required(machine, "MUL", 2);
     throw_required(machine, "MUL", 0, OBJECT_INTEGER);
     throw_required(machine, "MUL", 1, OBJECT_INTEGER);
     machine.pop(arg1);
@@ -44,11 +44,11 @@ void MUL(Machine& machine)
     machine.push(arg1 * arg2);
 }
 
+// int int => int
 void DIV(Machine& machine)
 {
     int64_t arg1, arg2;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("DIV requires two arguments");
+    stack_required(machine, "DIV", 2);
     throw_required(machine, "DIV", 0, OBJECT_INTEGER);
     throw_required(machine, "DIV", 1, OBJECT_INTEGER);
     machine.pop(arg1);

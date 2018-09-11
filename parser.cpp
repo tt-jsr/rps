@@ -100,6 +100,14 @@ void GetToken(Source& src, Token& token)
 {
     token.value.clear();
     SkipWhitespace(src);
+    if (*src.it == '!')
+    {
+        token.value.push_back(*src.it);
+        token.token = TOKEN_SYSTEM;
+        ++src.it;
+        return;
+    }
+
     if (*src.it == ';')
     {
         token.value.push_back(*src.it);
@@ -210,6 +218,8 @@ again:
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_MAP));
     else if (token.token == TOKEN_END_MAP)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_MAP));
+    else if (token.token == TOKEN_SYSTEM)
+        optr.reset(new Command(token.value, &SYSTEM));
     else if (token.token == TOKEN_EOL)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_EOL));
     else if (token.value == "IF")
@@ -264,6 +274,8 @@ again:
             optr.reset(new Command(token.value, &PICK));
         else if (token.value == "ROLL")
             optr.reset(new Command(token.value, &ROLL));
+        else if (token.value == "DEPTH")
+            optr.reset(new Command(token.value, &DEPTH));
         else if (token.value == "VIEW")
         {
             optr.reset(new Command(token.value, &VIEW));
@@ -335,6 +347,8 @@ again:
             optr.reset(new Command(token.value, &LIST_INSERT));
         else if (token.value == "MAP-INSERT")
             optr.reset(new Command(token.value, &MAP_INSERT));
+        else if (token.value == "INSERT")
+            optr.reset(new Command(token.value, &INSERT));
         else if (token.value == "SIZE")
             optr.reset(new Command(token.value, &SIZE));
         else if (token.value == "FIND")
@@ -386,6 +400,8 @@ again:
             optr.reset(new Command(token.value, &PRINT));
         else if (token.value == "PROMPT")
             optr.reset(new Command(token.value, &PROMPT));
+        else if (token.value == "PREAD")
+            optr.reset(new Command(token.value, &PREAD));
         else 
             optr.reset(new String(token.value));
     }

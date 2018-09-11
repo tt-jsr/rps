@@ -10,6 +10,7 @@
 #include "utilities.h"
 #include "commands.h"
 
+// obj "str" =>
 void STO(Machine& machine)
 {
     std::string s;
@@ -32,6 +33,7 @@ void STO(Machine& machine)
     module.variables_[varname] = optr;
 }
 
+// obj "str" =>
 void STOL(Machine& machine)
 {
     std::string s;
@@ -47,6 +49,7 @@ void STOL(Machine& machine)
     machine.current_program->locals[s] = optr;
 }
 
+// "str" => obj
 void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
 {
     std::string modname = machine.current_module_;
@@ -77,6 +80,7 @@ void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
     out = itVar->second;
 }
 
+// "str" => obj
 void RCL(Machine& machine)
 {
     std::string s;
@@ -89,6 +93,7 @@ void RCL(Machine& machine)
     machine.push(optr);
 }
 
+// "str" => obj
 void RCLL(Machine& machine)
 {
     stack_required(machine, "RCLL", 1);
@@ -117,6 +122,7 @@ void RCLL(Machine& machine, const std::string& name, ObjectPtr& out)
     out = itVar->second;
 }
 
+// "str" => [list]
 void VARNAMES(Machine& machine)
 {
     stack_required(machine, "VARNAMES", 1);
@@ -142,6 +148,7 @@ void VARNAMES(Machine& machine)
     machine.push(lp);
 }
 
+// "str" => [list]
 void VARTYPES(Machine& machine)
 {
     stack_required(machine, "VARTYPES", 1);
