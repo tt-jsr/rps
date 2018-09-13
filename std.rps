@@ -9,7 +9,6 @@ idx RCLL
 GET
 CAT
 !
-l RCLL
 >>
 interactive.less STO
 
@@ -25,19 +24,85 @@ idx RCLL
 GET
 CAT
 !
-l RCLL
 >>
 interactive.vim STO
 
 # Format list items into a numbers output
-<< DUP
+<< 
+DUP
+lst STOL
 0 count STOL
 FOR
     count RCLL
     "%0: %1" FORMAT PRINT
-    1 ADD count STOL
-    DROP
+    INC count STOL
+    DROP  # drop the FOR object
 ENDFOR
+lst RCLL
 >> interactive.show STO
+
+################################
+<< 
+    interactive.show CALL
+    "Enter => " PROMPT
+    resp STOL
+    IF 
+        resp RCLL
+        "q" STRCMP 0 NEQ
+    THEN
+        resp RCLL
+        TOINT
+        GET
+    ENDIF
+ENDWHILE
+>> interactive.lselect STO
+
+###############################################
+# Simple list based menu
+<< prog STOL
+lst STOL
+1 run STOL
+WHILE
+    run RCLL
+    0 GT
+REPEAT
+    lst RCLL
+    interactive.show CALL
+    "Enter => " PROMPT
+    resp STOL
+    IF 
+        resp RCLL
+        "q" STRCMP 0 NEQ
+    THEN
+        resp RCLL
+        TOINT
+        prog RCLL
+        EVAL
+        1 run STOL
+    ELSE
+        0 run STOL
+    ENDIF
+ENDWHILE
+>> interactive.menu STO
+
+#############################################
+# Save the current stack
+<<
+name STOL
+DEPTH
+TOLIST
+name RCLL
+"interactive.%0" FORMAT
+SWAP DROP
+STO
+>> interactive.sstack STO
+
+#############################################
+# Restore saved stack
+<<
+"interactive.%0" FORMAT RCL
+SWAP DROP
+FROMLIST
+>> interactive.rstack STO
 
 

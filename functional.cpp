@@ -14,8 +14,7 @@
 // [list]   <<prog>>  =>  [list]
 void APPLY(Machine& machine)
 {
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("APPLY: Requires two arguments");
+    stack_required(machine, "APPLY", 2);
     throw_required(machine, "APPLY", 0, OBJECT_PROGRAM);
     throw_required(machine, "APPLY", 1, OBJECT_LIST);
 
@@ -29,33 +28,39 @@ void APPLY(Machine& machine)
 
     machine.pop(lp);
 
-    size_t sz = machine.stack_.size();
+    for (ObjectPtr p : lp->items)
+    {
+        machine.push(p);
+        EVAL(machine, pptr);
+        machine.pop(optr);
+        result->items.push_back(optr);
+    }
+    machine.push(result);
+}
+
+void SELECT(Machine& machine)
+{
+    stack_required(machine, "SELECT", 2);
+    throw_required(machine, "SELECT", 0, OBJECT_PROGRAM);
+    throw_required(machine, "SELECT", 1, OBJECT_LIST);
+
+    ListPtr result = MakeList();
+    ListPtr lp;
+    ObjectPtr optr;
+    ProgramPtr pptr;
+
+    machine.pop(optr);
+    pptr = std::static_pointer_cast<Program>(optr);
+
+    machine.pop(lp);
 
     for (ObjectPtr p : lp->items)
     {
         machine.push(p);
         EVAL(machine, pptr);
-        if (machine.stack_.size() > sz)
-        {
-            size_t n = machine.stack_.size() - sz;
-            if (n == 1)
-            {
-                machine.pop(optr);
-                result->items.push_back(optr);
-            }
-            if (n > 1)
-            {
-                ListPtr r = MakeList();
-                while (n--)
-                {
-                    machine.pop(optr);
-                    r->items.push_back(optr);
-                }
-                result->items.push_back(r);
-            }
-        }
+        machine.pop(optr);
+        if (ToBool(machine, optr))
+            result->items.push_back(p);
     }
-    if (result->items.size())
-        machine.push(result);
+    machine.push(result);
 }
-

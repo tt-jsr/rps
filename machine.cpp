@@ -34,6 +34,12 @@ void Machine::push(ObjectPtr& optr)
     stack_.push_back(optr);
 }
 
+void Machine::pop()
+{
+    if (stack_.empty())
+        throw std::runtime_error("stack underflow");
+    stack_.pop_back();
+}
 
 void Machine::pop(ObjectPtr& optr)
 {
@@ -181,7 +187,7 @@ void Execute(Machine& machine, ObjectPtr optr)
             If *p = (If *)optr.get();
             Execute(machine, p->cond);
             machine.pop(ob);
-            if (ToBool(ob))
+            if (ToBool(machine, ob))
                 Execute(machine, p->then);
             else
                 Execute(machine, p->els);
@@ -217,6 +223,32 @@ void Execute(Machine& machine, ObjectPtr optr)
                         machine.push(lp);
                         Execute(machine, p->program);
                     }
+                }
+            }
+            catch (std::exception& e)
+            {
+                std::cout << e.what() << std::endl;
+            }
+        }
+        break;
+    case OBJECT_WHILE:
+        {
+            ObjectPtr ob;
+            While *p = (While *)optr.get();
+            try
+            {
+                while (true)
+                {
+                    Execute(machine, p->cond);
+                    ObjectPtr optr;
+                    machine.pop(optr);
+                    bool b = ToBool(machine, optr);
+                    if (b) 
+                    {
+                        Execute(machine, p->program);
+                    }
+                    else
+                        break;
                 }
             }
             catch (std::exception& e)
@@ -346,3 +378,5 @@ void stack_required(Machine& machine, const char *f, int depth)
         throw std::runtime_error(strm.str().c_str());
     }
 }
+
+

@@ -23,6 +23,8 @@ void ADD(Machine& machine);
 void SUB(Machine& machine);
 void MUL(Machine& machine);
 void DIV(Machine& machine);
+void INC(Machine& machine);
+void DEC(Machine& machine);
 
 /*
  * Variables commands
@@ -77,17 +79,9 @@ void FROMMAP(Machine&);
 void CREATELIST(Machine&);
 void CREATEMAP(Machine&);
 
-/* Functional
-L1: List
-L0: function name
-
-Apply calls the function given in L0 to each item in the list at L1
-If the function pushes one value,  a list will be the result in  L0.
-If the function pushes multiple values, a list of lists will be in L0.
-If the function pushes no values, nothing will be returned in  L0
-*/
-
+// Functional
 void APPLY(Machine& machine);
+void SELECT(Machine& machine);
 
 // IO commands
 void PRINT(Machine&);
@@ -101,6 +95,13 @@ void CAT(Machine&);
 void JOIN(Machine&);
 void SUBSTR(Machine&);
 void STRFIND(Machine&);
+void STRCMP(Machine&);
+void SPLIT(Machine&);
+
+// Types
+void TOINT(Machine&);
+void TOSTR(Machine&);
+void TYPE(Machine&);
 
 /*
  * Misc commands

@@ -107,3 +107,12 @@ public:
 
 typedef std::shared_ptr<For> ForPtr;
 
+class While : public Object
+{
+public:
+    While() : Object(OBJECT_WHILE, TOKEN_STATEMENT) {}
+    std::vector<ObjectPtr> program;
+    std::vector<ObjectPtr> cond;
+};
+
+typedef std::shared_ptr<While> WhilePtr;

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <cassert>
+#include <cstring>
 #include "token.h"
 #include "object.h"
 #include "module.h"
@@ -149,4 +150,69 @@ void STRFIND(Machine& machine)
     else
         machine.push(pos);
 }
+
+// "str" "str" => int
+void STRCMP(Machine& machine)
+{
+    stack_required(machine, "STRCMP", 2);
+    throw_required(machine, "STRCMP", 0, OBJECT_STRING);
+    throw_required(machine, "STRCMP", 1, OBJECT_STRING);
+
+    std::string s1, s2;
+    machine.pop(s2);
+    machine.pop(s1);
+    
+    int64_t n = std::strcmp(s1.c_str(), s2.c_str());
+    machine.push(n);
+}
+
+// "str" "str" => [list]
+void SPLIT(Machine& machine)
+{
+    stack_required(machine, "SPLIT", 2);
+    throw_required(machine, "SPLIT", 0, OBJECT_STRING); // delim
+    throw_required(machine, "SPLIT", 1, OBJECT_STRING); // string to split
+
+    std::string str,  delims;
+    ListPtr result = MakeList();
+    bool bCollapse(false);
+
+    machine.pop(delims);
+    if (delims == "--collapse")
+    {
+        bCollapse = true;
+        machine.pop(delims);
+    }
+    machine.pop(str);
+    std::string s;
+    for (auto it = str.begin(); it != str.end(); ++it)
+    {
+        if (delims.find_first_of(*it) != std::string::npos)
+        {
+            StringPtr sp = MakeString();
+            sp->value = s;
+            result->items.push_back(sp);
+            s = "";
+            if (bCollapse)
+            {
+                while (delims.find_first_of(*it) != std::string::npos)
+                    ++it;
+                --it;
+            }
+        }
+        else
+        {
+            s.push_back(*it);
+        }
+    }
+    if (s.size())
+    {
+        StringPtr sp = MakeString();
+        sp->value = s;
+        result->items.push_back(sp);
+    }
+    ObjectPtr optr = result;
+    machine.push(optr);
+}
+
 

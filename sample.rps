@@ -1,2 +1,8 @@
-"ls -l"
-PREAD
+<<
+    "ls *.h *.cpp" PREAD
+    << 
+        "module.h" STRCMP 0 NEQ
+    >>
+    SELECT
+>> interactive.select_test STO
+

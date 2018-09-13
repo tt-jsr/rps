@@ -20,6 +20,9 @@ enum TokenType
     , TOKEN_ENDIF   // 15
     , TOKEN_FOR
     , TOKEN_ENDFOR
+    , TOKEN_WHILE
+    , TOKEN_REPEAT
+    , TOKEN_ENDWHILE // 20
     , TOKEN_SYSTEM
     , TOKEN_EOL
 };
@@ -41,6 +44,7 @@ enum ObjectType
     ,OBJECT_TOKEN 
     ,OBJECT_IF
     ,OBJECT_FOR
+    ,OBJECT_WHILE
 };
 
 static const char *ObjectNames[] = {
@@ -52,4 +56,5 @@ static const char *ObjectNames[] = {
     , "Token"
     , "If"
     , "For"
+    , "While"
 };

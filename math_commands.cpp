@@ -56,4 +56,27 @@ void DIV(Machine& machine)
     machine.push(arg2 / arg1);
 }
 
+// int => int
+void INC(Machine& machine)
+{
+    stack_required(machine, "INC", 1);
+    throw_required(machine, "INC", 0, OBJECT_INTEGER);
+    int64_t n;
+    machine.pop(n);
+    ++n;
+    machine.push(n);
+}
+
+// int => int
+void DEC(Machine& machine)
+{
+    stack_required(machine, "DEC", 1);
+    throw_required(machine, "DEC", 0, OBJECT_INTEGER);
+    int64_t n;
+    machine.pop(n);
+    --n;
+    machine.push(n);
+}
+
+
 

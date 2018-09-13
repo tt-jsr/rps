@@ -35,7 +35,8 @@ ListPtr MakeList();
 MapPtr MakeMap();
 ObjectPtr Clone(ObjectPtr);
 
-bool ToBool(ObjectPtr);
+bool ToBool(Machine&, ObjectPtr);
 
 std::string ToStr(Machine&, ObjectPtr);
+int64_t ToInt(Machine&, ObjectPtr);
 std::string ToType(Machine&, ObjectPtr);

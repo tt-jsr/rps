@@ -234,6 +234,12 @@ again:
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_FOR));
     else if (token.value == "ENDFOR")
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_ENDFOR));
+    else if (token.value == "WHILE")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_WHILE));
+    else if (token.value == "REPEAT")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_REPEAT));
+    else if (token.value == "ENDWHILE")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_ENDWHILE));
     else if (token.token == TOKEN_STRING)
     {
         if (token.value == "import")
@@ -325,6 +331,10 @@ again:
             optr.reset(new Command(token.value, &MUL));
         else if (token.value == "DIV")
             optr.reset(new Command(token.value, &DIV));
+        else if (token.value == "INC")
+            optr.reset(new Command(token.value, &INC));
+        else if (token.value == "DEC")
+            optr.reset(new Command(token.value, &DEC));
 
         // Control commands
         else if (token.value == "IFT")
@@ -373,6 +383,9 @@ again:
         // Functional
         else if (token.value == "APPLY")
             optr.reset(new Command(token.value, &APPLY));
+        else if (token.value == "SELECT")
+            optr.reset(new Command(token.value, &SELECT));
+
         // Execution commands
         else if (token.value == "EVAL")
             optr.reset(new Command(token.value, &EVAL));
@@ -394,6 +407,18 @@ again:
             optr.reset(new Command(token.value, &SUBSTR));
         else if (token.value == "STRFIND")
             optr.reset(new Command(token.value, &STRFIND));
+        else if (token.value == "STRCMP")
+            optr.reset(new Command(token.value, &STRCMP));
+        else if (token.value == "SPLIT")
+            optr.reset(new Command(token.value, &SPLIT));
+
+        // Types
+        else if (token.value == "TOINT")
+            optr.reset(new Command(token.value, &TOINT));
+        else if (token.value == "TOSTR")
+            optr.reset(new Command(token.value, &TOSTR));
+        else if (token.value == "TYPE")
+            optr.reset(new Command(token.value, &TYPE));
 
         // IO
         else if (token.value == "PRINT")
@@ -449,6 +474,17 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
             ParseFor(machine, forptr, src); 
             src.prompt = savePrompt;
             optr = forptr;
+            pVec->push_back(optr);           
+        }
+        else if (optr->token == TOKEN_WHILE)
+        {
+            WhilePtr whileptr;
+            whileptr.reset(new While());
+            std::string savePrompt = src.prompt;
+            src.prompt = "WHILE: ";
+            ParseWhile(machine, whileptr, src); 
+            src.prompt = savePrompt;
+            optr = whileptr;
             pVec->push_back(optr);           
         }
         else if (optr->token == TOKEN_START_PROGRAM)
@@ -532,6 +568,80 @@ void Parser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
     }
 }
 
+void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
+{
+    ObjectPtr optr;
+    std::vector<ObjectPtr> *pVec = &whileptr->cond;
+    while(GetObject(machine, src, optr))
+    {
+        if (optr->token == TOKEN_ENDWHILE)
+        {
+            return;
+        }
+        else if (optr->token == TOKEN_REPEAT)
+        {
+            pVec = &whileptr->program;
+            src.prompt = "REPEAT: ";
+        }
+        else if (optr->token == TOKEN_WHILE)
+        {
+            WhilePtr whilep;
+            whilep.reset(new While());
+            std::string savePrompt = src.prompt;
+            src.prompt = "WHILE: ";
+            ParseWhile(machine, whilep, src);    // recurse
+            src.prompt = savePrompt;
+            optr = whilep;
+            pVec->push_back(optr);
+        }
+        else if (optr->token == TOKEN_FOR)
+        {
+            ForPtr forp;
+            forp.reset(new For());
+            std::string savePrompt = src.prompt;
+            src.prompt = "FOR: ";
+            ParseFor(machine, forp, src);    // recurse
+            src.prompt = savePrompt;
+            optr = forp;
+            pVec->push_back(optr);
+        }
+        else if (optr->token == TOKEN_IF)
+        {
+            IfPtr ifp;
+            ifp.reset(new If());
+            std::string savePrompt = src.prompt;
+            src.prompt = "IF: ";
+            ParseIf(machine, ifp, src);    // recurse
+            src.prompt = savePrompt;
+            optr = ifp;
+            pVec->push_back(optr);
+        }
+        else if (optr->token == TOKEN_START_PROGRAM)
+        {
+            ProgramPtr pptr;
+            pptr.reset(new Program());
+            std::string savePrompt = src.prompt;
+            src.prompt = ">> ";
+            ParseProgram(machine, pptr, src);    // recurse
+            src.prompt = savePrompt;
+            optr = pptr;
+            pVec->push_back(optr);
+        }
+        else if (optr->token == TOKEN_START_LIST)
+        {
+            ListPtr lp;
+            lp.reset(new List());
+            std::string savePrompt = src.prompt;
+            src.prompt = "[] ";
+            ParseList(machine, lp, src);    // recurse
+            src.prompt = savePrompt;
+            optr = lp;
+            pVec->push_back(optr);
+        }
+        else
+            pVec->push_back(optr);           
+    }
+}
 void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
 {
     ObjectPtr optr;
@@ -606,6 +716,16 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
             src.prompt = savePrompt;
             optr = forptr;
         }
+        else if (optr->token == TOKEN_WHILE)
+        {
+            WhilePtr whileptr;
+            whileptr.reset(new While());
+            std::string savePrompt = src.prompt;
+            src.prompt = "WHILE: ";
+            ParseWhile(machine, whileptr, src);    // recurse
+            src.prompt = savePrompt;
+            optr = whileptr;
+        }
         pptr->program.push_back(optr);           
     }
 }
@@ -648,6 +768,22 @@ void Parser::Parse(Machine& machine, Source& src)
                 try
                 {
                     Execute(machine, forptr);
+                }
+                catch (std::exception& e)
+                {
+                    std::cout << e.what() << std::endl;
+                }
+            }
+            if (optr->token == TOKEN_WHILE)
+            {
+                src.prompt = "WHILE: ";
+                WhilePtr whileptr;
+                whileptr.reset(new While());
+                ParseWhile(machine, whileptr, src);
+                src.prompt = "> ";
+                try
+                {
+                    Execute(machine, whileptr);
                 }
                 catch (std::exception& e)
                 {

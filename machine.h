@@ -26,6 +26,7 @@ public:
     void push(ListPtr&);
     void pop(MapPtr&);
     void push(MapPtr&);
+    void pop();
 
     // settings
     size_t list_maxcount;

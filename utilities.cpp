@@ -178,11 +178,23 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
             return  strm.str();
         }
         break;
-    case OBJECT_TOKEN:
+    case OBJECT_WHILE:
         {
             std::stringstream strm;
-            strm << "TOKEN: " << optr->token;
+            strm << "WHILE";
             return  strm.str();
+        }
+        break;
+    case OBJECT_TOKEN:
+        {
+            if (optr->token == TOKEN_EOL)
+                return "<EOL>";
+            else
+            {
+                std::stringstream strm;
+                strm << "TOKEN: " << optr->token;
+                return  strm.str();
+            }
         }
         break;
     default:
@@ -215,7 +227,8 @@ std::string ToType(Machine&, ObjectPtr optr)
         break;
     }
 }
-bool ToBool(ObjectPtr optr)
+
+bool ToBool(Machine&, ObjectPtr optr)
 {
     switch(optr->type)
     {
@@ -225,8 +238,33 @@ bool ToBool(ObjectPtr optr)
         return ((Integer *)optr.get())->value != 0;
     case OBJECT_LIST:
         return !((List *)optr.get())->items.empty();
+    case OBJECT_MAP:
+        return !((Map *)optr.get())->items.empty();
     case OBJECT_PROGRAM:
         return false;
+    case OBJECT_COMMAND:
+        assert(false);
+        break;
+    }
+}
+
+int64_t ToInt(Machine& machine, ObjectPtr optr)
+{
+    switch(optr->type)
+    {
+    case OBJECT_STRING:
+        {
+            String *p =  (String *)optr.get();
+            return std::stoll(p->value);
+        }
+    case OBJECT_INTEGER:
+        return ((Integer *)optr.get())->value;
+    case OBJECT_LIST:
+        throw std::runtime_error("Invalid List to Int conversion");
+    case OBJECT_MAP:
+        throw std::runtime_error("Invalid Map to Int conversion");
+    case OBJECT_PROGRAM:
+        throw std::runtime_error("Invalid Program to Int conversion");
     case OBJECT_COMMAND:
         assert(false);
         break;
