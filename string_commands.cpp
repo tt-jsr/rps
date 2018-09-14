@@ -24,7 +24,6 @@ void FORMAT(Machine& machine)
     char *p = &fmt[0];
     std::stringstream strm;
 
-    int stackPopTo = 0;
     while (*p)
     {
         if (*p == '%')
@@ -35,7 +34,6 @@ void FORMAT(Machine& machine)
                 int n = strtol(p, &p, 10);
                 if (n >= machine.stack_.size())
                     throw std::runtime_error("FORMAT: Stack out of bounds");
-                stackPopTo = std::max(n, stackPopTo);
                 strm << ToStr(machine, machine.peek(n));
             }
             else if (isalpha(*p))
@@ -132,10 +130,10 @@ void SUBSTR(Machine& machine)
 // "str"  "str"  => int
 void STRFIND(Machine& machine)
 {
-    stack_required(machine, "FIND_FIRST", 3);
-    throw_required(machine, "FIND_FIRST", 0, OBJECT_STRING);
-    throw_required(machine, "FIND_FIRST", 1, OBJECT_INTEGER);
-    throw_required(machine, "FIND_FIRST", 2, OBJECT_STRING);
+    stack_required(machine, "FIND", 3);
+    throw_required(machine, "FIND", 0, OBJECT_STRING);
+    throw_required(machine, "FIND", 1, OBJECT_INTEGER);
+    throw_required(machine, "FIND", 2, OBJECT_STRING);
 
     int64_t startpos;
     std::string find_str;

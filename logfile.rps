@@ -5,3 +5,19 @@ SWAP DROP
 APPLY
 >> start STO
 
+# filename startbyte endbyte => ddcommand
+<<
+TOINT 512 DIV endblock STOL
+TOINT 512 DIV startblock STOL
+filename STOL
+
+IF 
+    endblock RCLL
+    startblock RCLL
+    GT
+THEN
+    "dd if=%filename skip=%startblock count=%endblock " FORMAT
+ELSE
+    "dd if=%filename skip=%startblock " FORMAT
+ENDIF
+>> section STO

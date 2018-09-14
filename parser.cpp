@@ -231,6 +231,8 @@ again:
         optr.reset(new Command(token.value, &SYSTEM));
     else if (token.token == TOKEN_EOL)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_EOL));
+    else if (token.value == "EXIT")
+        optr.reset(new Object(OBJECT_TOKEN, TOKEN_EXIT));
     else if (token.value == "IF")
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_IF));
     else if (token.value == "THEN")
@@ -436,6 +438,8 @@ again:
             optr.reset(new Command(token.value, &PROMPT));
         else if (token.value == "PREAD")
             optr.reset(new Command(token.value, &PREAD));
+        else if (token.value == "PWRITE")
+            optr.reset(new Command(token.value, &PWRITE));
         else 
             optr.reset(new String(token.value));
     }
@@ -746,7 +750,11 @@ void Parser::Parse(Machine& machine, Source& src)
         ObjectPtr optr;
         while(GetObject(machine, src, optr))
         {
-            if (optr->token == TOKEN_START_LIST)
+            if (optr->token == TOKEN_EXIT)
+            {
+                return;
+            }
+            else if (optr->token == TOKEN_START_LIST)
             {
                 src.prompt = "[] ";
                 ListPtr lptr;

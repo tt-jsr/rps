@@ -45,7 +45,7 @@ void PROMPT(Machine& machine)
 }
 
 // cmd => [list]
-// cmd opt1.. => PREAD
+// cmd opt1.. => [list]
 //   opt: "--limit=n"
 void PREAD(Machine& machine)
 {
@@ -88,6 +88,41 @@ void PREAD(Machine& machine)
    }
    machine.push(ret);
 
+}
+
+// cmd [list] => 
+// cmd "str" => 
+void PWRITE(Machine& machine)
+{
+   stack_required(machine, "PWRITE", 2);
+
+   ObjectPtr data;
+   std::string cmd;
+
+   machine.pop(data);
+   machine.pop(cmd);
+
+   FILE *fp = popen(cmd.c_str(), "w");
+   if (fp)
+   {
+       if (data->type == OBJECT_STRING)
+       {
+           String *sp = (String *)data.get();
+           fputs(sp->value.c_str(), fp);
+           fputs("\n", fp);
+       }
+       if (data->type == OBJECT_LIST)
+       {
+            List *lp = (List *)data.get();
+            for (ObjectPtr optr : lp->items)
+            {
+                std::string s = ToStr(machine, optr);
+                fputs(s.c_str(), fp);
+                fputs("\n", fp);
+            }
+       }
+       pclose(fp);
+   }
 }
 
 void SYSTEM(Machine& machine)

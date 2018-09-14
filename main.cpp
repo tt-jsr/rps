@@ -16,6 +16,18 @@ int main(int argc, char *argv[])
     Source src(std::cin);
     src.interactive = true;
     src.prompt = "> ";
-    parser.Parse(machine, src);
+    while (true)
+    {
+        try
+        {
+            parser.Parse(machine, src);
+            return 0;
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cout << e.what() << std::endl;
+        }
+    }
+
     return 0;
 }

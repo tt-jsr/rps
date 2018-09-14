@@ -88,13 +88,8 @@ ObjectPtr Clone(ObjectPtr optr)
     }
 }
 
-void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t maxwidth, bool view)
+void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
 {
-    if (strm.str().size() > maxwidth)
-    {
-        strm << "...";
-        return;
-    }
     switch (optr->type)
     {
     case OBJECT_STRING:
@@ -115,12 +110,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t max
             strm << "[ ";
             for (auto it = lp->items.begin(); it != lp->items.end(); ++it)
             {
-                ToStr(machine, *it, strm, maxwidth, view);
-                if (strm.str().size() >= maxwidth)
-                {
-                    strm << "...";
-                    break;
-                }
+                ToStr(machine, *it, strm, view);
                 if ((it+1) != lp->items.end())
                     strm << ", ";
             }
@@ -132,21 +122,16 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t max
             Map *mp = (Map *)optr.get();
             strm << "{ ";
             auto it = mp->items.begin();
-            ToStr(machine, it->first, strm, maxwidth, view);
+            ToStr(machine, it->first, strm, view);
             strm << ":";
-            ToStr(machine, it->second, strm, maxwidth, view);
+            ToStr(machine, it->second, strm, view);
             ++it;
             for (; it != mp->items.end(); ++it)
             {
                 strm << ", ";
-                ToStr(machine, it->first, strm, maxwidth, view);
+                ToStr(machine, it->first, strm, view);
                 strm << ":";
-                ToStr(machine, it->second, strm, maxwidth, view);
-                if (strm.str().size() >= maxwidth)
-                {
-                    strm << "...";
-                    break;
-                }
+                ToStr(machine, it->second, strm, view);
             }
             strm << " }";
         }
@@ -157,13 +142,8 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t max
             strm << "<< ";
             for (ObjectPtr& op : pp->program)
             {
-                ToStr(machine, op, strm, maxwidth, view);
+                ToStr(machine, op, strm, view);
                 strm << " ";
-                if (strm.str().size() >= maxwidth, view)
-                {
-                    strm << "...";
-                    break;
-                }
             }
             strm << " >>";
         }
@@ -174,16 +154,16 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t max
             strm << "IF";
             for (ObjectPtr op : pif->cond)
             {
-                ToStr(machine, op, strm, maxwidth, view);
+                ToStr(machine, op, strm, view);
             }
             strm << " THEN ";
             for (ObjectPtr op : pif->then)
-                ToStr(machine, op, strm, maxwidth, view);
+                ToStr(machine, op, strm, view);
             if (pif->els.size())
             {
                 strm << " ELSE ";
                 for (ObjectPtr op : pif->els)
-                    ToStr(machine, op, strm, maxwidth, view);
+                    ToStr(machine, op, strm, view);
             }
         }
         break;
@@ -192,7 +172,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t max
             strm << "FOR";
             For *pfor = (For *)optr.get();
             for (ObjectPtr op : pfor->program)
-                ToStr(machine, op, strm, maxwidth, view);
+                ToStr(machine, op, strm, view);
         }
         break;
     case OBJECT_WHILE:
@@ -200,10 +180,10 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t max
             strm << "WHILE";
             While *pwhile = (While *)optr.get();
             for (ObjectPtr op : pwhile->cond)
-                ToStr(machine, op, strm, maxwidth, view);
+                ToStr(machine, op, strm, view);
             strm << " REPEAT ";
             for (ObjectPtr op : pwhile->program)
-                ToStr(machine, op, strm, maxwidth, view);
+                ToStr(machine, op, strm, view);
         }
         break;
     case OBJECT_TOKEN:
@@ -227,7 +207,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t max
 std::string ToStr(Machine& machine, ObjectPtr optr)
 {
     std::stringstream strm;
-    ToStr(machine, optr, strm, machine.maxwidth, false);
+    ToStr(machine, optr, strm, false);
     return strm.str();
 }
 

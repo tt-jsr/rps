@@ -87,6 +87,7 @@ void SELECT(Machine& machine);
 void PRINT(Machine&);
 void PROMPT(Machine&);
 void PREAD(Machine&);
+void PWRITE(Machine&);
 void SYSTEM(Machine&);
 
 // String commands

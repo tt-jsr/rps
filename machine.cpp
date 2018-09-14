@@ -13,7 +13,7 @@
 #include "utilities.h"
 
 Machine::Machine()
-: maxwidth(60)
+: maxwidth(120)
 , debug(false) 
 {
 }

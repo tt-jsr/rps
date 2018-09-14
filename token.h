@@ -25,6 +25,7 @@ enum TokenType
     , TOKEN_ENDWHILE // 20
     , TOKEN_SYSTEM
     , TOKEN_EOL
+    , TOKEN_EXIT
 };
 
 struct Token

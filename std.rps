@@ -27,6 +27,8 @@ CAT
 >>
 interactive.vim STO
 
+100 showwidth STO # default width for show
+
 # Format list items into a numbers output
 << 
 DUP
@@ -34,7 +36,7 @@ lst STOL
 0 count STOL
 FOR
     count RCLL
-    "%0: %1" FORMAT PRINT
+    "%0: %1" FORMAT 0 showwidth RCL SUBSTR PRINT
     INC count STOL
     DROP  # drop the FOR object
 ENDFOR
@@ -53,6 +55,8 @@ lst RCLL
         resp RCLL
         TOINT
         GET
+    ELSE
+        DROP
     ENDIF
 ENDWHILE
 >> interactive.lselect STO
@@ -67,15 +71,13 @@ WHILE
     0 GT
 REPEAT
     lst RCLL
-    interactive.show CALL
-    "Enter => " PROMPT
-    resp STOL
+    interactive.lselect CALL
+    sel STOL
     IF 
-        resp RCLL
+        sel RCLL
         "q" STRCMP 0 NEQ
     THEN
-        resp RCLL
-        TOINT
+        sel RCLL
         prog RCLL
         EVAL
         1 run STOL

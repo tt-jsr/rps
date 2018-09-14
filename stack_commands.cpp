@@ -97,8 +97,10 @@ void VIEW(Machine& machine, size_t depth)
     while(n >= 0)
     {
         std::stringstream strm;
-        ToStr(machine, machine.peek(n), strm, machine.maxwidth, true);
-        std::cout << n << ":" << strm.str() << std::endl;
+        ToStr(machine, machine.peek(n), strm, true);
+        std::string s = strm.str();
+        s = s.substr(0, machine.maxwidth);
+        std::cout << n << ":" << s << std::endl;
         --n;
     }
 }
