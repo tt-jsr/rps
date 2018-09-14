@@ -301,14 +301,16 @@ void EVAL(Machine& machine, ObjectPtr optr)
             machine.current_module_ = machine.current_program->module_name;
             try
             {
+                std::unordered_map<std::string, ObjectPtr> locals;
+
                 Execute(machine, machine.current_program->program);
-                machine.current_program->locals.clear();
+                machine.current_program->pLocals = &locals;
                 machine.current_module_ = prev_module;
                 machine.current_program = prev_program;
             }
             catch (std::exception& e)
             {
-                machine.current_program->locals.clear();
+                machine.current_program->pLocals = nullptr;
                 machine.current_module_ = prev_module;
                 machine.current_program = prev_program;
                 throw;

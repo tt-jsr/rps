@@ -23,4 +23,6 @@ public:
     void ParseIf(Machine&, IfPtr& ifptr, Source& src);
     void ParseFor(Machine&, ForPtr& forptr, Source& src);
     void ParseWhile(Machine&, WhilePtr& whileptr, Source& src);
+
+    ProgramPtr enclosingProgram;
 };

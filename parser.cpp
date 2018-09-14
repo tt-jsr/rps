@@ -522,7 +522,11 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
             pptr.reset(new Program());
             std::string savePrompt = src.prompt;
             src.prompt = ">> ";
+            if (enclosingProgram)
+                pptr->enclosingProgram = enclosingProgram;
+            enclosingProgram = pptr;
             ParseProgram(machine, pptr, src);  
+            enclosingProgram = pptr->enclosingProgram;
             src.prompt = savePrompt;
             optr = pptr;
             pVec->push_back(optr);           
@@ -578,7 +582,11 @@ void Parser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
             pptr.reset(new Program());
             std::string savePrompt = src.prompt;
             src.prompt = ">> ";
+            if (enclosingProgram)
+                pptr->enclosingProgram = enclosingProgram;
+            enclosingProgram = pptr;
             ParseProgram(machine, pptr, src);    // recurse
+            enclosingProgram = pptr->enclosingProgram;
             src.prompt = savePrompt;
             optr = pptr;
         }
@@ -651,7 +659,11 @@ void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
             pptr.reset(new Program());
             std::string savePrompt = src.prompt;
             src.prompt = ">> ";
+            if (enclosingProgram)
+                pptr->enclosingProgram = enclosingProgram;
+            enclosingProgram = pptr;
             ParseProgram(machine, pptr, src);    // recurse
+            enclosingProgram = pptr->enclosingProgram;
             src.prompt = savePrompt;
             optr = pptr;
             pVec->push_back(optr);
@@ -685,7 +697,11 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
             ProgramPtr pptr;
             pptr.reset(new Program());
             src.prompt = ">> ";
+            if (enclosingProgram)
+                pptr->enclosingProgram = enclosingProgram;
+            enclosingProgram = pptr;
             ParseProgram(machine, pptr, src);    // recurse
+            enclosingProgram = pptr->enclosingProgram;
             src.prompt = "[] ";
             optr = pptr;
         }
@@ -714,7 +730,11 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
         {
             ProgramPtr pp;
             pp.reset(new Program());
+            if (enclosingProgram)
+                pp->enclosingProgram = enclosingProgram;
+            enclosingProgram = pp;
             ParseProgram(machine, pp, src);    // recurse
+            enclosingProgram = pp->enclosingProgram;
             optr = pp;
         }
         else if (optr->token == TOKEN_START_LIST)
@@ -784,7 +804,9 @@ void Parser::Parse(Machine& machine, Source& src)
                 src.prompt = ">> ";
                 ProgramPtr pptr;
                 pptr.reset(new Program());
+                enclosingProgram = pptr;
                 ParseProgram(machine, pptr, src);
+                enclosingProgram.reset();
                 src.prompt = "> ";
                 optr = pptr;
             }

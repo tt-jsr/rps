@@ -76,16 +76,19 @@ public:
 
 typedef std::shared_ptr<Command> CommandPtr;
 
+class Program;
+typedef std::shared_ptr<Program> ProgramPtr;
+
 class Program : public Object
 {
 public:
     Program() : Object(OBJECT_PROGRAM, TOKEN_DATA) {}
     std::vector<ObjectPtr> program;
-    std::unordered_map<std::string, ObjectPtr> locals;
     std::string module_name;
+    std::unordered_map<std::string, ObjectPtr> *pLocals;
+    ProgramPtr enclosingProgram;
 };
 
-typedef std::shared_ptr<Program> ProgramPtr;
 
 class If : public Object
 {

@@ -10,6 +10,20 @@
 #include "utilities.h"
 #include "commands.h"
 
+
+ObjectPtr find_local(Machine& machine, const std::string& name)
+{
+    ProgramPtr pp = machine.current_program;
+    ObjectPtr optr;
+
+    auto itVar = pp->pLocals->find(name);
+    if (itVar == pp->pLocals->end())
+    {
+        return optr;
+    }
+    return itVar->second;
+}
+
 // obj "str" =>
 void STO(Machine& machine)
 {
@@ -36,7 +50,7 @@ void STO(Machine& machine)
 // obj "str" =>
 void STOL(Machine& machine)
 {
-    std::string s;
+    std::string name;
     ObjectPtr optr;
     stack_required(machine, "STOL", 2);
     throw_required(machine, "STOL", 0, OBJECT_STRING);
@@ -44,9 +58,22 @@ void STOL(Machine& machine)
     {
         throw std::runtime_error("STOL: Requires current program context");
     }
-    machine.pop(s);
+    machine.pop(name);
     machine.pop(optr);
-    machine.current_program->locals[s] = optr;
+
+    ProgramPtr pp = machine.current_program;
+
+    while (pp)
+    {
+        auto itVar = pp->pLocals->find(name);
+        if (itVar != pp->pLocals->end())
+        {
+            (*pp->pLocals)[name] = optr;
+            return;
+        }
+        pp = pp->enclosingProgram;
+    }
+    (*machine.current_program->pLocals)[name] = optr;
 }
 
 // "str" => obj
@@ -112,14 +139,22 @@ void RCLL(Machine& machine, const std::string& name, ObjectPtr& out)
     {
         throw std::runtime_error("RCCL: Requires current program context");
     }
-    auto itVar = machine.current_program->locals.find(name);
-    if (itVar == machine.current_program->locals.end())
+
+    ProgramPtr pp = machine.current_program;
+
+    while (pp)
     {
-        std::stringstream strm;
-        strm << "RCLL local Variable " << name << " not found";
-        throw std::runtime_error(strm.str().c_str());
+        auto itVar = pp->pLocals->find(name);
+        if (itVar != pp->pLocals->end())
+        {
+            out = itVar->second;
+            return;
+        }
+        pp = pp->enclosingProgram;
     }
-    out = itVar->second;
+    std::stringstream strm;
+    strm << "RCLL local Variable " << name << " not found";
+    throw std::runtime_error(strm.str().c_str());
 }
 
 // "str" => [list]
