@@ -59,7 +59,7 @@ lst RCLL
         DROP
     ENDIF
 ENDWHILE
->> interactive.lselect STO
+>> interactive.lget STO
 
 ###############################################
 # Simple list based menu
@@ -106,5 +106,4 @@ STO
 SWAP DROP
 FROMLIST
 >> interactive.rstack STO
-
 

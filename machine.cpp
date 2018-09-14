@@ -5,6 +5,7 @@
 #include <sstream>
 #include <cassert>
 #include <memory>
+#include <unistd.h>
 #include "token.h"
 #include "object.h"
 #include "module.h"
@@ -355,6 +356,32 @@ void CLONE(Machine& machine)
 
     ObjectPtr optr = Clone(machine.stack_[machine.stack_.size()-1]);
     machine.push(optr);
+}
+
+void SETNS(Machine& machine)
+{
+    stack_required(machine, "SETNS", 1);
+    throw_required(machine, "SETNS", 0, OBJECT_STRING);
+
+    std::string s;
+    machine.pop(s);
+    machine.CreateModule(s);
+    machine.current_module_ = s;
+}
+
+void GETNS(Machine& machine)
+{
+    machine.push(machine.current_module_);
+}
+
+void CD(Machine& machine)
+{
+    stack_required(machine, "CD", 1);
+    throw_required(machine, "CD", 0, OBJECT_STRING);
+
+    std::string dir;
+    machine.pop(dir);
+    chdir(dir.c_str());
 }
 
 void throw_required(Machine& machine, const char *f, int level, ObjectType t)

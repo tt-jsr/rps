@@ -41,3 +41,6 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
 std::string ToStr(Machine&, ObjectPtr);
 int64_t ToInt(Machine&, ObjectPtr);
 std::string ToType(Machine&, ObjectPtr);
+
+
+void split(const std::string& str, std::vector<std::string>& out, const std::string& delim, bool bCollapse = false);

@@ -277,3 +277,30 @@ int64_t ToInt(Machine& machine, ObjectPtr optr)
     }
 }
 
+
+void split(const std::string& str, std::vector<std::string>& out, const std::string& delims, bool bCollapse)
+{
+    std::string s;
+    for (auto it = str.begin(); it != str.end(); ++it)
+    {
+        if (delims.find_first_of(*it) != std::string::npos)
+        {
+            out.push_back(s);
+            s = "";
+            if (bCollapse)
+            {
+                while (delims.find_first_of(*it) != std::string::npos)
+                    ++it;
+                --it;
+            }
+        }
+        else
+        {
+            s.push_back(*it);
+        }
+    }
+    if (s.size())
+    {
+        out.push_back(s);
+    }
+}

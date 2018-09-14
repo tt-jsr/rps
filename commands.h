@@ -104,15 +104,21 @@ void TOINT(Machine&);
 void TOSTR(Machine&);
 void TYPE(Machine&);
 
-/*
- * Misc commands
- */
+// Execution
 void EVAL(Machine&);
 void EVAL(Machine&, ObjectPtr);
 void CALL(Machine&);
-void MODULES(Machine&);
-void CLONE(Machine&);
 
+// Environment
+void MODULES(Machine&);
+void SETNS(Machine&);
+void GETNS(Machine&);
+void CD(Machine&);
+
+/*
+ * Misc commands
+ */
+void CLONE(Machine&);
 
 
 

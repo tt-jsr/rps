@@ -127,7 +127,7 @@ void SUBSTR(Machine& machine)
     machine.push(s);
 }
 
-// "str"  "str"  => int
+// "str" startpos "str to find"  => int
 void STRFIND(Machine& machine)
 {
     stack_required(machine, "FIND", 3);
@@ -164,7 +164,6 @@ void STRCMP(Machine& machine)
     machine.push(n);
 }
 
-// "str" "str" => [list]
 void SPLIT(Machine& machine)
 {
     stack_required(machine, "SPLIT", 2);

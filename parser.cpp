@@ -205,6 +205,12 @@ void GetToken(Source& src, Token& token)
 
 bool Parser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
 {
+    const char *rps_path = getenv("RPS_PATH");
+    std::vector<std::string> dirs;
+    dirs.push_back(".");
+    if (rps_path)
+        split(rps_path, dirs, ":");
+
 again:
     Token token;
     GetToken(src, token);
@@ -255,17 +261,21 @@ again:
     {
         if (token.value == "import")
         {
-            //std::cout << "=== importing " << std::endl;
             std::string filename;
             Token modulename;
             GetToken(src, modulename);
             std::ifstream ifs;
-            filename = modulename.value + ".rps";
-            ifs.open(filename);
+            for (auto& dir : dirs)
+            {
+                filename = dir + "/" + modulename.value + ".rps";
+                ifs.open(filename);
+                if (ifs.is_open())
+                    break;
+            }
             if (!ifs.is_open())
             {
                 std::stringstream strm;
-                strm << "import: cannot open " << filename;
+                strm << "import: cannot find " << modulename.value << ".rps";
                 throw std::runtime_error(strm.str());
             }
             Source srcImport(ifs);
@@ -406,6 +416,12 @@ again:
         // Environment
         else if (token.value == "MODULES")
             optr.reset(new Command(token.value, &MODULES));
+        else if (token.value == "SETNS")
+            optr.reset(new Command(token.value, &SETNS));
+        else if (token.value == "GETNS")
+            optr.reset(new Command(token.value, &GETNS));
+        else if (token.value == "CD")
+            optr.reset(new Command(token.value, &CD));
 
         // String
         else if (token.value == "FORMAT")
