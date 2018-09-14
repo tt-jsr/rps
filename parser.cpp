@@ -35,13 +35,22 @@ void CollectQuoted(Source& src, Token& token)
     {
         while (src.it != src.line.end())
         {
-            if (*src.it == '\"')
+            if (*src.it == '\\')
             {
                 ++src.it;
-                return;
+                token.value.push_back(*src.it);
             }
-            token.value.push_back(*src.it);
-            ++src.it;
+            else
+            {
+                if (*src.it == '\"')
+                {
+                    ++src.it;
+                    return;
+                }
+                token.value.push_back(*src.it);
+            }
+            if (src.it != src.line.end())
+                ++src.it;
         }
         src.Read();
     }
@@ -375,9 +384,9 @@ again:
             optr.reset(new Command(token.value, &FROMLIST));
         else if (token.value == "FROMMAP")
             optr.reset(new Command(token.value, &FROMMAP));
-        else if (token.value == "CREATE-LIST")
+        else if (token.value == "CREATELIST")
             optr.reset(new Command(token.value, &CREATELIST));
-        else if (token.value == "CREATE-MAP")
+        else if (token.value == "CREATEMAP")
             optr.reset(new Command(token.value, &CREATEMAP));
 
         // Functional

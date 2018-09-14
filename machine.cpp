@@ -13,8 +13,7 @@
 #include "utilities.h"
 
 Machine::Machine()
-: list_maxcount(20)
-, map_maxcount(20)
+: maxwidth(60)
 , debug(false) 
 {
 }

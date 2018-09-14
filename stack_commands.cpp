@@ -96,7 +96,9 @@ void VIEW(Machine& machine, size_t depth)
     int n = std::min(depth, machine.stack_.size() - 1);
     while(n >= 0)
     {
-        std::cout << n << ":" << ToStr(machine, machine.peek(n)) << std::endl;
+        std::stringstream strm;
+        ToStr(machine, machine.peek(n), strm, machine.maxwidth, true);
+        std::cout << n << ":" << strm.str() << std::endl;
         --n;
     }
 }

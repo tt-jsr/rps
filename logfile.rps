@@ -1,0 +1,7 @@
+<<
+"grep -b \"S T A R T\" %0" FORMAT PREAD
+SWAP DROP
+<< ":" SPLIT >>
+APPLY
+>> start STO
+

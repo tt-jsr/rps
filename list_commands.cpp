@@ -35,32 +35,27 @@ void APPEND(Machine& machine)
 // [list] int(idx) => obj
 void GET(Machine& machine)
 {
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("GET requires two arguments");
-    if (machine.peek(1)->type == OBJECT_LIST)
-    {
-        if (machine.peek(0)->type != OBJECT_INTEGER)
-            throw std::runtime_error("GET: requires Integer argument for List");
-        ListPtr lp;
-        int64_t idx;
+    stack_required(machine, "GET", 2);
+    throw_required(machine, "GET", 0, OBJECT_INTEGER);
+    throw_required(machine, "GET", 1, OBJECT_LIST);
 
-        machine.pop(idx);
-        machine.pop(lp);
-        if (idx < 0)
-        {
-            idx = lp->items.size() + idx;
-        }
-        if (idx < 0 || idx >= lp->items.size())
-        {
-            machine.push(lp);
-            machine.push(idx);
-            throw std::runtime_error("GET: Index out of range for List");
-        }
-        ObjectPtr p = lp->items[idx];
-        machine.push(p);
-        return;
+    ListPtr lp;
+    int64_t idx;
+
+    machine.pop(idx);
+    machine.pop(lp);
+    if (idx < 0)
+    {
+        idx = lp->items.size() + idx;
     }
-    throw std::runtime_error("GET: requires List argument");
+    if (idx < 0 || idx >= lp->items.size())
+    {
+        machine.push(lp);
+        throw std::runtime_error("GET: Index out of range for List");
+    }
+    ObjectPtr p = lp->items[idx];
+    machine.push(p);
+    return;
 }
 
 // {map} "str" => obj

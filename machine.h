@@ -29,8 +29,7 @@ public:
     void pop();
 
     // settings
-    size_t list_maxcount;
-    size_t map_maxcount;
+    size_t maxwidth;
     bool debug;
 };
 

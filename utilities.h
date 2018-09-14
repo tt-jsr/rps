@@ -37,6 +37,7 @@ ObjectPtr Clone(ObjectPtr);
 
 bool ToBool(Machine&, ObjectPtr);
 
+void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t maxwidth, bool view);
 std::string ToStr(Machine&, ObjectPtr);
 int64_t ToInt(Machine&, ObjectPtr);
 std::string ToType(Machine&, ObjectPtr);

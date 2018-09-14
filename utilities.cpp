@@ -88,112 +88,131 @@ ObjectPtr Clone(ObjectPtr optr)
     }
 }
 
-std::string ToStr(Machine& machine, ObjectPtr optr)
+void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, size_t maxwidth, bool view)
 {
+    if (strm.str().size() > maxwidth)
+    {
+        strm << "...";
+        return;
+    }
     switch (optr->type)
     {
     case OBJECT_STRING:
-        return ((String *)optr.get())->value;
+        if(view)
+            strm << "\"" << ((String *)optr.get())->value << "\"";
+        else
+            strm << ((String *)optr.get())->value;
+        break;
     case OBJECT_INTEGER:
-        return std::to_string(((Integer *)optr.get())->value);
+        strm << std::to_string(((Integer *)optr.get())->value);
+        break;
     case OBJECT_COMMAND:
-        return ((Command *)optr.get())->value;
+        strm << ((Command *)optr.get())->value;
+        break;
     case OBJECT_LIST:
         {
-            std::stringstream strm;
             List *lp = (List *)optr.get();
             strm << "[ ";
-            size_t max = std::min(lp->items.size(), machine.list_maxcount);
-            size_t count = 0;
-            for (auto it = lp->items.begin(); count < max; ++it)
+            for (auto it = lp->items.begin(); it != lp->items.end(); ++it)
             {
-                ++count;
-                strm << ToStr(machine, *it);
-                if (count < lp->items.size())
+                ToStr(machine, *it, strm, maxwidth, view);
+                if (strm.str().size() >= maxwidth)
+                {
+                    strm << "...";
+                    break;
+                }
+                if ((it+1) != lp->items.end())
                     strm << ", ";
             }
-            if (count < lp->items.size() )
-            {
-                strm << "...";
-            }
             strm << " ]";
-            return strm.str();
         }
         break;
     case OBJECT_MAP:
         {
-            std::stringstream strm;
             Map *mp = (Map *)optr.get();
             strm << "{ ";
-            size_t max = std::min(mp->items.size(), machine.list_maxcount);
-            size_t count = 0;
-            for (auto it = mp->items.begin(); count < max; ++it)
+            auto it = mp->items.begin();
+            ToStr(machine, it->first, strm, maxwidth, view);
+            strm << ":";
+            ToStr(machine, it->second, strm, maxwidth, view);
+            ++it;
+            for (; it != mp->items.end(); ++it)
             {
-                ++count;
-                std::string k = ToStr(machine, it->first);
-                std::string v = ToStr(machine, it->second);
-                strm << k << ":" << v;
-                if (count < mp->items.size())
-                    strm << ", ";
-            }
-            if (count < mp->items.size())
-            {
-                strm << "...";
+                strm << ", ";
+                ToStr(machine, it->first, strm, maxwidth, view);
+                strm << ":";
+                ToStr(machine, it->second, strm, maxwidth, view);
+                if (strm.str().size() >= maxwidth)
+                {
+                    strm << "...";
+                    break;
+                }
             }
             strm << " }";
-            return strm.str();
         }
         break;
     case OBJECT_PROGRAM:
         {
-            std::stringstream strm;
             Program *pp = (Program *)optr.get();
             strm << "<< ";
-            if (pp->program.size() < 30)
+            for (ObjectPtr& op : pp->program)
             {
-                for (ObjectPtr& op : pp->program)
+                ToStr(machine, op, strm, maxwidth, view);
+                strm << " ";
+                if (strm.str().size() >= maxwidth, view)
                 {
-                    strm << ToStr(machine, op) << " ";
+                    strm << "...";
+                    break;
                 }
             }
-            else
-            {
-                strm << "...";
-            }
             strm << " >>";
-            return strm.str();
         }
         break;
     case OBJECT_IF:
         {
-            std::stringstream strm;
+            If *pif = (If *)optr.get();
             strm << "IF";
-            return  strm.str();
+            for (ObjectPtr op : pif->cond)
+            {
+                ToStr(machine, op, strm, maxwidth, view);
+            }
+            strm << " THEN ";
+            for (ObjectPtr op : pif->then)
+                ToStr(machine, op, strm, maxwidth, view);
+            if (pif->els.size())
+            {
+                strm << " ELSE ";
+                for (ObjectPtr op : pif->els)
+                    ToStr(machine, op, strm, maxwidth, view);
+            }
         }
         break;
     case OBJECT_FOR:
         {
-            std::stringstream strm;
             strm << "FOR";
-            return  strm.str();
+            For *pfor = (For *)optr.get();
+            for (ObjectPtr op : pfor->program)
+                ToStr(machine, op, strm, maxwidth, view);
         }
         break;
     case OBJECT_WHILE:
         {
-            std::stringstream strm;
             strm << "WHILE";
-            return  strm.str();
+            While *pwhile = (While *)optr.get();
+            for (ObjectPtr op : pwhile->cond)
+                ToStr(machine, op, strm, maxwidth, view);
+            strm << " REPEAT ";
+            for (ObjectPtr op : pwhile->program)
+                ToStr(machine, op, strm, maxwidth, view);
         }
         break;
     case OBJECT_TOKEN:
         {
             if (optr->token == TOKEN_EOL)
-                return "<EOL>";
+                strm << "<EOL>";
             else
             {
-                std::stringstream strm;
                 strm << "TOKEN: " << optr->token;
-                return  strm.str();
             }
         }
         break;
@@ -203,6 +222,13 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
         throw std::runtime_error("ToStr: Unknown type");
         break;
     }
+}
+
+std::string ToStr(Machine& machine, ObjectPtr optr)
+{
+    std::stringstream strm;
+    ToStr(machine, optr, strm, machine.maxwidth, false);
+    return strm.str();
 }
 
 std::string ToType(Machine&, ObjectPtr optr)

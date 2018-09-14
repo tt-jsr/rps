@@ -74,13 +74,15 @@ void PREAD(Machine& machine)
        char buf[10240];
        for (int count = 0; count < limit && !feof(fp); ++count)
        {
-           fgets(buf, sizeof(buf), fp);
-           size_t l = strlen(buf);
-           if (buf[l-1] == '\n')
-               buf[l-1] = '\0';
-           StringPtr sp = MakeString();
-           sp->value = buf;
-           ret->items.push_back(sp);
+           if (fgets(buf, sizeof(buf), fp))
+           {
+               size_t l = strlen(buf);
+               if (buf[l-1] == '\n')
+                   buf[l-1] = '\0';
+               StringPtr sp = MakeString();
+               sp->value = buf;
+               ret->items.push_back(sp);
+           }
        }
        pclose(fp);
    }
