@@ -303,8 +303,9 @@ void EVAL(Machine& machine, ObjectPtr optr)
             {
                 std::unordered_map<std::string, ObjectPtr> locals;
 
-                Execute(machine, machine.current_program->program);
                 machine.current_program->pLocals = &locals;
+                Execute(machine, machine.current_program->program);
+                machine.current_program->pLocals = nullptr;
                 machine.current_module_ = prev_module;
                 machine.current_program = prev_program;
             }

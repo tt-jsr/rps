@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "object.h"
 #include "module.h"
 #include "machine.h"
@@ -456,6 +458,8 @@ again:
             optr.reset(new Command(token.value, &PREAD));
         else if (token.value == "PWRITE")
             optr.reset(new Command(token.value, &PWRITE));
+        else if (token.value == "FWRITE")
+            optr.reset(new Command(token.value, &FWRITE));
         else 
             optr.reset(new String(token.value));
     }
@@ -899,18 +903,36 @@ Source::Source(std::istream& is)
 
 void Source::Read()
 {
-    if (istrm.eof())
+    if (interactive)
     {
-        it = line.end();
-        return;
+        if (it == line.end())
+        {
+            char *pLine = readline(prompt.c_str());
+            add_history(pLine);
+            line = pLine;
+            free(pLine);
+            line += ";";
+            ++lineno;
+            it = line.begin();
+        }
     }
-    if (it == line.end())
+    else
     {
-        if (interactive)
-            std::cout << prompt << std::flush;
-        getline(istrm, line);
-        line += ";";
-        ++lineno;
-        it = line.begin();
+        if (istrm.eof())
+        {
+            it = line.end();
+            return;
+        }
+        if (it == line.end())
+        {
+            if (interactive)
+            {
+                std::cout << prompt << std::flush;
+            }
+            getline(istrm, line);
+            line += ";";
+            ++lineno;
+            it = line.begin();
+        }
     }
 }

@@ -5,15 +5,34 @@ class Machine;
 /*
  * Stack commands
  * */
+
+// Drop the TOS
+// obj =>
 void DROP(Machine& machine);
+// Drop n items from the stack
+// n => 
 void DROPN(Machine& machine);
+
+// Clear the stack
 void CLRSTK(Machine& machine);
+// Swap L0 and L1
+// obj1 obj2 => obj2 obj1
 void SWAP(Machine& machine);
+
+// obj => obj obj
 void DUP(Machine& machine);
+
+// Pick an item from the nth level of the stack
+// and copy to L0
+// int => obj
 void PICK(Machine&);
+
+// Remove nth item from stack and place at L0
 void ROLL(Machine&);
 void VIEW(Machine&);
 void VIEW(Machine&, size_t n);
+
+// push number of items on the stack
 void DEPTH(Machine&);
 
 /*
@@ -88,6 +107,7 @@ void PRINT(Machine&);
 void PROMPT(Machine&);
 void PREAD(Machine&);
 void PWRITE(Machine&);
+void FWRITE(Machine&);
 void SYSTEM(Machine&);
 
 // String commands

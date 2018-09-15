@@ -65,6 +65,7 @@ void STOL(Machine& machine)
 
     while (pp)
     {
+        assert(pp->pLocals);
         auto itVar = pp->pLocals->find(name);
         if (itVar != pp->pLocals->end())
         {

@@ -1,6 +1,8 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "object.h"
 #include "module.h"
 #include "machine.h"
@@ -16,6 +18,8 @@ int main(int argc, char *argv[])
     Source src(std::cin);
     src.interactive = true;
     src.prompt = "> ";
+
+    using_history();
     while (true)
     {
         try

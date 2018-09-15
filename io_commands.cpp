@@ -99,18 +99,12 @@ void PWRITE(Machine& machine)
    ObjectPtr data;
    std::string cmd;
 
-   machine.pop(data);
    machine.pop(cmd);
+   machine.pop(data);
 
    FILE *fp = popen(cmd.c_str(), "w");
    if (fp)
    {
-       if (data->type == OBJECT_STRING)
-       {
-           String *sp = (String *)data.get();
-           fputs(sp->value.c_str(), fp);
-           fputs("\n", fp);
-       }
        if (data->type == OBJECT_LIST)
        {
             List *lp = (List *)data.get();
@@ -121,7 +115,49 @@ void PWRITE(Machine& machine)
                 fputs("\n", fp);
             }
        }
+       else
+       {
+           String *sp = (String *)data.get();
+           fputs(sp->value.c_str(), fp);
+           fputs("\n", fp);
+       }
        pclose(fp);
+   }
+}
+
+// cmd [list] => 
+// cmd "str" => 
+void FWRITE(Machine& machine)
+{
+   stack_required(machine, "FWRITE", 2);
+
+   ObjectPtr data;
+   std::string file;
+
+   machine.pop(file);
+   machine.pop(data);
+
+   FILE *fp = fopen(file.c_str(), "w");
+   if (fp)
+   {
+       if (data->type == OBJECT_LIST)
+       {
+            List *lp = (List *)data.get();
+            for (ObjectPtr optr : lp->items)
+            {
+                std::string s = ToStr(machine, optr);
+                fputs(s.c_str(), fp);
+                fputs("\n", fp);
+            }
+       }
+       else
+       {
+           std::string s = ToStr(machine, data);
+           String *sp = (String *)data.get();
+           fputs(sp->value.c_str(), fp);
+           fputs("\n", fp);
+       }
+       fclose(fp);
    }
 }
 
