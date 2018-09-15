@@ -1,7 +1,7 @@
 <<
 "grep -b \"S T A R T\" %0" FORMAT PREAD
 SWAP DROP
-<< ":" SPLIT >>
+<< ":" "--1" SPLIT >>
 APPLY
 >> start STO
 

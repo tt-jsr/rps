@@ -10,7 +10,7 @@ GET
 CAT
 !
 >>
-interactive.less STO
+less STO
 
 #####################################################
 #Invoke vim on a filename list element
@@ -25,7 +25,7 @@ GET
 CAT
 !
 >>
-interactive.vim STO
+vim STO
 
 100 showwidth STO # default width for show
 
@@ -41,11 +41,11 @@ FOR
     DROP  # drop the FOR object
 ENDFOR
 lst RCLL
->> interactive.show STO
+>> show STO
 
 ################################
 << 
-    interactive.show CALL
+    show CALL
     "Enter => " PROMPT
     resp STOL
     IF 
@@ -59,7 +59,7 @@ lst RCLL
         DROP
     ENDIF
 ENDWHILE
->> interactive.lget STO
+>> lget STO
 
 ###############################################
 # Simple list based menu
@@ -71,7 +71,7 @@ WHILE
     0 GT
 REPEAT
     lst RCLL
-    interactive.lselect CALL
+    lselect CALL
     sel STOL
     IF 
         sel RCLL
@@ -85,7 +85,7 @@ REPEAT
         0 run STOL
     ENDIF
 ENDWHILE
->> interactive.menu STO
+>> menu STO
 
 #############################################
 # Save the current stack
@@ -94,16 +94,15 @@ name STOL
 DEPTH
 TOLIST
 name RCLL
-"interactive.%0" FORMAT
 SWAP DROP
 STO
->> interactive.sstack STO
+>> sstack STO
 
 #############################################
 # Restore saved stack
 <<
-"interactive.%0" FORMAT RCL
+RCL
 SWAP DROP
 FROMLIST
->> interactive.rstack STO
+>> rstack STO
 

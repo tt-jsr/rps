@@ -173,15 +173,25 @@ void SPLIT(Machine& machine)
     std::string str,  delims;
     ListPtr result = MakeList();
     bool bCollapse(false);
+    int max = 10000;
 
     machine.pop(delims);
-    if (delims == "--collapse")
+    while (strncmp(delims.c_str(), "--", 2) == 0)
     {
-        bCollapse = true;
-        machine.pop(delims);
+        if (isdigit(*(delims.c_str()+2)))
+        {
+            max = std::stol(delims.c_str()+2);
+            machine.pop(delims);
+        }
+        if (delims == "--collapse" )
+        {
+            bCollapse = true;
+            machine.pop(delims);
+        }
     }
     machine.pop(str);
     std::string s;
+    int nmatch = 0;
     for (auto it = str.begin(); it != str.end(); ++it)
     {
         if (delims.find_first_of(*it) != std::string::npos)
@@ -190,6 +200,15 @@ void SPLIT(Machine& machine)
             sp->value = s;
             result->items.push_back(sp);
             s = "";
+            ++nmatch;
+            if (nmatch == max)
+            {
+                StringPtr sp = MakeString();
+                ++it;
+                sp->value = &*it;
+                result->items.push_back(sp);
+                break;
+            }
             if (bCollapse)
             {
                 while (delims.find_first_of(*it) != std::string::npos)
