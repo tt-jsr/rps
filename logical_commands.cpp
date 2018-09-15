@@ -62,35 +62,35 @@ void LogicalInteger(Machine& machine, ObjectPtr olhs, ObjectPtr orhs, Operator o
 
 void LogicalString(Machine& machine, ObjectPtr olhs, ObjectPtr orhs, Operator oper)
 {
-    assert(olhs->type == OBJECT_INTEGER);
-    assert(orhs->type == OBJECT_INTEGER);
+    assert(olhs->type == OBJECT_STRING);
+    assert(orhs->type == OBJECT_STRING);
     StringPtr lhs = std::static_pointer_cast<String>(olhs);
     StringPtr rhs = std::static_pointer_cast<String>(orhs);
     switch (oper)
     {
     case OP_EQ:
-        machine.push(rhs->value == rhs->value ? 1 : 0);
+        machine.push(lhs->value == rhs->value ? 1 : 0);
         break;
     case OP_NEQ:
-        machine.push(rhs->value != rhs->value ? 1 : 0);
+        machine.push(lhs->value != rhs->value ? 1 : 0);
         break;
     case OP_LT:
-        machine.push(rhs->value < rhs->value ? 1 : 0);
+        machine.push(lhs->value < rhs->value ? 1 : 0);
         break;
     case OP_LTEQ:
-        machine.push(rhs->value <= rhs->value ? 1 : 0);
+        machine.push(lhs->value <= rhs->value ? 1 : 0);
         break;
     case OP_GT:
-        machine.push(rhs->value > rhs->value ? 1 : 0);
+        machine.push(lhs->value > rhs->value ? 1 : 0);
         break;
     case OP_GTEQ:
-        machine.push(rhs->value >= rhs->value ? 1 : 0);
+        machine.push(lhs->value >= rhs->value ? 1 : 0);
         break;
     case OP_AND:
-        machine.push(!rhs->value.empty() && !rhs->value.empty() ? 1 : 0);
+        machine.push(!lhs->value.empty() && !rhs->value.empty() ? 1 : 0);
         break;
     case OP_OR:
-        machine.push(!rhs->value.empty() || !rhs->value.empty() ? 1 : 0);
+        machine.push(!lhs->value.empty() || !rhs->value.empty() ? 1 : 0);
         break;
     default:
         assert(false);

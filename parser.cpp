@@ -438,6 +438,8 @@ again:
             optr.reset(new Command(token.value, &STRFIND));
         else if (token.value == "STRCMP")
             optr.reset(new Command(token.value, &STRCMP));
+        else if (token.value == "STRNCMP")
+            optr.reset(new Command(token.value, &STRNCMP));
         else if (token.value == "SPLIT")
             optr.reset(new Command(token.value, &SPLIT));
 

@@ -50,7 +50,7 @@ lst RCLL
     resp STOL
     IF 
         resp RCLL
-        "q" STRCMP 0 NEQ
+        "q"  NEQ
     THEN
         resp RCLL
         TOINT
@@ -75,7 +75,7 @@ REPEAT
     sel STOL
     IF 
         sel RCLL
-        "q" STRCMP 0 NEQ
+        "q" NEQ
     THEN
         sel RCLL
         prog RCLL

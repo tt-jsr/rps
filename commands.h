@@ -115,8 +115,31 @@ void FORMAT(Machine&);
 void CAT(Machine&);
 void JOIN(Machine&);
 void SUBSTR(Machine&);
+
+// Find a string
+// "str" startpos "str" => int
+// Returns position found, -1 if not found
 void STRFIND(Machine&);
+
+// Compare a string. Behaves as strcmp
+// "str" "str" => int
+// Returns <0 ==0 >0
 void STRCMP(Machine&);
+
+// Compare a string. Behaves as strncmp
+// "str" "str" length => int
+// Returns <0 ==0 >0
+void STRNCMP(Machine&);
+
+// Split a string into a list
+// "string" "delimiters" opts => [list]
+// string: The string to split
+// delims: String of character delimiters
+// opt: Optional modifiers
+//      --collapse: By default, each encountered delimiter will result
+//                  in a list item, possibly empty. --collapse willmodify
+//                  the result so that only non-empty list items are created
+//       --n:       Maximum number of splits to make
 void SPLIT(Machine&);
 
 // Types

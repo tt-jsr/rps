@@ -164,6 +164,24 @@ void STRCMP(Machine& machine)
     machine.push(n);
 }
 
+// "str" "str" length => int
+void STRNCMP(Machine& machine)
+{
+    stack_required(machine, "STRNCMP", 3);
+    throw_required(machine, "STRNCMP", 0, OBJECT_INTEGER);
+    throw_required(machine, "STRNCMP", 1, OBJECT_STRING);
+    throw_required(machine, "STRNCMP", 2, OBJECT_STRING);
+
+    std::string s1, s2;
+    int64_t length;
+    machine.pop(length);
+    machine.pop(s2);
+    machine.pop(s1);
+    
+    int64_t n = std::strncmp(s1.c_str(), s2.c_str(), length);
+    machine.push(n);
+}
+
 void SPLIT(Machine& machine)
 {
     stack_required(machine, "SPLIT", 2);
