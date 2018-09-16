@@ -99,6 +99,14 @@ void LogicalString(Machine& machine, ObjectPtr olhs, ObjectPtr orhs, Operator op
 
 void EQ(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "EQ: Compare for equality" << std::endl;
+        std::cout << "\"str1\" \"str2\" EQ => int" << std::endl;
+        std::cout << "int1 int2 EQ => int" << std::endl;
+        return;
+    }
+
     ObjectPtr lhs, rhs;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("EQ requires two arguments");
@@ -120,6 +128,14 @@ void EQ(Machine& machine)
 
 void NEQ(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "NEQ: Compare for not equal" << std::endl;
+        std::cout << "\"str1\" \"str2\" NEQ => int" << std::endl;
+        std::cout << "int1 int2 NEQ => int" << std::endl;
+        return;
+    }
+
     ObjectPtr lhs, rhs;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("NEQ requires two arguments");
@@ -141,6 +157,14 @@ void NEQ(Machine& machine)
 
 void LT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "LT: Compare for less than" << std::endl;
+        std::cout << "\"str1\" \"str2\" LT => int" << std::endl;
+        std::cout << "int1 int2 LT => int" << std::endl;
+        return;
+    }
+
     ObjectPtr lhs, rhs;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("LT requires two arguments");
@@ -162,6 +186,14 @@ void LT(Machine& machine)
 
 void LTEQ(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "LTEQ: Compare for less than or equal" << std::endl;
+        std::cout << "\"str1\" \"str2\" LTEQ => int" << std::endl;
+        std::cout << "int1 int2 LTEQ => int" << std::endl;
+        return;
+    }
+
     ObjectPtr lhs, rhs;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("LTEQ requires two arguments");
@@ -183,6 +215,14 @@ void LTEQ(Machine& machine)
 
 void GT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "GT: Compare for greater than" << std::endl;
+        std::cout << "\"str1\" \"str2\" GT => int" << std::endl;
+        std::cout << "int1 int2 GT => int" << std::endl;
+        return;
+    }
+
     ObjectPtr lhs, rhs;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("GT requires two arguments");
@@ -204,6 +244,14 @@ void GT(Machine& machine)
 
 void GTEQ(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "GTEQ: Compare for greater than or equal" << std::endl;
+        std::cout << "\"str1\" \"str2\" GTEQ => int" << std::endl;
+        std::cout << "int1 int2 GTEQ => int" << std::endl;
+        return;
+    }
+
     ObjectPtr lhs, rhs;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("GTEQ requires two arguments");
@@ -225,6 +273,14 @@ void GTEQ(Machine& machine)
 
 void AND(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "AND: Logical AND" << std::endl;
+        std::cout << "\"str1\" \"str2\" AND => int" << std::endl;
+        std::cout << "int1 int2 AND => int" << std::endl;
+        return;
+    }
+
     ObjectPtr lhs, rhs;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("AND requires two arguments");
@@ -246,6 +302,14 @@ void AND(Machine& machine)
 
 void OR(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "OR: Logical OR" << std::endl;
+        std::cout << "\"str1\" \"str2\" OR => int" << std::endl;
+        std::cout << "int1 int2 OR => int" << std::endl;
+        return;
+    }
+
     ObjectPtr lhs, rhs;
     if (machine.stack_.size() < 2)
         throw std::runtime_error("OR requires two arguments");

@@ -17,6 +17,12 @@
 // "str" =>
 void PRINT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "PRINT: Print the object at L0 according to the rules of TOSTR" << std::endl;
+        std::cout << "\"str\" => " << std::endl;
+        return;
+    }
     if (machine.stack_.size() < 1)
         throw std::runtime_error("PRINT: Requires object at L0");
 
@@ -29,6 +35,12 @@ void PRINT(Machine& machine)
 // "str" => "str"
 void PROMPT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "PROMPT: Prompt for user input" << std::endl;
+        std::cout << "\"prompt\" => \"response\"" << std::endl;
+        return;
+    }
     if (machine.stack_.size() < 1)
         throw std::runtime_error("PROMPT: Requires string at L0");
 
@@ -49,6 +61,12 @@ void PROMPT(Machine& machine)
 //   opt: "--limit=n"
 void PREAD(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "PREAD: Capture process output into a list" << std::endl;
+        std::cout << "\"command line\" PREAD => [dstlist]" << std::endl;
+        return;
+    }
    stack_required(machine, "PREAD", 1);
    throw_required(machine, "PREAD", 0, OBJECT_STRING);
 
@@ -94,6 +112,12 @@ void PREAD(Machine& machine)
 // cmd "str" => 
 void PWRITE(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "PWRITE: Write object at L1 to the commandline on L0" << std::endl;
+        std::cout << "\"obj\" \"command line\" PWRITE =>" << std::endl;
+        return;
+    }
    stack_required(machine, "PWRITE", 2);
 
    ObjectPtr data;
@@ -129,6 +153,13 @@ void PWRITE(Machine& machine)
 // cmd "str" => 
 void FWRITE(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "FWRITE: Write object at L1 to the file on L0" << std::endl;
+        std::cout << "\"obj\" \"filename\" FWRITE =>" << std::endl;
+        return;
+    }
+
    stack_required(machine, "FWRITE", 2);
 
    ObjectPtr data;
@@ -163,6 +194,13 @@ void FWRITE(Machine& machine)
 
 void SYSTEM(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "SYSTEM or !: Execute the command at L0" << std::endl;
+        std::cout << "No output is captured" << std::endl;
+        std::cout << "\"command line\" SYSTEM =>" << std::endl;
+        return;
+    }
     stack_required(machine, "SYSTEM", 1);
     throw_required(machine, "SYSTEM", 0, OBJECT_STRING);
     std::string cmd;

@@ -14,6 +14,15 @@
 // [list]   <<prog>>  =>  [list]
 void APPLY(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "APPLY: Apply a program to each item in a list" << std::endl;
+        std::cout << "[srclist] <<prog>> APPLY => [dstlist]" << std::endl;
+        std::cout << "srclist: List of items" << std::endl;
+        std::cout << "prog: Program to execute. The program will have a list item at L0" << std::endl;
+        std::cout << "      the program will return an object to be placedon the dstlist" << std::endl;
+        return;
+    }
     stack_required(machine, "APPLY", 2);
     throw_required(machine, "APPLY", 0, OBJECT_PROGRAM);
     throw_required(machine, "APPLY", 1, OBJECT_LIST);

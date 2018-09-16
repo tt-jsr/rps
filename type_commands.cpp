@@ -14,6 +14,13 @@
 // int  => int
 void TOINT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "TOINT: Convert to integer" << std::endl;
+        std::cout << "obj TOINT => int" << std::endl;
+        return;
+    }
+
     ObjectPtr optr;
     stack_required(machine, "TOINT", 1);
 
@@ -28,6 +35,13 @@ void TOINT(Machine& machine)
 // int  => "str"
 void TOSTR(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "TOSTR: Convert to string" << std::endl;
+        std::cout << "obj TOSTR => \"str\"" << std::endl;
+        return;
+    }
+
     ObjectPtr optr;
     stack_required(machine, "TOSTR", 1);
 
@@ -41,6 +55,13 @@ void TOSTR(Machine& machine)
 // obj => "str"
 void TYPE(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "TYPE: Pushes the type of object at L0" << std::endl;
+        std::cout << "obj TYPE => \"str\"" << std::endl;
+        return;
+    }
+
     ObjectPtr optr;
     stack_required(machine, "TYPE", 1);
 

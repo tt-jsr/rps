@@ -15,6 +15,14 @@
 // obj obj... "str" => "str"
 void FORMAT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "FORMAT: Format a string" << std::endl;
+        std::cout << "\"str\" FORMAT => \"str\"" << std::endl;
+        std::cout << "todo: Format description..." << std::endl;
+        return;
+    }
+
     stack_required(machine, "FORMAT", 1);
     throw_required(machine, "FORMAT", 0, OBJECT_STRING);
 
@@ -76,6 +84,13 @@ void FORMAT(Machine& machine)
 // "str" "str" => "str"
 void CAT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "CAT: Concatenate two strings" << std::endl;
+        std::cout << "\"str1\" \"str2\" CAT => \"str1str2\"" << std::endl;
+        return;
+    }
+
     stack_required(machine, "CAT", 2);
     throw_required(machine, "CAT", 0, OBJECT_STRING);
     throw_required(machine, "CAT", 1, OBJECT_STRING);
@@ -89,6 +104,14 @@ void CAT(Machine& machine)
 // [list]  "str" => "str"
 void JOIN(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "Join: Joins a list into a string" << std::endl;
+        std::cout << "[list] \"delim\" JOIN =>\"str\"" << std::endl;
+        std::cout << "delim: The string to join with" << std::endl;
+        return;
+    }
+
     stack_required(machine, "JOIN", 2);
     throw_required(machine, "JOIN", 1, OBJECT_LIST);
     throw_required(machine, "JOIN", 0, OBJECT_STRING);
@@ -113,6 +136,13 @@ void JOIN(Machine& machine)
 // if length < 0, the returned substr is strtpos to end of string
 void SUBSTR(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "SUBSTR: Push a substring" << std::endl;
+        std::cout << "\"str\" startpos length SUBSTR => \"str\"" << std::endl;
+        return;
+    }
+
     stack_required(machine, "SUBSTR", 3);
     throw_required(machine, "SUBSTR", 0, OBJECT_INTEGER);
     throw_required(machine, "SUBSTR", 1, OBJECT_INTEGER);
@@ -133,6 +163,14 @@ void SUBSTR(Machine& machine)
 // "str" startpos "str to find"  => int
 void STRFIND(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "STRFIND: Find a string" << std::endl;
+        std::cout << "\"str\" startpos \"str to find\" STRFIND => pos" << std::endl;
+        std::cout << "Pushes -1 if the string is not found" << std::endl;
+        return;
+    }
+
     stack_required(machine, "FIND", 3);
     throw_required(machine, "FIND", 0, OBJECT_STRING);
     throw_required(machine, "FIND", 1, OBJECT_INTEGER);
@@ -155,6 +193,14 @@ void STRFIND(Machine& machine)
 // "str" "str" => int
 void STRCMP(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "STRCMP: Compare two strings" << std::endl;
+        std::cout << "\"str1\" \"str2\" STRCMP => int" << std::endl;
+        std::cout << "Pushes <0, 0 or >0" << std::endl;
+        return;
+    }
+
     stack_required(machine, "STRCMP", 2);
     throw_required(machine, "STRCMP", 0, OBJECT_STRING);
     throw_required(machine, "STRCMP", 1, OBJECT_STRING);
@@ -170,6 +216,14 @@ void STRCMP(Machine& machine)
 // "str" "str" length => int
 void STRNCMP(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "STRNCMP: Compare two strings for the given length" << std::endl;
+        std::cout << "\"str1\" \"str2\" length STRNCMP => int" << std::endl;
+        std::cout << "Pushes <0, 0 or >0" << std::endl;
+        return;
+    }
+
     stack_required(machine, "STRNCMP", 3);
     throw_required(machine, "STRNCMP", 0, OBJECT_INTEGER);
     throw_required(machine, "STRNCMP", 1, OBJECT_STRING);
@@ -187,6 +241,17 @@ void STRNCMP(Machine& machine)
 
 void SPLIT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "SPLIT: Split a string" << std::endl;
+        std::cout << "\"str\" \"delim\" opts SPLIT => [list]" << std::endl;
+        std::cout << "delims: Set of delimiter chars to split with" << std::endl;
+        std::cout << "opts: Optional arguments" << std::endl;
+        std::cout << "     --collapse: Merge empty strings" << std::endl;
+        std::cout << "     --n: Max number of splits" << std::endl;
+        return;
+    }
+
     stack_required(machine, "SPLIT", 2);
     throw_required(machine, "SPLIT", 0, OBJECT_STRING); // delim
     throw_required(machine, "SPLIT", 1, OBJECT_STRING); // string to split

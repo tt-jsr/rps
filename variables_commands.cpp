@@ -27,6 +27,17 @@ ObjectPtr find_local(Machine& machine, const std::string& name)
 // obj "str" =>
 void STO(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "STO: Store object" << std::endl;
+        std::cout << "obj \"name\" STO =>" << std::endl;
+        std::cout << "obj \"namespace.name\" STO =>" << std::endl;
+        std::cout << "Store an object in the given variable name." << std::endl;
+        std::cout << "By default objects are stored in the current namespace which" << std::endl;
+        std::cout << "is usually the module name or set by SETNS" << std::endl;
+        return;
+    }
+
     std::string s;
     ObjectPtr optr;
     stack_required(machine, "STO", 2);
@@ -50,6 +61,17 @@ void STO(Machine& machine)
 // obj "str" =>
 void STOL(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "STOL: Store object into local storage" << std::endl;
+        std::cout << "obj \"name\" STOL =>" << std::endl;
+        std::cout << "Store an object in the given variable name in the local context." << std::endl;
+        std::cout << "Local variables are only available in the current program." << std::endl;
+        std::cout << "Programs defined within a program have access to local variables of the" << std::endl;
+        std::cout << "enclosing program" << std::endl;
+        return;
+    }
+
     std::string name;
     ObjectPtr optr;
     stack_required(machine, "STOL", 2);
@@ -111,6 +133,17 @@ void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
 // "str" => obj
 void RCL(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "RCL: Recall object" << std::endl;
+        std::cout << "\"name\" RCL => obj" << std::endl;
+        std::cout << "\"namespace.name\" RCL => obj" << std::endl;
+        std::cout << "Recall an object from the given variable name." << std::endl;
+        std::cout << "By default objects are recalled from the current namespace which" << std::endl;
+        std::cout << "is usually the module name or set by SETNS" << std::endl;
+        return;
+    }
+
     std::string s;
     stack_required(machine, "RCL", 1);
     throw_required(machine, "RCL", 0, OBJECT_STRING);
@@ -124,6 +157,15 @@ void RCL(Machine& machine)
 // "str" => obj
 void RCLL(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "RCLL: Recall a local object" << std::endl;
+        std::cout << "\"name\" RCLL =>" << std::endl;
+        std::cout << "Local variables can be recalled from the current program" << std::endl;
+        std::cout << "or local variables of enclosing programs" << std::endl;
+        return;
+    }
+
     stack_required(machine, "RCLL", 1);
     throw_required(machine, "RCLL", 0, OBJECT_STRING);
 
@@ -161,6 +203,13 @@ void RCLL(Machine& machine, const std::string& name, ObjectPtr& out)
 // "str" => [list]
 void VARNAMES(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "VARNAMES: List variables" << std::endl;
+        std::cout << "\"namespace\" VARNAMES => [list]" << std::endl;
+        return;
+    }
+
     stack_required(machine, "VARNAMES", 1);
     throw_required(machine, "VARNAMES", 0, OBJECT_STRING);
     std::string modname;
@@ -187,6 +236,13 @@ void VARNAMES(Machine& machine)
 // "str" => [list]
 void VARTYPES(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "VARTYPES: List variable types" << std::endl;
+        std::cout << "\"namespace\" VARTYPES => [list]" << std::endl;
+        return;
+    }
+
     stack_required(machine, "VARTYPES", 1);
     throw_required(machine, "VARTYPES", 0, OBJECT_STRING);
 

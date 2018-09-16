@@ -815,7 +815,7 @@ Parser::Parser(Machine& machine)
     AddCommand(machine, "CALL", &CALL);
 
     // Environment
-    AddCommand(machine, "MODULES", &MODULES);
+    AddCommand(machine, "NAMESPACES", &NAMESPACES);
     AddCommand(machine, "SETNS", &SETNS);
     AddCommand(machine, "GETNS", &GETNS);
     AddCommand(machine, "CD", &CD);

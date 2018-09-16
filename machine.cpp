@@ -330,6 +330,12 @@ void EVAL(Machine& machine, ObjectPtr optr)
 
 void EVAL(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "EVAL: Evaluate an object" << std::endl;
+        std::cout << "obj EVAL => ..." << std::endl;
+        return;
+    }
     ObjectPtr optr;
     machine.pop(optr);
     EVAL(machine, optr);
@@ -337,12 +343,25 @@ void EVAL(Machine& machine)
 
 void CALL(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "CALL: Call a program" << std::endl;
+        std::cout << "\"name\" CALL => ..." << std::endl;
+        std::cout << "Equivilent to name RCL EVAL" << std::endl;
+        return;
+    }
     RCL(machine);
     EVAL(machine);
 }
 
-void MODULES(Machine& machine)
+void NAMESPACES(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "NAMESPACES: List namespaces" << std::endl;
+        std::cout << "NAMESPACES => [list]" << std::endl;
+        return;
+    }
     ListPtr lp = MakeList();
     for (auto& pr : machine.modules_)
     {
@@ -355,8 +374,13 @@ void MODULES(Machine& machine)
 
 void CLONE(Machine& machine)
 {
-    if (machine.stack_.size() < 1)
-        throw std::runtime_error("CLONE: Requires item on stack");
+    if (machine.help)
+    {
+        std::cout << "CLONE: Clone the object at L0" << std::endl;
+        std::cout << "obj CLONE => obj" << std::endl;
+        return;
+    }
+    stack_required(machine, "CLONE", 1);
 
     ObjectPtr optr = Clone(machine.stack_[machine.stack_.size()-1]);
     machine.push(optr);
@@ -364,6 +388,12 @@ void CLONE(Machine& machine)
 
 void SETNS(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "SETNS: Create or change namespace" << std::endl;
+        std::cout << "\"namespace\" SETNS =>" << std::endl;
+        return;
+    }
     stack_required(machine, "SETNS", 1);
     throw_required(machine, "SETNS", 0, OBJECT_STRING);
 
@@ -374,12 +404,24 @@ void SETNS(Machine& machine)
 }
 
 void GETNS(Machine& machine)
-{
+{ 
+    if (machine.help)
+    {
+        std::cout << "GETNS: Push current namespace" << std::endl;
+        std::cout << "GETNS => \"namespace\"" << std::endl;
+        return;
+    }
     machine.push(machine.current_module_);
 }
 
 void CD(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "CD: Change current dir" << std::endl;
+        std::cout << "\"dir\" CD =>" << std::endl;
+        return;
+    }
     stack_required(machine, "CD", 1);
     throw_required(machine, "CD", 0, OBJECT_STRING);
 
@@ -390,15 +432,74 @@ void CD(Machine& machine)
 
 void HELP(Machine& machine)
 {
-    std::cout << "Command: " << std::flush;
-    std::string cmd;
-    std::getline(std::cin, cmd);
-    auto it = machine.commands.find(cmd);
-    if (it != machine.commands.end())
+    if (machine.help)
     {
-        machine.help = true;
-        (*it->second->funcptr)(machine);
-        machine.help = false;
+        std::cout << "HELP: HELP system" << std::endl;
+        std::cout << "HELP =>" << std::endl;
+        return;
+    }
+    while (true)
+    {
+        std::cout << "Stack commands" << std::endl;
+        std::cout << "   DROP DROPN CLRSTK SWAP DUP PICK ROLL VIEW DEPTH" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Math commands" << std::endl;
+        std::cout << "   ADD SUB MUL DIV INC DEC" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Variable management" << std::endl;
+        std::cout << "   STO RCL STOL RCLL VARNAMES VARTYPES" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Controlcommands" << std::endl;
+        std::cout << "   IFT IFTE TRYCATCH " << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Logical operators" << std::endl;
+        std::cout << "   EQ NEQ LT LTEQ GT GTEQ NOT AND OR" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "List commands" << std::endl;
+        std::cout << "   APPEND GET LIST-INSERT ERASE CLEAR SIZE FIRST SECOND TOLIST FROMLIST CREATELIST " << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Map commands" << std::endl;
+        std::cout << "   FIND MAP-INSERT ERASE CLEAR SIZE TOMAP FROMMAP CREATEMAP" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Functional commands" << std::endl;
+        std::cout << "   APPLY SELECT" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "IO commands" << std::endl;
+        std::cout << "   PRINT PROMPT PREAD PWRITE FWRITE " << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "String commands" << std::endl;
+        std::cout << "   FORMAT CAT JOIN SUBSTR STRFIND STRCMP STRNCMP SPLIT SIZE CLEAR" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Type commands" << std::endl;
+        std::cout << "   TOINT TOSTR TYPE " << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Executioncommands" << std::endl;
+        std::cout << "   EVAL CALL" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Environment" << std::endl;
+        std::cout << "   NAMESPACES SETNS GETNS CD HELP SYSTEM" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Misc commands" << std::endl;
+        std::cout << "   CLONE" << std::endl;
+        std::cout << "Command: " << std::flush;
+        std::string cmd;
+        std::getline(std::cin, cmd);
+        if (cmd == "q")
+            return;
+        auto it = machine.commands.find(cmd);
+        if (it != machine.commands.end())
+        {
+            machine.help = true;
+            std::cout << std::endl;
+            (*it->second->funcptr)(machine);
+            std::cout << std::endl;
+            machine.help = false;
+            std::getline(std::cin, cmd);
+        }
+        else
+        {
+            std::cout << "Help not found for " << cmd << std::endl;
+        }
     }
 }
 

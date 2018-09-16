@@ -14,6 +14,13 @@
 // obj =>
 void DROP(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "DROP: Pop the item at L0" << std::endl;
+        std::cout << "obj DROP => " << std::endl;
+        return;
+    }
+
     if (machine.stack_.empty())
         throw std::runtime_error("stack underflow");
     machine.stack_.pop_back();
@@ -22,6 +29,13 @@ void DROP(Machine& machine)
 // obj, obj... int =>
 void DROPN(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "DROPN: Pop n items from the stack" << std::endl;
+        std::cout << "obj1 obj2 obj3... nitems DROPN =>" << std::endl;
+        return;
+    }
+
     int64_t n;
     machine.pop(n);
     if (machine.stack_.size() < n)
@@ -33,6 +47,13 @@ void DROPN(Machine& machine)
 // obj1 obj0 => obj0 obj1
 void SWAP(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "SWAP: Swap the rop two objects on the stack" << std::endl;
+        std::cout << "obj1 obj2 SWAP => obj2 obj1" << std::endl;
+        return;
+    }
+
     if (machine.stack_.size() < 2)
         throw std::runtime_error("stack underflow");
     ObjectPtr o1, o2;
@@ -45,12 +66,26 @@ void SWAP(Machine& machine)
 // obj => obj obj
 void DUP(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "DUP: Duplicate the toptwo objects on the stack" << std::endl;
+        std::cout << "obj DUP => obj obj" << std::endl;
+        return;
+    }
+
     ObjectPtr optr = machine.peek(0);
     machine.push(optr);
 }
 
 void PICK(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "PICK: Copy the nth item from the stack and copy to L0" << std::endl;
+        std::cout << "obj1 obj2 level PICK => obj" << std::endl;
+        return;
+    }
+
     int64_t level;
     machine.pop(level);
 
@@ -70,6 +105,13 @@ void PICK(Machine& machine)
 
 void ROLL(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "ROLL: Move the nth item from the stack to L0" << std::endl;
+        std::cout << "obj1 obj2... nitem ROLL => obj" << std::endl;
+        return;
+    }
+
     int64_t level;
     machine.pop(level);
 
@@ -107,16 +149,37 @@ void VIEW(Machine& machine, size_t depth)
 
 void VIEW(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "VIEW: View the items in the stack" << std::endl;
+        std::cout << "obj1 obj2... VIEW => obj1 obj2..." << std::endl;
+        return;
+    }
+
     VIEW(machine, 20);
 }
 
 void CLRSTK(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "CLRSTK: Clear the stack" << std::endl;
+        std::cout << "obj1 obj2 obj3... CLRSTK =>" << std::endl;
+        return;
+    }
+
     machine.stack_.clear();
 }
 
 void DEPTH(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "DEPTH: Pushes the number of items on the stack" << std::endl;
+        std::cout << "obj1 obj2 ob3... DEPTH => obj1 obj2 obj3... int" << std::endl;
+        return;
+    }
+
     machine.push(machine.stack_.size());
 }
 

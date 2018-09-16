@@ -12,6 +12,12 @@
 
 void IFT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "Help not available" << std::endl;
+        return;
+    }
+
     if (machine.stack_.size() < 2)
         throw std::runtime_error("IFT: stack underflow");
     ObjectPtr cond;
@@ -36,6 +42,12 @@ void IFT(Machine& machine)
 
 void IFTE(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "Help not available" << std::endl;
+        return;
+    }
+
     if (machine.stack_.size() < 3)
         throw std::runtime_error("IFTE: stack underflow");
     ObjectPtr cond;
@@ -64,6 +76,12 @@ void IFTE(Machine& machine)
 
 void TRYCATCH(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "Help not available" << std::endl;
+        return;
+    }
+
     if (machine.stack_.size() < 2)
         throw std::runtime_error("TRYCATCH: stack underflow");
     ObjectPtr try_;
