@@ -16,6 +16,7 @@
 Machine::Machine()
 : maxwidth(120)
 , debug(false) 
+, help(false)
 {
 }
 
@@ -385,6 +386,20 @@ void CD(Machine& machine)
     std::string dir;
     machine.pop(dir);
     chdir(dir.c_str());
+}
+
+void HELP(Machine& machine)
+{
+    std::cout << "Command: " << std::flush;
+    std::string cmd;
+    std::getline(std::cin, cmd);
+    auto it = machine.commands.find(cmd);
+    if (it != machine.commands.end())
+    {
+        machine.help = true;
+        (*it->second->funcptr)(machine);
+        machine.help = false;
+    }
 }
 
 void throw_required(Machine& machine, const char *f, int level, ObjectType t)

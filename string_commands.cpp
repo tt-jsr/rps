@@ -110,6 +110,7 @@ void JOIN(Machine& machine)
 }
 
 // "str" startpos length => "str"
+// if length < 0, the returned substr is strtpos to end of string
 void SUBSTR(Machine& machine)
 {
     stack_required(machine, "SUBSTR", 3);
@@ -122,9 +123,11 @@ void SUBSTR(Machine& machine)
     machine.pop(length);
     machine.pop(startpos);
     machine.pop(str);
-
-    std::string s = str.substr(startpos, length);
-    machine.push(s);
+    if (length < 0)
+        str = str.substr(startpos);
+    else
+        str = str.substr(startpos, length);
+    machine.push(str);
 }
 
 // "str" startpos "str to find"  => int

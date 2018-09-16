@@ -1,3 +1,5 @@
+###################################################
+# Retruns a list of all "S T A R T" lines
 <<
 "grep -b \"S T A R T\" %0" FORMAT PREAD
 SWAP DROP
@@ -5,6 +7,8 @@ SWAP DROP
 APPLY
 >> start STO
 
+###################################################
+# Retuns a "dd" command for reading a section of a logfile
 # filename startbyte endbyte => ddcommand
 <<
 TOINT 512 DIV endblock STOL
@@ -21,3 +25,29 @@ ELSE
     "dd if=%filename skip=%startblock " FORMAT
 ENDIF
 >> section STO
+
+######################################################
+# Get a field from a protobuf
+# protobuf fiedname => value
+<<
+"=" CAT
+field STOL  # store fieldname=
+pb STOL     # store the pb
+pb RCLL     # pb
+0           # pb 0
+field RCLL  # pb 0 fieldname=
+STRFIND     # pos (the position of fieldname=)
+field RCLL  # pos fieldname=
+SIZE        # pos size_of_fieldname=
+ADD         # startpos of value
+DUP startpos STOL 
+pb RCLL     # startpos_of_value pb
+SWAP        # pb startpos_of_value
+" " STRFIND # endpos of value (we searched for the next space)
+endpos STOL 
+pb RCLL     # pb
+startpos RCLL  # pb startpos
+endpos RCLL startpos RCLL SUB  #  pb startpos length(startpos-endpos)
+SUBSTR          # the value
+>> getfield STO
+

@@ -157,6 +157,7 @@ void MODULES(Machine&);
 void SETNS(Machine&);
 void GETNS(Machine&);
 void CD(Machine&);
+void HELP(Machine&);
 
 /*
  * Misc commands

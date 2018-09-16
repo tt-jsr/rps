@@ -48,5 +48,6 @@ void TYPE(Machine& machine)
     StringPtr sp = MakeString();
     sp->value = ToType(machine, optr);
     optr = sp;
+    machine.push(optr);
 }
 

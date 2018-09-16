@@ -11,7 +11,7 @@
 int main(int argc, char *argv[])
 {
     Machine machine;
-    Parser parser;
+    Parser parser(machine);
 
     machine.current_module_ = "interactive";
     machine.CreateModule("interactive");

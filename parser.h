@@ -4,6 +4,7 @@ struct Source
 {
     Source(std::istream& is);
     void Read();
+    bool iseof();
     std::string line;
     std::string::iterator it;
     std::istream& istrm;
@@ -15,6 +16,8 @@ struct Source
 class Parser
 {
 public:
+    Parser(Machine&);
+    void AddCommand(Machine&, const char *name, void (*funcptr)(Machine&));
     // false at EOL and no data has been read
     bool GetObject(Machine&, Source&, ObjectPtr& optr);
     void Parse(Machine& machine, Source&);

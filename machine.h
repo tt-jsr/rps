@@ -2,6 +2,9 @@
 #include <unordered_map>
 #include <vector>
 
+class Command;
+typedef std::shared_ptr<Command> CommandPtr;
+
 class Machine
 {
 public:
@@ -31,6 +34,8 @@ public:
     // settings
     size_t maxwidth;
     bool debug;
+    bool help;
+    std::unordered_map<std::string, CommandPtr> commands;
 };
 
 

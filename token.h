@@ -26,6 +26,7 @@ enum TokenType
     , TOKEN_SYSTEM
     , TOKEN_EOL
     , TOKEN_EXIT
+    , TOKEN_EOF
 };
 
 struct Token

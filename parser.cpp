@@ -111,6 +111,11 @@ void GetToken(Source& src, Token& token)
 {
     token.value.clear();
     SkipWhitespace(src);
+    if(src.iseof())
+    {
+        token.token = TOKEN_EOF;
+        return;
+    }
     if (*src.it == '!')
     {
         token.value.push_back(*src.it);
@@ -215,10 +220,19 @@ bool Parser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
 
 again:
     Token token;
-    GetToken(src, token);
-    if (token.value.empty() && (src.it == src.line.end()))
+    do {
+        GetToken(src, token);
+    } while (token.token == TOKEN_COMMENT);
+    if (token.token == TOKEN_EOF)
         return false;
     //std::cout << "===GetObject: " << token.token << ":\"" << token.value << "\"" << std::endl;
+
+    auto it = machine.commands.find(token.value);
+    if (it != machine.commands.end())
+    {
+        optr = it->second;
+        return true;
+    }
 
     if (token.token == TOKEN_INTEGER)
         optr.reset(new Integer(strtol(token.value.c_str(), nullptr, 10)));
@@ -288,181 +302,7 @@ again:
             machine.current_module_ = modname;
             goto again;
         }
-        // Stack commands
-        else if (token.value == "CLRSTK")
-            optr.reset(new Command(token.value, &CLRSTK));
-        else if (token.value == "DROP")
-            optr.reset(new Command(token.value, &DROP));
-        else if (token.value == "DROPN")
-            optr.reset(new Command(token.value, &DROPN));
-        else if (token.value == "SWAP")
-            optr.reset(new Command(token.value, &SWAP));
-        else if (token.value == "DUP")
-            optr.reset(new Command(token.value, &DUP));
-        else if (token.value == "PICK")
-            optr.reset(new Command(token.value, &PICK));
-        else if (token.value == "ROLL")
-            optr.reset(new Command(token.value, &ROLL));
-        else if (token.value == "DEPTH")
-            optr.reset(new Command(token.value, &DEPTH));
-        else if (token.value == "VIEW")
-        {
-            optr.reset(new Command(token.value, &VIEW));
-            optr->bSuppressInteractivePrint = true;
-        }
-        else if (token.value == "CLONE")
-            optr.reset(new Command (token.value, &CLONE));
-
-        // Logical operators
-        else if (token.value == "EQ")
-            optr.reset(new Command(token.value, &EQ));
-        else if (token.value == "NEQ")
-            optr.reset(new Command(token.value, &NEQ));
-        else if (token.value == "LT")
-            optr.reset(new Command(token.value, &LT));
-        else if (token.value == "LTEQ")
-            optr.reset(new Command(token.value, &LTEQ));
-        else if (token.value == "GT")
-            optr.reset(new Command(token.value, &GT));
-        else if (token.value == "GTEQ")
-            optr.reset(new Command(token.value, &GTEQ));
-        else if (token.value == "AND")
-            optr.reset(new Command(token.value, &AND));
-        else if (token.value == "OR")
-            optr.reset(new Command(token.value, &OR));
-
-        // Variable commands
-        else if (token.value == "STO")
-            optr.reset(new Command(token.value, &STO));
-        else if (token.value == "RCL")
-            optr.reset(new Command(token.value, &RCL));
-        else if (token.value == "STOL")
-            optr.reset(new Command(token.value, &STOL));
-        else if (token.value == "RCLL")
-            optr.reset(new Command(token.value, &RCLL));
-        else if (token.value == "VARNAMES")
-            optr.reset(new Command(token.value, &VARNAMES));
-        else if (token.value == "VARTYPES")
-            optr.reset(new Command(token.value, &VARTYPES));
-
-        // Math commands
-        else if (token.value == "ADD")
-            optr.reset(new Command(token.value, &ADD));
-        else if (token.value == "SUB")
-            optr.reset(new Command(token.value, &SUB));
-        else if (token.value == "MUL")
-            optr.reset(new Command(token.value, &MUL));
-        else if (token.value == "DIV")
-            optr.reset(new Command(token.value, &DIV));
-        else if (token.value == "INC")
-            optr.reset(new Command(token.value, &INC));
-        else if (token.value == "DEC")
-            optr.reset(new Command(token.value, &DEC));
-
-        // Control commands
-        else if (token.value == "IFT")
-            optr.reset(new Command(token.value, &IFT));
-        else if (token.value == "IFTE")
-            optr.reset(new Command(token.value, &IFTE));
-        else if (token.value == "TRYCATCH")
-            optr.reset(new Command(token.value, &TRYCATCH));
-
-        // List commands
-        else if (token.value == "GET")
-            optr.reset(new Command(token.value, &GET));
-        else if (token.value == "APPEND")
-            optr.reset(new Command(token.value, &APPEND));
-        else if (token.value == "ERASE")
-            optr.reset(new Command(token.value, &ERASE));
-        else if (token.value == "CLEAR")
-            optr.reset(new Command(token.value, &CLEAR));
-        else if (token.value == "LIST-INSERT")
-            optr.reset(new Command(token.value, &LIST_INSERT));
-        else if (token.value == "MAP-INSERT")
-            optr.reset(new Command(token.value, &MAP_INSERT));
-        else if (token.value == "INSERT")
-            optr.reset(new Command(token.value, &INSERT));
-        else if (token.value == "SIZE")
-            optr.reset(new Command(token.value, &SIZE));
-        else if (token.value == "FIND")
-            optr.reset(new Command(token.value, &FIND));
-        else if (token.value == "FIRST")
-            optr.reset(new Command(token.value, &FIRST));
-        else if (token.value == "SECOND")
-            optr.reset(new Command(token.value, &SECOND));
-        else if (token.value == "TOLIST")
-            optr.reset(new Command(token.value, &TOLIST));
-        else if (token.value == "TOMAP")
-            optr.reset(new Command(token.value, &TOMAP));
-        else if (token.value == "FROMLIST")
-            optr.reset(new Command(token.value, &FROMLIST));
-        else if (token.value == "FROMMAP")
-            optr.reset(new Command(token.value, &FROMMAP));
-        else if (token.value == "CREATELIST")
-            optr.reset(new Command(token.value, &CREATELIST));
-        else if (token.value == "CREATEMAP")
-            optr.reset(new Command(token.value, &CREATEMAP));
-
-        // Functional
-        else if (token.value == "APPLY")
-            optr.reset(new Command(token.value, &APPLY));
-        else if (token.value == "SELECT")
-            optr.reset(new Command(token.value, &SELECT));
-
-        // Execution commands
-        else if (token.value == "EVAL")
-            optr.reset(new Command(token.value, &EVAL));
-        else if (token.value == "CALL")
-            optr.reset(new Command(token.value, &CALL));
-
-        // Environment
-        else if (token.value == "MODULES")
-            optr.reset(new Command(token.value, &MODULES));
-        else if (token.value == "SETNS")
-            optr.reset(new Command(token.value, &SETNS));
-        else if (token.value == "GETNS")
-            optr.reset(new Command(token.value, &GETNS));
-        else if (token.value == "CD")
-            optr.reset(new Command(token.value, &CD));
-
-        // String
-        else if (token.value == "FORMAT")
-            optr.reset(new Command(token.value, &FORMAT));
-        else if (token.value == "CAT")
-            optr.reset(new Command(token.value, &CAT));
-        else if (token.value == "JOIN")
-            optr.reset(new Command(token.value, &JOIN));
-        else if (token.value == "SUBSTR")
-            optr.reset(new Command(token.value, &SUBSTR));
-        else if (token.value == "STRFIND")
-            optr.reset(new Command(token.value, &STRFIND));
-        else if (token.value == "STRCMP")
-            optr.reset(new Command(token.value, &STRCMP));
-        else if (token.value == "STRNCMP")
-            optr.reset(new Command(token.value, &STRNCMP));
-        else if (token.value == "SPLIT")
-            optr.reset(new Command(token.value, &SPLIT));
-
-        // Types
-        else if (token.value == "TOINT")
-            optr.reset(new Command(token.value, &TOINT));
-        else if (token.value == "TOSTR")
-            optr.reset(new Command(token.value, &TOSTR));
-        else if (token.value == "TYPE")
-            optr.reset(new Command(token.value, &TYPE));
-
-        // IO
-        else if (token.value == "PRINT")
-            optr.reset(new Command(token.value, &PRINT));
-        else if (token.value == "PROMPT")
-            optr.reset(new Command(token.value, &PROMPT));
-        else if (token.value == "PREAD")
-            optr.reset(new Command(token.value, &PREAD));
-        else if (token.value == "PWRITE")
-            optr.reset(new Command(token.value, &PWRITE));
-        else if (token.value == "FWRITE")
-            optr.reset(new Command(token.value, &FWRITE));
-        else 
+        else
             optr.reset(new String(token.value));
     }
 
@@ -894,6 +734,116 @@ void Parser::Parse(Machine& machine, Source& src)
     }
 }
 
+void Parser::AddCommand(Machine& machine, const char *name, void (*funcptr)(Machine&))
+{
+    CommandPtr cp;
+    cp.reset(new Command(name, funcptr));
+    machine.commands.emplace(name, cp);
+}
+
+Parser::Parser(Machine& machine)
+{
+    AddCommand(machine, "SELECT", &SELECT);
+    // Stack commands
+    AddCommand(machine, "CLRSTK", &CLRSTK);
+    AddCommand(machine, "DROP", &DROP);
+    AddCommand(machine, "DROPN", &DROPN);
+    AddCommand(machine, "SWAP", &SWAP);
+    AddCommand(machine, "DUP", &DUP);
+    AddCommand(machine, "PICK", &PICK);
+    AddCommand(machine, "ROLL", &ROLL);
+    AddCommand(machine, "DEPTH", &DEPTH);
+    AddCommand(machine, "VIEW", &VIEW);
+    AddCommand(machine, "CLONE",  &CLONE);
+
+    // Logical operators
+    AddCommand(machine, "EQ", &EQ);
+    AddCommand(machine, "NEQ", &NEQ);
+    AddCommand(machine, "LT", &LT);
+    AddCommand(machine, "LTEQ", &LTEQ);
+    AddCommand(machine, "GT", &GT);
+    AddCommand(machine, "GTEQ", &GTEQ);
+    AddCommand(machine, "AND", &AND);
+    AddCommand(machine, "OR", &OR);
+
+    // Variable commands
+    AddCommand(machine, "STO", &STO);
+    AddCommand(machine, "RCL", &RCL);
+    AddCommand(machine, "STOL", &STOL);
+    AddCommand(machine, "RCLL", &RCLL);
+    AddCommand(machine, "VARNAMES", &VARNAMES);
+    AddCommand(machine, "VARTYPES", &VARTYPES);
+
+    // Math commands
+    AddCommand(machine, "ADD", &ADD);
+    AddCommand(machine, "SUB", &SUB);
+    AddCommand(machine, "MUL", &MUL);
+    AddCommand(machine, "DIV", &DIV);
+    AddCommand(machine, "INC", &INC);
+    AddCommand(machine, "DEC", &DEC);
+
+    // Control commands
+    AddCommand(machine, "IFT", &IFT);
+    AddCommand(machine, "IFTE", &IFTE);
+    AddCommand(machine, "TRYCATCH", &TRYCATCH);
+
+    // List commands
+    AddCommand(machine, "GET", &GET);
+    AddCommand(machine, "APPEND", &APPEND);
+    AddCommand(machine, "ERASE", &ERASE);
+    AddCommand(machine, "CLEAR", &CLEAR);
+    AddCommand(machine, "LIST-INSERT", &LIST_INSERT);
+    AddCommand(machine, "MAP-INSERT", &MAP_INSERT);
+    AddCommand(machine, "INSERT", &INSERT);
+    AddCommand(machine, "SIZE", &SIZE);
+    AddCommand(machine, "FIND", &FIND);
+    AddCommand(machine, "FIRST", &FIRST);
+    AddCommand(machine, "SECOND", &SECOND);
+    AddCommand(machine, "TOLIST", &TOLIST);
+    AddCommand(machine, "TOMAP", &TOMAP);
+    AddCommand(machine, "FROMLIST", &FROMLIST);
+    AddCommand(machine, "FROMMAP", &FROMMAP);
+    AddCommand(machine, "CREATELIST", &CREATELIST);
+    AddCommand(machine, "CREATEMAP", &CREATEMAP);
+
+    // Functional
+    AddCommand(machine, "APPLY", &APPLY);
+    AddCommand(machine, "SELECT", &SELECT);
+
+    // Execution commands
+    AddCommand(machine, "EVAL", &EVAL);
+    AddCommand(machine, "CALL", &CALL);
+
+    // Environment
+    AddCommand(machine, "MODULES", &MODULES);
+    AddCommand(machine, "SETNS", &SETNS);
+    AddCommand(machine, "GETNS", &GETNS);
+    AddCommand(machine, "CD", &CD);
+    AddCommand(machine, "HELP", &HELP);
+
+    // String
+    AddCommand(machine, "FORMAT", &FORMAT);
+    AddCommand(machine, "CAT", &CAT);
+    AddCommand(machine, "JOIN", &JOIN);
+    AddCommand(machine, "SUBSTR", &SUBSTR);
+    AddCommand(machine, "STRFIND", &STRFIND);
+    AddCommand(machine, "STRCMP", &STRCMP);
+    AddCommand(machine, "STRNCMP", &STRNCMP);
+    AddCommand(machine, "SPLIT", &SPLIT);
+
+    // Types
+    AddCommand(machine, "TOINT", &TOINT);
+    AddCommand(machine, "TOSTR", &TOSTR);
+    AddCommand(machine, "TYPE", &TYPE);
+
+    // IO
+    AddCommand(machine, "PRINT", &PRINT);
+    AddCommand(machine, "PROMPT", &PROMPT);
+    AddCommand(machine, "PREAD", &PREAD);
+    AddCommand(machine, "PWRITE", &PWRITE);
+    AddCommand(machine, "FWRITE", &FWRITE);
+}
+
 /********************************************************/
 Source::Source(std::istream& is)
 :istrm(is)
@@ -901,6 +851,11 @@ Source::Source(std::istream& is)
 , interactive(false)
 , lineno(0)
 {
+}
+
+bool Source::iseof()
+{
+    return istrm.eof();
 }
 
 void Source::Read()

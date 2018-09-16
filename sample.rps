@@ -1,9 +1,27 @@
+
+######################################################
+# Get a field from a protobuf
+# protobuf fiedname => value
 <<
-    "ls *.h *.cpp" PREAD
-    << 
-        "module.h" STRCMP 0 NEQ
-    >>
-    SELECT
->> interactive.select_test STO
+"=" CAT
+field STOL 
+pb STOL  
+pb RCLL  
+0         
+field RCLL 
+STRFIND     
+field RCLL  
+SIZE        
+ADD         
+DUP startpos STOL 
+pb RCLL     
+SWAP        
+" " STRFIND 
+endpos STOL 
+pb RCLL     
+startpos RCLL  
+endpos RCLL startpos RCLL SUB 
+SUBSTR          #
+>> getfield STO
 
 

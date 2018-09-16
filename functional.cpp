@@ -40,6 +40,17 @@ void APPLY(Machine& machine)
 
 void SELECT(Machine& machine)
 {
+    if (machine.help)
+    {
+        std::cout << "SELECT Select items from a list" << std::endl;
+        std::cout << "[srclist] <<prog>> SELECT => [dstlist]" << std::endl;
+        std::cout << "srclist: List of items" << std::endl;
+        std::cout << "prog: Program to execute. The program will have a list item at L0" << std::endl;
+        std::cout << "      the program will return true or false to have the item placed" << std::endl;
+        std::cout << "      on the dest list" << std::endl;
+        return;
+    }
+
     stack_required(machine, "SELECT", 2);
     throw_required(machine, "SELECT", 0, OBJECT_PROGRAM);
     throw_required(machine, "SELECT", 1, OBJECT_LIST);
