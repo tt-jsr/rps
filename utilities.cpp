@@ -2,10 +2,12 @@
 #include <cassert>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <unordered_map>
 #include "object.h"
 #include "module.h"
 #include "machine.h"
+#include "parser.h"
 
 StringPtr MakeString()
 {
@@ -303,4 +305,35 @@ void split(const std::string& str, std::vector<std::string>& out, const std::str
     {
         out.push_back(s);
     }
+}
+
+void Import(Machine& machine, Parser& parser, const std::string& modname)
+{
+    const char *rps_path = getenv("RPS_PATH");
+    std::vector<std::string> dirs;
+    dirs.push_back(".");
+    if (rps_path)
+        split(rps_path, dirs, ":", false);
+
+    std::string filename;
+    std::ifstream ifs;
+    for (auto& dir : dirs)
+    {
+        filename = dir + "/" + modname + ".rps";
+        ifs.open(filename);
+        if (ifs.is_open())
+            break;
+    }
+    if (!ifs.is_open())
+    {
+        std::stringstream strm;
+        strm << "import: cannot find " << modname << ".rps";
+        throw std::runtime_error(strm.str());
+    }
+    Source srcImport(ifs);
+    std::string savename = machine.current_module_;
+    machine.current_module_ = modname;
+    machine.CreateModule(modname);
+    parser.Parse(machine, srcImport);
+    machine.current_module_ = savename;
 }

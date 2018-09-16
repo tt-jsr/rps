@@ -28,10 +28,10 @@ ENDIF
 
 ######################################################
 # Get a field from a protobuf
-# protobuf fiedname => value
+# protobuf fieldname => value
 <<
-"=" CAT
-field STOL  # store fieldname=
+"=" CAT     # pb fieldname=
+field STOL  # pb
 pb STOL     # store the pb
 pb RCLL     # pb
 0           # pb 0
@@ -50,4 +50,17 @@ startpos RCLL  # pb startpos
 endpos RCLL startpos RCLL SUB  #  pb startpos length(startpos-endpos)
 SUBSTR          # the value
 >> getfield STO
+
+######################################################
+# Get a field from a protobuf
+# protobuf fieldname => value
+<<
+field STOL  # store fieldname=
+pb STOL     # store the pb
+pb RCLL     # pb
+field RCLL  # pb fieldname
+getfield CALL   # value
+pb RCLL         # value pb
+2 TOLIST        # [value, pb]
+>> gettuple STO
 

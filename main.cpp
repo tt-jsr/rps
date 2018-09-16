@@ -7,6 +7,7 @@
 #include "module.h"
 #include "machine.h"
 #include "parser.h"
+#include "utilities.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,6 +21,7 @@ int main(int argc, char *argv[])
     src.prompt = "> ";
 
     using_history();
+    Import(machine, parser, "init");
     while (true)
     {
         try

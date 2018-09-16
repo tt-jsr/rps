@@ -212,11 +212,6 @@ void GetToken(Source& src, Token& token)
 
 bool Parser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
 {
-    const char *rps_path = getenv("RPS_PATH");
-    std::vector<std::string> dirs;
-    dirs.push_back(".");
-    if (rps_path)
-        split(rps_path, dirs, ":");
 
 again:
     Token token;
@@ -280,26 +275,7 @@ again:
             std::string filename;
             Token modulename;
             GetToken(src, modulename);
-            std::ifstream ifs;
-            for (auto& dir : dirs)
-            {
-                filename = dir + "/" + modulename.value + ".rps";
-                ifs.open(filename);
-                if (ifs.is_open())
-                    break;
-            }
-            if (!ifs.is_open())
-            {
-                std::stringstream strm;
-                strm << "import: cannot find " << modulename.value << ".rps";
-                throw std::runtime_error(strm.str());
-            }
-            Source srcImport(ifs);
-            std::string modname = machine.current_module_;
-            machine.current_module_ = modulename.value;
-            machine.CreateModule(modulename.value);
-            Parse(machine, srcImport);
-            machine.current_module_ = modname;
+            Import(machine, *this, modulename.value);
             goto again;
         }
         else
