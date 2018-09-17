@@ -14,7 +14,7 @@ void IFT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "Help not available" << std::endl;
+        machine.helpstrm() << "Help not available";
         return;
     }
 
@@ -44,7 +44,7 @@ void IFTE(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "Help not available" << std::endl;
+        machine.helpstrm() << "Help not available";
         return;
     }
 
@@ -78,7 +78,7 @@ void TRYCATCH(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "Help not available" << std::endl;
+        machine.helpstrm() << "Help not available";
         return;
     }
 

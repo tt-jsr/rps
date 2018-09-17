@@ -19,8 +19,8 @@ void PRINT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "PRINT: Print the object at L0 according to the rules of TOSTR" << std::endl;
-        std::cout << "\"str\" => " << std::endl;
+        machine.helpstrm() << "PRINT: Print the object at L0 according to the rules of TOSTR";
+        machine.helpstrm() << "\"str\" => ";
         return;
     }
     if (machine.stack_.size() < 1)
@@ -37,8 +37,8 @@ void PROMPT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "PROMPT: Prompt for user input" << std::endl;
-        std::cout << "\"prompt\" => \"response\"" << std::endl;
+        machine.helpstrm() << "PROMPT: Prompt for user input";
+        machine.helpstrm() << "\"prompt\" => \"response\"";
         return;
     }
     if (machine.stack_.size() < 1)
@@ -63,8 +63,8 @@ void PREAD(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "PREAD: Capture process output into a list" << std::endl;
-        std::cout << "\"command line\" PREAD => [dstlist]" << std::endl;
+        machine.helpstrm() << "PREAD: Capture process output into a list";
+        machine.helpstrm() << "\"command line\" PREAD => [dstlist]";
         return;
     }
    stack_required(machine, "PREAD", 1);
@@ -114,8 +114,8 @@ void PWRITE(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "PWRITE: Write object at L1 to the commandline on L0" << std::endl;
-        std::cout << "\"obj\" \"command line\" PWRITE =>" << std::endl;
+        machine.helpstrm() << "PWRITE: Write object at L1 to the commandline on L0";
+        machine.helpstrm() << "\"obj\" \"command line\" PWRITE =>";
         return;
     }
    stack_required(machine, "PWRITE", 2);
@@ -155,8 +155,8 @@ void FWRITE(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "FWRITE: Write object at L1 to the file on L0" << std::endl;
-        std::cout << "\"obj\" \"filename\" FWRITE =>" << std::endl;
+        machine.helpstrm() << "FWRITE: Write object at L1 to the file on L0";
+        machine.helpstrm() << "\"obj\" \"filename\" FWRITE =>";
         return;
     }
 
@@ -196,9 +196,9 @@ void SYSTEM(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "SYSTEM or !: Execute the command at L0" << std::endl;
-        std::cout << "No output is captured" << std::endl;
-        std::cout << "\"command line\" SYSTEM =>" << std::endl;
+        machine.helpstrm() << "SYSTEM or !: Execute the command at L0";
+        machine.helpstrm() << "No output is captured";
+        machine.helpstrm() << "\"command line\" SYSTEM =>";
         return;
     }
     stack_required(machine, "SYSTEM", 1);

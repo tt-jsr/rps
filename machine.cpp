@@ -155,6 +155,12 @@ ObjectPtr& Machine::peek(size_t n)
     return stack_[stack_.size()-n];
 }
 
+std::ostream& Machine::helpstrm()
+{
+    if (hstrm.str().size())
+        hstrm << std::endl;
+    return hstrm;
+}
 /****************************************************************/
 void Execute(Machine& machine, std::vector<ObjectPtr>& vec)
 {
@@ -332,8 +338,8 @@ void EVAL(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "EVAL: Evaluate an object" << std::endl;
-        std::cout << "obj EVAL => ..." << std::endl;
+        machine.helpstrm() << "EVAL: Evaluate an object";
+        machine.helpstrm() << "obj EVAL => ...";
         return;
     }
     ObjectPtr optr;
@@ -345,9 +351,9 @@ void CALL(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "CALL: Call a program" << std::endl;
-        std::cout << "\"name\" CALL => ..." << std::endl;
-        std::cout << "Equivilent to name RCL EVAL" << std::endl;
+        machine.helpstrm() << "CALL: Call a program";
+        machine.helpstrm() << "\"name\" CALL => ...";
+        machine.helpstrm() << "Equivilent to name RCL EVAL";
         return;
     }
     RCL(machine);
@@ -358,8 +364,8 @@ void NAMESPACES(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "NAMESPACES: List namespaces" << std::endl;
-        std::cout << "NAMESPACES => [list]" << std::endl;
+        machine.helpstrm() << "NAMESPACES: List namespaces";
+        machine.helpstrm() << "NAMESPACES => [list]";
         return;
     }
     ListPtr lp = MakeList();
@@ -376,8 +382,8 @@ void CLONE(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "CLONE: Clone the object at L0" << std::endl;
-        std::cout << "obj CLONE => obj" << std::endl;
+        machine.helpstrm() << "CLONE: Clone the object at L0";
+        machine.helpstrm() << "obj CLONE => obj obj";
         return;
     }
     stack_required(machine, "CLONE", 1);
@@ -390,8 +396,8 @@ void SETNS(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "SETNS: Create or change namespace" << std::endl;
-        std::cout << "\"namespace\" SETNS =>" << std::endl;
+        machine.helpstrm() << "SETNS: Create or change namespace";
+        machine.helpstrm() << "\"namespace\" SETNS =>";
         return;
     }
     stack_required(machine, "SETNS", 1);
@@ -407,8 +413,8 @@ void GETNS(Machine& machine)
 { 
     if (machine.help)
     {
-        std::cout << "GETNS: Push current namespace" << std::endl;
-        std::cout << "GETNS => \"namespace\"" << std::endl;
+        machine.helpstrm() << "GETNS: Push current namespace";
+        machine.helpstrm() << "GETNS => \"namespace\"";
         return;
     }
     machine.push(machine.current_module_);
@@ -418,8 +424,8 @@ void CD(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "CD: Change current dir" << std::endl;
-        std::cout << "\"dir\" CD =>" << std::endl;
+        machine.helpstrm() << "CD: Change current dir";
+        machine.helpstrm() << "\"dir\" CD =>";
         return;
     }
     stack_required(machine, "CD", 1);
@@ -430,58 +436,57 @@ void CD(Machine& machine)
     chdir(dir.c_str());
 }
 
+std::string GetFunctionSynopsis(Machine& machine, const std::string& cmd)
+{
+    auto it = machine.commands.find(cmd);
+    if (it != machine.commands.end())
+    {
+        machine.help = true;
+        machine.hstrm.str("");
+        (*it->second->funcptr)(machine);
+        machine.help = false;
+        std::string s = machine.hstrm.str();
+        size_t pos = s.find_first_of('\n');
+        if (pos != std::string::npos)
+            return s.substr(0, pos);
+    }
+    return "";
+}
+
+void ShowCategory(Machine& machine, const std::string& cat)
+{
+    auto it = machine.categories.find(cat);
+    if (it != machine.categories.end())
+    {
+        std::cout << cat << std::endl;
+        for (std::string& cmd : it->second)
+        {
+            std::cout << "    " << GetFunctionSynopsis(machine, cmd) << std::endl;
+        }
+    }
+}
+
 void HELP(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "HELP: HELP system" << std::endl;
-        std::cout << "HELP =>" << std::endl;
+        machine.helpstrm() << "HELP: HELP system";
+        machine.helpstrm() << "HELP =>";
         return;
     }
     while (true)
     {
-        std::cout << "Stack commands" << std::endl;
-        std::cout << "   DROP DROPN CLRSTK SWAP DUP PICK ROLL VIEW DEPTH" << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Math commands" << std::endl;
-        std::cout << "   ADD SUB MUL DIV INC DEC" << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Variable management" << std::endl;
-        std::cout << "   STO RCL STOL RCLL VARNAMES VARTYPES" << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Controlcommands" << std::endl;
-        std::cout << "   IFT IFTE TRYCATCH " << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Logical operators" << std::endl;
-        std::cout << "   EQ NEQ LT LTEQ GT GTEQ NOT AND OR" << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "List commands" << std::endl;
-        std::cout << "   APPEND GET LIST-INSERT ERASE CLEAR SIZE FIRST SECOND TOLIST FROMLIST CREATELIST " << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Map commands" << std::endl;
-        std::cout << "   FIND MAP-INSERT ERASE CLEAR SIZE TOMAP FROMMAP CREATEMAP" << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Functional commands" << std::endl;
-        std::cout << "   APPLY SELECT" << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "IO commands" << std::endl;
-        std::cout << "   PRINT PROMPT PREAD PWRITE FWRITE " << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "String commands" << std::endl;
-        std::cout << "   FORMAT CAT JOIN SUBSTR STRFIND STRCMP STRNCMP SPLIT SIZE CLEAR" << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Type commands" << std::endl;
-        std::cout << "   TOINT TOSTR TYPE " << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Executioncommands" << std::endl;
-        std::cout << "   EVAL CALL" << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Environment" << std::endl;
-        std::cout << "   NAMESPACES SETNS GETNS CD HELP SYSTEM" << std::endl;
-        std::cout << "" << std::endl;
-        std::cout << "Misc commands" << std::endl;
-        std::cout << "   CLONE" << std::endl;
-        std::cout << "Command: " << std::flush;
+        for (auto& pr : machine.categories)
+        {
+            std::cout << pr.first << " commands" << std::endl;
+            std::cout << "    ";
+            for (auto& c : pr.second)
+            {
+                std::cout << c << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << "Command or Category: " << std::flush;
         std::string cmd;
         std::getline(std::cin, cmd);
         if (cmd == "q")
@@ -490,15 +495,16 @@ void HELP(Machine& machine)
         if (it != machine.commands.end())
         {
             machine.help = true;
-            std::cout << std::endl;
+            machine.hstrm.str("");
             (*it->second->funcptr)(machine);
-            std::cout << std::endl;
             machine.help = false;
+            std::cout << std::endl << machine.hstrm.str() << std::endl;
             std::getline(std::cin, cmd);
         }
         else
         {
-            std::cout << "Help not found for " << cmd << std::endl;
+            ShowCategory(machine, cmd);
+            std::getline(std::cin, cmd);
         }
     }
 }

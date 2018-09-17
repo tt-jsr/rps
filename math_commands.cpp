@@ -13,8 +13,8 @@ void ADD(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "ADD: Addition" << std::endl;
-        std::cout << "int1 int2 ADD => int" << std::endl;
+        machine.helpstrm() << "ADD: Addition";
+        machine.helpstrm() << "int1 int2 ADD => int";
         return;
     }
 
@@ -32,8 +32,8 @@ void SUB(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "SUB: Subraction" << std::endl;
-        std::cout << "int1 int2 SUB => int" << std::endl;
+        machine.helpstrm() << "SUB: Subraction";
+        machine.helpstrm() << "int1 int2 SUB => int";
         return;
     }
 
@@ -51,8 +51,8 @@ void MUL(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "MUL: Multilication" << std::endl;
-        std::cout << "int1 int2 MUL => int" << std::endl;
+        machine.helpstrm() << "MUL: Multilication";
+        machine.helpstrm() << "int1 int2 MUL => int";
         return;
     }
 
@@ -70,8 +70,8 @@ void DIV(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "DIV: Division" << std::endl;
-        std::cout << "int1 int2 DIV => int" << std::endl;
+        machine.helpstrm() << "DIV: Division";
+        machine.helpstrm() << "int1 int2 DIV => int";
         return;
     }
 
@@ -89,8 +89,8 @@ void INC(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "INC: Increment" << std::endl;
-        std::cout << "int INC => int" << std::endl;
+        machine.helpstrm() << "INC: Increment";
+        machine.helpstrm() << "int INC => int";
         return;
     }
 
@@ -107,8 +107,8 @@ void DEC(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "DEC: Decrement" << std::endl;
-        std::cout << "int DEC => int" << std::endl;
+        machine.helpstrm() << "DEC: Decrement";
+        machine.helpstrm() << "int DEC => int";
         return;
     }
 

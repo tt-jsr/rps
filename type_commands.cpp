@@ -16,8 +16,8 @@ void TOINT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "TOINT: Convert to integer" << std::endl;
-        std::cout << "obj TOINT => int" << std::endl;
+        machine.helpstrm() << "TOINT: Convert to integer";
+        machine.helpstrm() << "obj TOINT => int";
         return;
     }
 
@@ -37,8 +37,8 @@ void TOSTR(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "TOSTR: Convert to string" << std::endl;
-        std::cout << "obj TOSTR => \"str\"" << std::endl;
+        machine.helpstrm() << "TOSTR: Convert to string";
+        machine.helpstrm() << "obj TOSTR => \"str\"";
         return;
     }
 
@@ -57,8 +57,8 @@ void TYPE(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "TYPE: Pushes the type of object at L0" << std::endl;
-        std::cout << "obj TYPE => \"str\"" << std::endl;
+        machine.helpstrm() << "TYPE: Pushes the type of object at L0";
+        machine.helpstrm() << "obj TYPE => \"str\"";
         return;
     }
 

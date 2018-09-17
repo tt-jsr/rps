@@ -13,11 +13,6 @@
 #include "commands.h"
 #include "utilities.h"
 
-// [list] "str"    => [list]
-// [list] int      => [list]
-// [list] <<prog>> => [list]
-// [list] {map}    => [list]
-// [list] [list]   => [list]
 void APPEND(Machine& machine)
 {
     if (machine.help)
@@ -37,13 +32,13 @@ void APPEND(Machine& machine)
     machine.push(lp);
 }
 
-// [list] int(idx) => obj
 void GET(Machine& machine)
 {
     if (machine.help)
     {
         std::cout << "GET: Get the object object in a list at the given index" << std::endl;
         std::cout << "[list] idx GET => obj" << std::endl;
+        std::cout << "If idx < 0 it is taken from the end of the list" << std::endl;
         return;
     }
 
@@ -70,16 +65,54 @@ void GET(Machine& machine)
     return;
 }
 
-// {map} "str" => obj
-// {map} int   => obj
+void SUBLIST(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "SUBLIST: Push a sublist";
+        machine.helpstrm() << "[list] startpos length SUBLIST => [list]";
+        machine.helpstrm() << "If startpos is < 0, it is taken from the end of the list";
+        machine.helpstrm() << "If length < 0 or longer then available, copy until the end of the list";
+        return;
+    }
+
+    stack_required(machine, "SUBLIST", 3);
+    throw_required(machine, "SUBLIST", 0, OBJECT_INTEGER);
+    throw_required(machine, "SUBLIST", 1, OBJECT_INTEGER);
+    throw_required(machine, "SUBLIST", 2, OBJECT_LIST);
+
+    int64_t startpos, length;
+    ListPtr lp;
+    machine.pop(length);
+    machine.pop(startpos);
+    machine.pop(lp);
+    if (startpos < 0)
+    {
+        startpos = lp->items.size() + startpos;
+    }
+    if (startpos < 0 || startpos >= lp->items.size())
+    {
+        machine.push(lp);
+        throw std::runtime_error("SUBLIST: startpos out of range for List");
+    }
+    if ((startpos+length) >= lp->items.size())
+        length = -1;
+    ListPtr result = MakeList();
+    if (length < 0)
+        std::copy(lp->items.begin()+startpos, lp->items.end(), std::back_inserter(result->items));
+    else
+        std::copy(lp->items.begin()+startpos, lp->items.begin()+startpos+length, std::back_inserter(result->items));
+    machine.push(result);
+}
+
 void FIND(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "FIND: Find an item in a map" << std::endl;
-        std::cout << "{map} key onError FIND => obj" << std::endl;
-        std::cout << "key: Either a string or integer key" << std::endl;
-        std::cout << "onError: If the key is not found, this is the value placed on L0" << std::endl;
+        machine.helpstrm() << "FIND: Find an item in a map";
+        machine.helpstrm() << "{map} key onError FIND => obj";
+        machine.helpstrm() << "key: Either a string or integer key";
+        machine.helpstrm() << "onError: If the key is not found, this is the value placed on L0";
         return;
     }
 
@@ -101,15 +134,12 @@ void FIND(Machine& machine)
         machine.push(it->second);
 }
 
-// [list] idx value => [list]
-// idx: int
-// value: int | "str" | [list] | {map} | <<prog>>
 void LIST_INSERT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "LIST-INSERT: Insert an item into a list" << std::endl;
-        std::cout << "[list] idx obj => [list]" << std::endl;
+        machine.helpstrm() << "LIST-INSERT: Insert an item into a list";
+        machine.helpstrm() << "[list] idx obj => [list]";
         return;
     }
 
@@ -139,18 +169,13 @@ void LIST_INSERT(Machine& machine)
     machine.push(lp);
 }
 
-// {map} [list] => {map}
-//
-// list is a tuple of: [key, value]
-// key: int | "str"
-// value: int | "str" | {map} | [list] | <<prog>>
 void MAP_INSERT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "MAP-INSERT: Insert into a map" << std::endl;
-        std::cout << "{map} [k,v] => {map}" << std::endl;
-        std::cout << "list: A tuple of a Key-Value pair" << std::endl;
+        machine.helpstrm() << "MAP-INSERT: Insert into a map";
+        machine.helpstrm() << "{map} [k,v] => {map}";
+        machine.helpstrm() << "list: A tuple of a Key-Value pair";
         return;
     }
 
@@ -170,7 +195,7 @@ void INSERT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "Help not available" << std::endl;
+        machine.helpstrm() << "Help not available";
         return;
     }
 
@@ -191,17 +216,13 @@ void INSERT(Machine& machine)
     std::runtime_error("INSERT: cannot detect map or list insert");
 }
 
-// [list] idx => [list]
-//    idx: int
-// {map} key => {map}
-//    key: int | "str"
 void ERASE(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "ERASE: Erase an item from a list or a map" << std::endl;
-        std::cout << "[list] idx ERASE => [list]" << std::endl;
-        std::cout << "{map} key ERASE => {map}" << std::endl;
+        machine.helpstrm() << "ERASE: Erase an item from a list or a map";
+        machine.helpstrm() << "[list] idx ERASE => [list]";
+        machine.helpstrm() << "{map} key ERASE => {map}";
         return;
     }
 
@@ -245,15 +266,13 @@ void ERASE(Machine& machine)
     throw std::runtime_error("ERASE: requires List  or Map argument");
 }
 
-// [list] => [list]
-// {map}  => {map}
 void CLEAR(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "CLEAR: Clear a list or map" << std::endl;
-        std::cout << "[list] CLEAR => []" << std::endl;
-        std::cout << "{map} CLEAR => {}" << std::endl;
+        machine.helpstrm() << "CLEAR: Clear a list or map";
+        machine.helpstrm() << "[list] CLEAR => []";
+        machine.helpstrm() << "{map} CLEAR => {}";
         return;
     }
 
@@ -278,19 +297,15 @@ void CLEAR(Machine& machine)
     throw std::runtime_error("CLEAR: requires List or Map argument");
 }
 
-// [list]    => int
-// {map}     => int
-// "str"     => int
-// <<prog>>  => int
 void SIZE(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "SIZE: Return the size of an object" << std::endl;
-        std::cout << "[list] SIZE => int" << std::endl;
-        std::cout << "{map} SIZE => int" << std::endl;
-        std::cout << "\"str\" SIZE => int" << std::endl;
-        std::cout << "<<prog>> SIZE => int" << std::endl;
+        machine.helpstrm() << "SIZE: Return the size of an object";
+        machine.helpstrm() << "[list] SIZE => int";
+        machine.helpstrm() << "{map} SIZE => int";
+        machine.helpstrm() << "\"str\" SIZE => int";
+        machine.helpstrm() << "<<prog>> SIZE => int";
         return;
     }
 
@@ -331,13 +346,12 @@ void SIZE(Machine& machine)
     throw std::runtime_error("SIZE: requires [list], {map}, \"str\", or <<prog>> argument");
 }
 
-// [list] => obj
 void FIRST(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "FIRST: Get the fist element of a list" << std::endl;
-        std::cout << "[list] FIRST => obj" << std::endl;
+        machine.helpstrm() << "FIRST: Get the fist element of a list";
+        machine.helpstrm() << "[list] FIRST => obj";
         return;
     }
 
@@ -347,13 +361,12 @@ void FIRST(Machine& machine)
     GET(machine);
 }
 
-// [list] => obj
 void SECOND(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "SECOND: Get the second element of a list" << std::endl;
-        std::cout << "[list] SECOND => obj" << std::endl;
+        machine.helpstrm() << "SECOND: Get the second element of a list";
+        machine.helpstrm() << "[list] SECOND => obj";
         return;
     }
 
@@ -363,13 +376,12 @@ void SECOND(Machine& machine)
     GET(machine);
 }
 
-// obj, obj...  int => [list]
 void TOLIST(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "TOLIST: Take n items from the stack and create a list" << std::endl;
-        std::cout << "obj1 obj2 obj3... nitems TOLIST => [list]" << std::endl;
+        machine.helpstrm() << "TOLIST: Take n items from the stack and create a list";
+        machine.helpstrm() << "obj1 obj2 obj3... nitems TOLIST => [list]";
         return;
     }
 
@@ -387,13 +399,12 @@ void TOLIST(Machine& machine)
     machine.push(lp);
 }
 
-// [list], [list], [list]... int => {map}
 void TOMAP(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "TOMAP: Take n tuples from the stack and create a map" << std::endl;
-        std::cout << "[k,v] [k,v] [k,v]... nitems TOMAP => {map}" << std::endl;
+        machine.helpstrm() << "TOMAP: Take n tuples from the stack and create a map";
+        machine.helpstrm() << "[k,v] [k,v] [k,v]... nitems TOMAP => {map}";
         return;
     }
 
@@ -410,13 +421,12 @@ void TOMAP(Machine& machine)
     machine.push(mp);
 }
 
-// [list] => obj, obj. obj,...
 void FROMLIST(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "FROMLIST: Push all items of a list to the stack" << std::endl;
-        std::cout << "[list] FROMLIST => obj1, obj2, obj3..." << std::endl;
+        machine.helpstrm() << "FROMLIST: Push all items of a list to the stack";
+        machine.helpstrm() << "[list] FROMLIST => obj1, obj2, obj3...";
         return;
     }
 
@@ -428,13 +438,12 @@ void FROMLIST(Machine& machine)
     }
 }
 
-// {map} => [list], [list], [list], ...
 void FROMMAP(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "FROMMAP: Push all key/values of a map onto the stack" << std::endl;
-        std::cout << "{map} FROMMAP => [k, v] [k, v] [k,v]..." << std::endl;
+        machine.helpstrm() << "FROMMAP: Push all key/values of a map onto the stack";
+        machine.helpstrm() << "{map} FROMMAP => [k, v] [k, v] [k,v]...";
         return;
     }
 
@@ -449,13 +458,12 @@ void FROMMAP(Machine& machine)
     }
 }
 
-// => []
 void CREATELIST(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "CREATELIST: Create a list" << std::endl;
-        std::cout << "CREATELIST => []" << std::endl;
+        machine.helpstrm() << "CREATELIST: Create a list";
+        machine.helpstrm() << "CREATELIST => []";
         return;
     }
 
@@ -463,13 +471,12 @@ void CREATELIST(Machine& machine)
     machine.push(lp);
 }
 
-// => {}
 void CREATEMAP(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "CREATEMAP: Create a map" << std::endl;
-        std::cout << "CREATEMAP => {}" << std::endl;
+        machine.helpstrm() << "CREATEMAP: Create a map";
+        machine.helpstrm() << "CREATEMAP => {}";
         return;
     }
 

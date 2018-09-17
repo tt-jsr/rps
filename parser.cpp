@@ -710,114 +710,199 @@ void Parser::Parse(Machine& machine, Source& src)
     }
 }
 
-void Parser::AddCommand(Machine& machine, const char *name, void (*funcptr)(Machine&))
+void AddCommand(Machine& machine, const char *name, void (*funcptr)(Machine&))
 {
     CommandPtr cp;
     cp.reset(new Command(name, funcptr));
     machine.commands.emplace(name, cp);
 }
 
+void Category(Machine& machine, const std::string& cat, const std::string& name)
+{
+    std::vector<std::string>& vec = machine.categories[cat];
+    vec.push_back(name);
+}
+
 Parser::Parser(Machine& machine)
 {
-    AddCommand(machine, "SELECT", &SELECT);
     // Stack commands
     AddCommand(machine, "CLRSTK", &CLRSTK);
+    Category(machine, "Stack", "CLRSTK");
     AddCommand(machine, "DROP", &DROP);
+    Category(machine, "Stack", "DROP");
     AddCommand(machine, "DROPN", &DROPN);
+    Category(machine, "Stack", "DROPN");
     AddCommand(machine, "SWAP", &SWAP);
+    Category(machine, "Stack", "SWAP");
     AddCommand(machine, "DUP", &DUP);
+    Category(machine, "Stack", "DUP");
     AddCommand(machine, "PICK", &PICK);
+    Category(machine, "Stack", "PICK");
     AddCommand(machine, "ROLL", &ROLL);
+    Category(machine, "Stack", "ROLL");
     AddCommand(machine, "DEPTH", &DEPTH);
+    Category(machine, "Stack", "DEPTH");
     AddCommand(machine, "VIEW", &VIEW);
+    Category(machine, "Stack", "VIEW");
     AddCommand(machine, "CLONE",  &CLONE);
+    Category(machine, "Stack", "CLONE");
 
     // Logical operators
     AddCommand(machine, "EQ", &EQ);
+    Category(machine, "Logical", "EQ");
     AddCommand(machine, "NEQ", &NEQ);
+    Category(machine, "Logical", "NEQ");
     AddCommand(machine, "LT", &LT);
+    Category(machine, "Logical", "LT");
     AddCommand(machine, "LTEQ", &LTEQ);
+    Category(machine, "Logical", "LTEQ");
     AddCommand(machine, "GT", &GT);
+    Category(machine, "Logical", "GT");
     AddCommand(machine, "GTEQ", &GTEQ);
+    Category(machine, "Logical", "GTEQ");
     AddCommand(machine, "AND", &AND);
+    Category(machine, "Logical", "AND");
     AddCommand(machine, "OR", &OR);
+    Category(machine, "Logical", "OR");
 
     // Variable commands
     AddCommand(machine, "STO", &STO);
+    Category(machine, "Variable", "STO");
     AddCommand(machine, "RCL", &RCL);
+    Category(machine, "Variable", "RCL");
     AddCommand(machine, "STOL", &STOL);
+    Category(machine, "Variable", "STOL");
     AddCommand(machine, "RCLL", &RCLL);
+    Category(machine, "Variable", "RCLL");
     AddCommand(machine, "VARNAMES", &VARNAMES);
+    Category(machine, "Variable", "VARNAMES");
     AddCommand(machine, "VARTYPES", &VARTYPES);
+    Category(machine, "Variable", "VARTYPES");
 
     // Math commands
     AddCommand(machine, "ADD", &ADD);
+    Category(machine, "Math", "ADD");
     AddCommand(machine, "SUB", &SUB);
+    Category(machine, "Math", "SUB");
     AddCommand(machine, "MUL", &MUL);
+    Category(machine, "Math", "MUL");
     AddCommand(machine, "DIV", &DIV);
+    Category(machine, "Math", "DIV");
     AddCommand(machine, "INC", &INC);
+    Category(machine, "Math", "INC");
     AddCommand(machine, "DEC", &DEC);
+    Category(machine, "Math", "DEC");
 
     // Control commands
     AddCommand(machine, "IFT", &IFT);
+    Category(machine, "Control", "IFT");
     AddCommand(machine, "IFTE", &IFTE);
+    Category(machine, "Control", "IFTE");
     AddCommand(machine, "TRYCATCH", &TRYCATCH);
+    Category(machine, "Control", "TRYCATCH");
 
     // List commands
     AddCommand(machine, "GET", &GET);
+    Category(machine, "List", "GET");
+    AddCommand(machine, "SUBLIST", &SUBLIST);
+    Category(machine, "List", "SUBLIST");
     AddCommand(machine, "APPEND", &APPEND);
+    Category(machine, "List", "APPEND");
     AddCommand(machine, "ERASE", &ERASE);
+    Category(machine, "List", "ERASE");
+    Category(machine, "Map", "ERASE");
     AddCommand(machine, "CLEAR", &CLEAR);
+    Category(machine, "List", "CLEAR");
+    Category(machine, "MAP", "CLEAR");
     AddCommand(machine, "LIST-INSERT", &LIST_INSERT);
+    Category(machine, "List", "LIST-INSERT");
     AddCommand(machine, "MAP-INSERT", &MAP_INSERT);
+    Category(machine, "Map", "MAP-INSERT");
     AddCommand(machine, "INSERT", &INSERT);
     AddCommand(machine, "SIZE", &SIZE);
+    Category(machine, "List", "SIZE");
+    Category(machine, "Map", "SIZE");
+    Category(machine, "String", "SIZE");
     AddCommand(machine, "FIND", &FIND);
+    Category(machine, "Map", "FIND");
     AddCommand(machine, "FIRST", &FIRST);
+    Category(machine, "List", "FIRST");
     AddCommand(machine, "SECOND", &SECOND);
+    Category(machine, "List", "SECOND");
     AddCommand(machine, "TOLIST", &TOLIST);
+    Category(machine, "List", "TOLIST");
     AddCommand(machine, "TOMAP", &TOMAP);
+    Category(machine, "Map", "TOMAP");
     AddCommand(machine, "FROMLIST", &FROMLIST);
+    Category(machine, "List", "FROMLIST");
     AddCommand(machine, "FROMMAP", &FROMMAP);
+    Category(machine, "Map", "FROMMAP");
     AddCommand(machine, "CREATELIST", &CREATELIST);
+    Category(machine, "List", "CREATELIST");
     AddCommand(machine, "CREATEMAP", &CREATEMAP);
+    Category(machine, "Map", "CREATEMAP");
 
     // Functional
     AddCommand(machine, "APPLY", &APPLY);
+    Category(machine, "Functional", "APPLY");
     AddCommand(machine, "SELECT", &SELECT);
+    Category(machine, "Functional", "SELECT");
 
     // Execution commands
     AddCommand(machine, "EVAL", &EVAL);
+    Category(machine, "Execution", "EVAL");
     AddCommand(machine, "CALL", &CALL);
+    Category(machine, "Execution", "CALL");
 
     // Environment
     AddCommand(machine, "NAMESPACES", &NAMESPACES);
+    Category(machine, "Environment", "NAMESPACES");
     AddCommand(machine, "SETNS", &SETNS);
+    Category(machine, "Environment", "SETNS");
     AddCommand(machine, "GETNS", &GETNS);
+    Category(machine, "Environment", "GETNS");
     AddCommand(machine, "CD", &CD);
+    Category(machine, "Environment", "CD");
     AddCommand(machine, "HELP", &HELP);
+    Category(machine, "Environment", "HELP");
 
     // String
     AddCommand(machine, "FORMAT", &FORMAT);
+    Category(machine, "String", "FORMAT");
     AddCommand(machine, "CAT", &CAT);
+    Category(machine, "String", "CAT");
     AddCommand(machine, "JOIN", &JOIN);
+    Category(machine, "String", "JOIN");
     AddCommand(machine, "SUBSTR", &SUBSTR);
+    Category(machine, "String", "SUBSTR");
     AddCommand(machine, "STRFIND", &STRFIND);
+    Category(machine, "String", "STRFIND");
     AddCommand(machine, "STRCMP", &STRCMP);
+    Category(machine, "String", "STRCMP");
     AddCommand(machine, "STRNCMP", &STRNCMP);
+    Category(machine, "String", "STRNCMP");
     AddCommand(machine, "SPLIT", &SPLIT);
+    Category(machine, "String", "SPLIT");
 
     // Types
     AddCommand(machine, "TOINT", &TOINT);
+    Category(machine, "Types", "TOINT");
     AddCommand(machine, "TOSTR", &TOSTR);
+    Category(machine, "Types", "TOSTR");
     AddCommand(machine, "TYPE", &TYPE);
+    Category(machine, "Types", "TYPE");
 
     // IO
     AddCommand(machine, "PRINT", &PRINT);
+    Category(machine, "IO", "PRINT");
     AddCommand(machine, "PROMPT", &PROMPT);
+    Category(machine, "IO", "PROMPT");
     AddCommand(machine, "PREAD", &PREAD);
+    Category(machine, "IO", "PREAD");
     AddCommand(machine, "PWRITE", &PWRITE);
+    Category(machine, "IO", "PWRITE");
     AddCommand(machine, "FWRITE", &FWRITE);
+    Category(machine, "IO", "FWRITE");
 }
 
 /********************************************************/

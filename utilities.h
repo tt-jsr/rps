@@ -27,6 +27,7 @@ namespace std
 }
 
 class Machine;
+class Parser;
 
 StringPtr MakeString();
 IntegerPtr MakeInteger();

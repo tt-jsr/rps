@@ -17,7 +17,6 @@ class Parser
 {
 public:
     Parser(Machine&);
-    void AddCommand(Machine&, const char *name, void (*funcptr)(Machine&));
     // false at EOL and no data has been read
     bool GetObject(Machine&, Source&, ObjectPtr& optr);
     void Parse(Machine& machine, Source&);

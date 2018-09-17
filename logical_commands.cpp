@@ -101,9 +101,9 @@ void EQ(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "EQ: Compare for equality" << std::endl;
-        std::cout << "\"str1\" \"str2\" EQ => int" << std::endl;
-        std::cout << "int1 int2 EQ => int" << std::endl;
+        machine.helpstrm() << "EQ: Compare for equality";
+        machine.helpstrm() << "\"str1\" \"str2\" EQ => int";
+        machine.helpstrm() << "int1 int2 EQ => int";
         return;
     }
 
@@ -130,9 +130,9 @@ void NEQ(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "NEQ: Compare for not equal" << std::endl;
-        std::cout << "\"str1\" \"str2\" NEQ => int" << std::endl;
-        std::cout << "int1 int2 NEQ => int" << std::endl;
+        machine.helpstrm() << "NEQ: Compare for not equal";
+        machine.helpstrm() << "\"str1\" \"str2\" NEQ => int";
+        machine.helpstrm() << "int1 int2 NEQ => int";
         return;
     }
 
@@ -159,9 +159,9 @@ void LT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "LT: Compare for less than" << std::endl;
-        std::cout << "\"str1\" \"str2\" LT => int" << std::endl;
-        std::cout << "int1 int2 LT => int" << std::endl;
+        machine.helpstrm() << "LT: Compare for less than";
+        machine.helpstrm() << "\"str1\" \"str2\" LT => int";
+        machine.helpstrm() << "int1 int2 LT => int";
         return;
     }
 
@@ -188,9 +188,9 @@ void LTEQ(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "LTEQ: Compare for less than or equal" << std::endl;
-        std::cout << "\"str1\" \"str2\" LTEQ => int" << std::endl;
-        std::cout << "int1 int2 LTEQ => int" << std::endl;
+        machine.helpstrm() << "LTEQ: Compare for less than or equal";
+        machine.helpstrm() << "\"str1\" \"str2\" LTEQ => int";
+        machine.helpstrm() << "int1 int2 LTEQ => int";
         return;
     }
 
@@ -217,9 +217,9 @@ void GT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "GT: Compare for greater than" << std::endl;
-        std::cout << "\"str1\" \"str2\" GT => int" << std::endl;
-        std::cout << "int1 int2 GT => int" << std::endl;
+        machine.helpstrm() << "GT: Compare for greater than";
+        machine.helpstrm() << "\"str1\" \"str2\" GT => int";
+        machine.helpstrm() << "int1 int2 GT => int";
         return;
     }
 
@@ -246,9 +246,9 @@ void GTEQ(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "GTEQ: Compare for greater than or equal" << std::endl;
-        std::cout << "\"str1\" \"str2\" GTEQ => int" << std::endl;
-        std::cout << "int1 int2 GTEQ => int" << std::endl;
+        machine.helpstrm() << "GTEQ: Compare for greater than or equal";
+        machine.helpstrm() << "\"str1\" \"str2\" GTEQ => int";
+        machine.helpstrm() << "int1 int2 GTEQ => int";
         return;
     }
 
@@ -275,9 +275,9 @@ void AND(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "AND: Logical AND" << std::endl;
-        std::cout << "\"str1\" \"str2\" AND => int" << std::endl;
-        std::cout << "int1 int2 AND => int" << std::endl;
+        machine.helpstrm() << "AND: Logical AND";
+        machine.helpstrm() << "\"str1\" \"str2\" AND => int";
+        machine.helpstrm() << "int1 int2 AND => int";
         return;
     }
 
@@ -304,9 +304,9 @@ void OR(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "OR: Logical OR" << std::endl;
-        std::cout << "\"str1\" \"str2\" OR => int" << std::endl;
-        std::cout << "int1 int2 OR => int" << std::endl;
+        machine.helpstrm() << "OR: Logical OR";
+        machine.helpstrm() << "\"str1\" \"str2\" OR => int";
+        machine.helpstrm() << "int1 int2 OR => int";
         return;
     }
 

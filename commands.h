@@ -64,6 +64,7 @@ void OR(Machine&);
  */
 void APPEND(Machine&);
 void GET(Machine&);
+void SUBLIST(Machine&);
 void FIND(Machine&);
 void INSERT(Machine&);
 void LIST_INSERT(Machine&);

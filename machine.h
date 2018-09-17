@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
+#include <sstream>
 
 class Command;
 typedef std::shared_ptr<Command> CommandPtr;
@@ -16,6 +17,7 @@ public:
     ProgramPtr current_program;
 
     void CreateModule(const std::string& name);
+    std::ostream& helpstrm();
 
     ObjectPtr& peek();
     ObjectPtr& peek(size_t n);
@@ -36,6 +38,8 @@ public:
     bool debug;
     bool help;
     std::unordered_map<std::string, CommandPtr> commands;
+    std::unordered_map<std::string, std::vector<std::string>> categories;
+    std::stringstream hstrm;
 };
 
 

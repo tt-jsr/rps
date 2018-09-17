@@ -16,8 +16,8 @@ void DROP(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "DROP: Pop the item at L0" << std::endl;
-        std::cout << "obj DROP => " << std::endl;
+        machine.helpstrm() << "DROP: Pop the item at L0";
+        machine.helpstrm() << "obj DROP => ";
         return;
     }
 
@@ -31,8 +31,8 @@ void DROPN(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "DROPN: Pop n items from the stack" << std::endl;
-        std::cout << "obj1 obj2 obj3... nitems DROPN =>" << std::endl;
+        machine.helpstrm() << "DROPN: Pop n items from the stack";
+        machine.helpstrm() << "obj1 obj2 obj3... nitems DROPN =>";
         return;
     }
 
@@ -49,8 +49,8 @@ void SWAP(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "SWAP: Swap the rop two objects on the stack" << std::endl;
-        std::cout << "obj1 obj2 SWAP => obj2 obj1" << std::endl;
+        machine.helpstrm() << "SWAP: Swap the rop two objects on the stack";
+        machine.helpstrm() << "obj1 obj2 SWAP => obj2 obj1";
         return;
     }
 
@@ -68,8 +68,8 @@ void DUP(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "DUP: Duplicate the toptwo objects on the stack" << std::endl;
-        std::cout << "obj DUP => obj obj" << std::endl;
+        machine.helpstrm() << "DUP: Duplicate the toptwo objects on the stack";
+        machine.helpstrm() << "obj DUP => obj obj";
         return;
     }
 
@@ -81,8 +81,8 @@ void PICK(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "PICK: Copy the nth item from the stack and copy to L0" << std::endl;
-        std::cout << "obj1 obj2 level PICK => obj" << std::endl;
+        machine.helpstrm() << "PICK: Copy the nth item from the stack and copy to L0";
+        machine.helpstrm() << "obj1 obj2 level PICK => obj";
         return;
     }
 
@@ -107,8 +107,8 @@ void ROLL(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "ROLL: Move the nth item from the stack to L0" << std::endl;
-        std::cout << "obj1 obj2... nitem ROLL => obj" << std::endl;
+        machine.helpstrm() << "ROLL: Move the nth item from the stack to L0";
+        machine.helpstrm() << "obj1 obj2... nitem ROLL => obj";
         return;
     }
 
@@ -151,8 +151,8 @@ void VIEW(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "VIEW: View the items in the stack" << std::endl;
-        std::cout << "obj1 obj2... VIEW => obj1 obj2..." << std::endl;
+        machine.helpstrm() << "VIEW: View the items in the stack";
+        machine.helpstrm() << "obj1 obj2... VIEW => obj1 obj2...";
         return;
     }
 
@@ -163,8 +163,8 @@ void CLRSTK(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "CLRSTK: Clear the stack" << std::endl;
-        std::cout << "obj1 obj2 obj3... CLRSTK =>" << std::endl;
+        machine.helpstrm() << "CLRSTK: Clear the stack";
+        machine.helpstrm() << "obj1 obj2 obj3... CLRSTK =>";
         return;
     }
 
@@ -175,8 +175,8 @@ void DEPTH(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "DEPTH: Pushes the number of items on the stack" << std::endl;
-        std::cout << "obj1 obj2 ob3... DEPTH => obj1 obj2 obj3... int" << std::endl;
+        machine.helpstrm() << "DEPTH: Pushes the number of items on the stack";
+        machine.helpstrm() << "obj1 obj2 ob3... DEPTH => obj1 obj2 obj3... int";
         return;
     }
 

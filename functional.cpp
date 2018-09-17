@@ -16,11 +16,11 @@ void APPLY(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "APPLY: Apply a program to each item in a list" << std::endl;
-        std::cout << "[srclist] <<prog>> APPLY => [dstlist]" << std::endl;
-        std::cout << "srclist: List of items" << std::endl;
-        std::cout << "prog: Program to execute. The program will have a list item at L0" << std::endl;
-        std::cout << "      the program will return an object to be placedon the dstlist" << std::endl;
+        machine.helpstrm() << "APPLY: Apply a program to each item in a list";
+        machine.helpstrm() << "[srclist] <<prog>> APPLY => [dstlist]";
+        machine.helpstrm() << "srclist: List of items";
+        machine.helpstrm() << "prog: Program to execute. The program will have a list item at L0";
+        machine.helpstrm() << "      the program will return an object to be placedon the dstlist";
         return;
     }
     stack_required(machine, "APPLY", 2);
@@ -51,12 +51,12 @@ void SELECT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "SELECT Select items from a list" << std::endl;
-        std::cout << "[srclist] <<prog>> SELECT => [dstlist]" << std::endl;
-        std::cout << "srclist: List of items" << std::endl;
-        std::cout << "prog: Program to execute. The program will have a list item at L0" << std::endl;
-        std::cout << "      the program will return true or false to have the item placed" << std::endl;
-        std::cout << "      on the dest list" << std::endl;
+        machine.helpstrm() << "SELECT Select items from a list";
+        machine.helpstrm() << "[srclist] <<prog>> SELECT => [dstlist]";
+        machine.helpstrm() << "srclist: List of items";
+        machine.helpstrm() << "prog: Program to execute. The program will have a list item at L0";
+        machine.helpstrm() << "      the program will return true or false to have the item placed";
+        machine.helpstrm() << "      on the dest list" << std::endl;
         return;
     }
 

@@ -17,9 +17,9 @@ void FORMAT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "FORMAT: Format a string" << std::endl;
-        std::cout << "\"str\" FORMAT => \"str\"" << std::endl;
-        std::cout << "todo: Format description..." << std::endl;
+        machine.helpstrm() << "FORMAT: Format a string";
+        machine.helpstrm() << "\"str\" FORMAT => \"str\"";
+        machine.helpstrm() << "todo: Format description...";
         return;
     }
 
@@ -86,8 +86,8 @@ void CAT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "CAT: Concatenate two strings" << std::endl;
-        std::cout << "\"str1\" \"str2\" CAT => \"str1str2\"" << std::endl;
+        machine.helpstrm() << "CAT: Concatenate two strings";
+        machine.helpstrm() << "\"str1\" \"str2\" CAT => \"str1str2\"";
         return;
     }
 
@@ -106,9 +106,9 @@ void JOIN(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "Join: Joins a list into a string" << std::endl;
-        std::cout << "[list] \"delim\" JOIN =>\"str\"" << std::endl;
-        std::cout << "delim: The string to join with" << std::endl;
+        machine.helpstrm() << "Join: Joins a list into a string";
+        machine.helpstrm() << "[list] \"delim\" JOIN =>\"str\"";
+        machine.helpstrm() << "delim: The string to join with";
         return;
     }
 
@@ -132,14 +132,12 @@ void JOIN(Machine& machine)
     machine.push(strm.str());
 }
 
-// "str" startpos length => "str"
-// if length < 0, the returned substr is strtpos to end of string
 void SUBSTR(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "SUBSTR: Push a substring" << std::endl;
-        std::cout << "\"str\" startpos length SUBSTR => \"str\"" << std::endl;
+        machine.helpstrm() << "SUBSTR: Push a substring";
+        machine.helpstrm() << "\"str\" startpos length SUBSTR => \"str\"";
         return;
     }
 
@@ -165,9 +163,9 @@ void STRFIND(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "STRFIND: Find a string" << std::endl;
-        std::cout << "\"str\" startpos \"str to find\" STRFIND => pos" << std::endl;
-        std::cout << "Pushes -1 if the string is not found" << std::endl;
+        machine.helpstrm() << "STRFIND: Find a string";
+        machine.helpstrm() << "\"str\" startpos \"str to find\" STRFIND => pos";
+        machine.helpstrm() << "Pushes -1 if the string is not found";
         return;
     }
 
@@ -195,9 +193,9 @@ void STRCMP(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "STRCMP: Compare two strings" << std::endl;
-        std::cout << "\"str1\" \"str2\" STRCMP => int" << std::endl;
-        std::cout << "Pushes <0, 0 or >0" << std::endl;
+        machine.helpstrm() << "STRCMP: Compare two strings";
+        machine.helpstrm() << "\"str1\" \"str2\" STRCMP => int";
+        machine.helpstrm() << "Pushes <0, 0 or >0";
         return;
     }
 
@@ -218,9 +216,9 @@ void STRNCMP(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "STRNCMP: Compare two strings for the given length" << std::endl;
-        std::cout << "\"str1\" \"str2\" length STRNCMP => int" << std::endl;
-        std::cout << "Pushes <0, 0 or >0" << std::endl;
+        machine.helpstrm() << "STRNCMP: Compare two strings for the given length";
+        machine.helpstrm() << "\"str1\" \"str2\" length STRNCMP => int";
+        machine.helpstrm() << "Pushes <0, 0 or >0";
         return;
     }
 
@@ -243,12 +241,12 @@ void SPLIT(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "SPLIT: Split a string" << std::endl;
-        std::cout << "\"str\" \"delim\" opts SPLIT => [list]" << std::endl;
-        std::cout << "delims: Set of delimiter chars to split with" << std::endl;
-        std::cout << "opts: Optional arguments" << std::endl;
-        std::cout << "     --collapse: Merge empty strings" << std::endl;
-        std::cout << "     --n: Max number of splits" << std::endl;
+        machine.helpstrm() << "SPLIT: Split a string";
+        machine.helpstrm() << "\"str\" \"delim\" opts SPLIT => [list]";
+        machine.helpstrm() << "delims: Set of delimiter chars to split with";
+        machine.helpstrm() << "opts: Optional arguments";
+        machine.helpstrm() << "     --collapse: Merge empty strings";
+        machine.helpstrm() << "     --n: Max number of splits";
         return;
     }
 
