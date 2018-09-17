@@ -14,7 +14,6 @@
 #include "commands.h"
 #include "utilities.h"
 
-// "str" =>
 void PRINT(Machine& machine)
 {
     if (machine.help)
@@ -32,7 +31,6 @@ void PRINT(Machine& machine)
     std::cout << ToStr(machine, optr) << std::endl;
 }
 
-// "str" => "str"
 void PROMPT(Machine& machine)
 {
     if (machine.help)
@@ -56,15 +54,13 @@ void PROMPT(Machine& machine)
     machine.push(inbuf);
 }
 
-// cmd => [list]
-// cmd opt1.. => [list]
-//   opt: "--limit=n"
 void PREAD(Machine& machine)
 {
     if (machine.help)
     {
         machine.helpstrm() << "PREAD: Capture process output into a list";
-        machine.helpstrm() << "\"command line\" PREAD => [dstlist]";
+        machine.helpstrm() << "\"command line\" opts PREAD => [dstlist]";
+        machine.helpstrm() << "opts: --limit=n  Read a maximum of n lines of data";
         return;
     }
    stack_required(machine, "PREAD", 1);
@@ -105,11 +101,8 @@ void PREAD(Machine& machine)
        pclose(fp);
    }
    machine.push(ret);
-
 }
 
-// cmd [list] => 
-// cmd "str" => 
 void PWRITE(Machine& machine)
 {
     if (machine.help)
@@ -149,8 +142,6 @@ void PWRITE(Machine& machine)
    }
 }
 
-// cmd [list] => 
-// cmd "str" => 
 void FWRITE(Machine& machine)
 {
     if (machine.help)
@@ -161,6 +152,7 @@ void FWRITE(Machine& machine)
     }
 
    stack_required(machine, "FWRITE", 2);
+   throw_required(machine, "FREAD", 0, OBJECT_STRING);
 
    ObjectPtr data;
    std::string file;
@@ -190,6 +182,55 @@ void FWRITE(Machine& machine)
        }
        fclose(fp);
    }
+}
+
+void FREAD(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "FREAD: Capture a file into a list";
+        machine.helpstrm() << "\"filename\" opts FREAD => [list]";
+        machine.helpstrm() << "opts: --limit=n  Read a maximum of n lines of data";
+        return;
+    }
+   stack_required(machine, "FREAD", 1);
+   throw_required(machine, "FREAD", 0, OBJECT_STRING);
+
+   std::string opt;
+   std::string file;
+   machine.pop(opt);
+   int limit = std::numeric_limits<int>::max();
+   while (strncmp(opt.c_str(), "--", 2) == 0)
+   {
+       if (strncmp(opt.c_str(), "--limit=", 8) == 0)
+       {
+            limit = std::stoi(&opt.c_str()[8]);
+       }
+       throw_required(machine, "FREAD", 0, OBJECT_STRING);
+       machine.pop(opt);
+   }
+   file = opt;
+   ListPtr ret = MakeList();
+
+   FILE *fp = fopen(file.c_str(), "r");
+   if (fp)
+   {
+       char buf[10240];
+       for (int count = 0; count < limit && !feof(fp); ++count)
+       {
+           if (fgets(buf, sizeof(buf), fp))
+           {
+               size_t l = strlen(buf);
+               if (buf[l-1] == '\n')
+                   buf[l-1] = '\0';
+               StringPtr sp = MakeString();
+               sp->value = buf;
+               ret->items.push_back(sp);
+           }
+       }
+       fclose(fp);
+   }
+   machine.push(ret);
 }
 
 void SYSTEM(Machine& machine)

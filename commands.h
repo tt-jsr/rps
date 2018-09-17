@@ -90,6 +90,7 @@ void PRINT(Machine&);
 void PROMPT(Machine&);
 void PREAD(Machine&);
 void PWRITE(Machine&);
+void FREAD(Machine&);
 void FWRITE(Machine&);
 void SYSTEM(Machine&);
 

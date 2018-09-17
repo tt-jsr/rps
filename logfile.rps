@@ -52,8 +52,8 @@ SUBSTR          # the value
 >> getfield STO
 
 ######################################################
-# Get a field from a protobuf
-# protobuf fieldname => value
+# Get a field=value from a protobuf
+# protobuf fieldname => [name, value]
 <<
 field STOL  # store fieldname=
 pb STOL     # store the pb

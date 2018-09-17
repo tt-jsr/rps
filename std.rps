@@ -106,3 +106,21 @@ SWAP DROP
 FROMLIST
 >> rstack STO
 
+############################################
+# Vim edit a list
+<<
+"rpstmp.txt" FWRITE
+"vim rpstmp.txt" SYSTEM
+"rpstmp.txt" FREAD
+"rm rpstmp.txt" SYSTEM
+>> vedit STO
+
+###########################################
+# Less 
+<<
+DUP
+"rpstmp.txt" FWRITE
+"less rpstmp.txt" SYSTEM
+"rm rpstmp.txt" SYSTEM
+>> less STO
+

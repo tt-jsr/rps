@@ -366,6 +366,7 @@ void NAMESPACES(Machine& machine)
     {
         machine.helpstrm() << "NAMESPACES: List namespaces";
         machine.helpstrm() << "NAMESPACES => [list]";
+        machine.helpstrm() << "See also: SETNS GETNS =>";
         return;
     }
     ListPtr lp = MakeList();
@@ -398,6 +399,7 @@ void SETNS(Machine& machine)
     {
         machine.helpstrm() << "SETNS: Create or change namespace";
         machine.helpstrm() << "\"namespace\" SETNS =>";
+        machine.helpstrm() << "See also: GETNS NAMESPACES =>";
         return;
     }
     stack_required(machine, "SETNS", 1);
@@ -415,6 +417,7 @@ void GETNS(Machine& machine)
     {
         machine.helpstrm() << "GETNS: Push current namespace";
         machine.helpstrm() << "GETNS => \"namespace\"";
+        machine.helpstrm() << "See also: SETNS NAMESPACES =>";
         return;
     }
     machine.push(machine.current_module_);

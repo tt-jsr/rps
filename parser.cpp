@@ -810,35 +810,36 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "APPEND");
     AddCommand(machine, "ERASE", &ERASE);
     Category(machine, "List", "ERASE");
-    Category(machine, "Map", "ERASE");
     AddCommand(machine, "CLEAR", &CLEAR);
     Category(machine, "List", "CLEAR");
-    Category(machine, "MAP", "CLEAR");
     AddCommand(machine, "LIST-INSERT", &LIST_INSERT);
     Category(machine, "List", "LIST-INSERT");
-    AddCommand(machine, "MAP-INSERT", &MAP_INSERT);
-    Category(machine, "Map", "MAP-INSERT");
     AddCommand(machine, "INSERT", &INSERT);
     AddCommand(machine, "SIZE", &SIZE);
     Category(machine, "List", "SIZE");
-    Category(machine, "Map", "SIZE");
-    Category(machine, "String", "SIZE");
-    AddCommand(machine, "FIND", &FIND);
-    Category(machine, "Map", "FIND");
     AddCommand(machine, "FIRST", &FIRST);
     Category(machine, "List", "FIRST");
     AddCommand(machine, "SECOND", &SECOND);
     Category(machine, "List", "SECOND");
     AddCommand(machine, "TOLIST", &TOLIST);
     Category(machine, "List", "TOLIST");
-    AddCommand(machine, "TOMAP", &TOMAP);
-    Category(machine, "Map", "TOMAP");
     AddCommand(machine, "FROMLIST", &FROMLIST);
     Category(machine, "List", "FROMLIST");
-    AddCommand(machine, "FROMMAP", &FROMMAP);
-    Category(machine, "Map", "FROMMAP");
     AddCommand(machine, "CREATELIST", &CREATELIST);
     Category(machine, "List", "CREATELIST");
+
+    // Map commands
+    Category(machine, "Map", "ERASE");
+    Category(machine, "MAP", "CLEAR");
+    AddCommand(machine, "MAP-INSERT", &MAP_INSERT);
+    Category(machine, "Map", "MAP-INSERT");
+    Category(machine, "Map", "SIZE");
+    AddCommand(machine, "FIND", &FIND);
+    Category(machine, "Map", "FIND");
+    AddCommand(machine, "TOMAP", &TOMAP);
+    Category(machine, "Map", "TOMAP");
+    AddCommand(machine, "FROMMAP", &FROMMAP);
+    Category(machine, "Map", "FROMMAP");
     AddCommand(machine, "CREATEMAP", &CREATEMAP);
     Category(machine, "Map", "CREATEMAP");
 
@@ -853,6 +854,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Execution", "EVAL");
     AddCommand(machine, "CALL", &CALL);
     Category(machine, "Execution", "CALL");
+    AddCommand(machine, "SYSTEM", &SYSTEM);
+    Category(machine, "Execution", "SYSTEM");
 
     // Environment
     AddCommand(machine, "NAMESPACES", &NAMESPACES);
@@ -883,6 +886,7 @@ Parser::Parser(Machine& machine)
     Category(machine, "String", "STRNCMP");
     AddCommand(machine, "SPLIT", &SPLIT);
     Category(machine, "String", "SPLIT");
+    Category(machine, "String", "SIZE");
 
     // Types
     AddCommand(machine, "TOINT", &TOINT);
@@ -899,6 +903,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "IO", "PROMPT");
     AddCommand(machine, "PREAD", &PREAD);
     Category(machine, "IO", "PREAD");
+    AddCommand(machine, "FREAD", &FREAD);
+    Category(machine, "IO", "FREAD");
     AddCommand(machine, "PWRITE", &PWRITE);
     Category(machine, "IO", "PWRITE");
     AddCommand(machine, "FWRITE", &FWRITE);
