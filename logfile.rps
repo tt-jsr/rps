@@ -1,5 +1,6 @@
 ###################################################
 # Retruns a list of all "S T A R T" lines
+# "logname" start CALL => [list]
 <<
 "grep -b \"S T A R T\" %0" FORMAT PREAD
 SWAP DROP
@@ -9,7 +10,7 @@ APPLY
 
 ###################################################
 # Retuns a "dd" command for reading a section of a logfile
-# filename startbyte endbyte => ddcommand
+# filename startbyte endbyte section CALL => ddcommand
 <<
 TOINT 512 DIV endblock STOL
 TOINT 512 DIV startblock STOL
@@ -27,8 +28,8 @@ ENDIF
 >> section STO
 
 ######################################################
-# Get a field from a protobuf
-# protobuf fieldname => value
+# Get a field value from a protobuf
+# protobuf fieldname getfield CALL => value
 <<
 "=" CAT     # pb fieldname=
 field STOL  # pb
@@ -53,7 +54,7 @@ SUBSTR          # the value
 
 ######################################################
 # Get a field=value from a protobuf
-# protobuf fieldname => [name, value]
+# protobuf fieldname gettuple CALL => [name, value]
 <<
 field STOL  # store fieldname=
 pb STOL     # store the pb
@@ -64,3 +65,8 @@ pb RCLL         # value pb
 2 TOLIST        # [value, pb]
 >> gettuple STO
 
+#########################################
+# Protobuf format a list item
+# [list] idx pfmt CALL => [list]
+<< 1 PICK SWAP GET "pfmt" PWRITE
+>> pfmt STO

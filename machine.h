@@ -34,7 +34,7 @@ public:
     void pop();
 
     // settings
-    size_t maxwidth;
+    size_t viewwidth;
     bool debug;
     bool help;
     std::unordered_map<std::string, CommandPtr> commands;
@@ -48,3 +48,9 @@ void throw_required(Machine& machine, const char *f, int level, ObjectType t);
 void Execute(Machine&);
 void Execute(Machine&, ObjectPtr);
 
+class Program;
+typedef std::shared_ptr<Program> ProgramPtr;
+
+void Category(Machine& machine, const std::string& cat, const std::string& name);
+void AddCommand(Machine& machine, const char *name, void (*funcptr)(Machine&));
+void AddCommand(Machine& machine, const std::string&, ProgramPtr);

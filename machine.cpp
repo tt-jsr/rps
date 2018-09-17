@@ -14,7 +14,7 @@
 #include "utilities.h"
 
 Machine::Machine()
-: maxwidth(120)
+: viewwidth(120)
 , debug(false) 
 , help(false)
 {
@@ -267,7 +267,10 @@ void Execute(Machine& machine, ObjectPtr optr)
     case OBJECT_COMMAND:
         {
             Command *pCommand = (Command *)optr.get();
-            (*pCommand->funcptr)(machine);
+            if (pCommand->program)
+                EVAL(machine, pCommand->program);
+            else
+                (*pCommand->funcptr)(machine);
         }
         break;
     case OBJECT_TOKEN:
@@ -377,6 +380,29 @@ void NAMESPACES(Machine& machine)
         lp->items.push_back(sp);
     }
     machine.push(lp);
+}
+
+void REGISTER(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "REGISTER: Register a user defined program";
+        machine.helpstrm() << "<<prog>> \"name\" REGISTER => ";
+        machine.helpstrm() << "Registering a program allows the user invoke the program by name";
+        machine.helpstrm() << "rather than having to issue a CALL statement";
+        return;
+    }
+    stack_required(machine, "REGISTER", 2);
+    throw_required(machine, "REGISTER", 0, OBJECT_STRING);
+    throw_required(machine, "REGISTER", 1, OBJECT_PROGRAM);
+    ObjectPtr prog;
+    std::string name;
+
+    machine.pop(name);
+    machine.pop(prog);
+    ProgramPtr pptr = std::static_pointer_cast<Program>(prog);
+
+    AddCommand(machine, name, pptr);
 }
 
 void CLONE(Machine& machine)
@@ -533,4 +559,25 @@ void stack_required(Machine& machine, const char *f, int depth)
     }
 }
 
+
+void AddCommand(Machine& machine, const char *name, void (*funcptr)(Machine&))
+{
+    CommandPtr cp;
+    cp.reset(new Command(name, funcptr));
+    machine.commands.emplace(name, cp);
+}
+
+void AddCommand(Machine& machine, const std::string& name, ProgramPtr pptr)
+{
+    CommandPtr cp;
+    cp.reset(new Command(name, nullptr));
+    cp->program = pptr;
+    machine.commands.emplace(name, cp);
+}
+
+void Category(Machine& machine, const std::string& cat, const std::string& name)
+{
+    std::vector<std::string>& vec = machine.categories[cat];
+    vec.push_back(name);
+}
 

@@ -11,7 +11,6 @@
 #include "commands.h"
 #include "utilities.h"
 
-// [list]   <<prog>>  =>  [list]
 void APPLY(Machine& machine)
 {
     if (machine.help)
@@ -84,3 +83,37 @@ void SELECT(Machine& machine)
     }
     machine.push(result);
 }
+
+void MAP(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "MAP a function over a list";
+        machine.helpstrm() << "[list] <<prog>> MAP => ";
+        machine.helpstrm() << "srclist: List of items";
+        machine.helpstrm() << "prog: Program to execute. The program will have a list item at L0";
+        machine.helpstrm() << "MAP itself does not push anything on the stack, however the executed program may.";
+        return;
+    }
+
+    stack_required(machine, "MAP", 2);
+    throw_required(machine, "MAP", 0, OBJECT_PROGRAM);
+    throw_required(machine, "MAP", 1, OBJECT_LIST);
+
+    ListPtr result = MakeList();
+    ListPtr lp;
+    ObjectPtr optr;
+    ProgramPtr pptr;
+
+    machine.pop(optr);
+    pptr = std::static_pointer_cast<Program>(optr);
+
+    machine.pop(lp);
+
+    for (ObjectPtr p : lp->items)
+    {
+        machine.push(p);
+        EVAL(machine, pptr);
+    }
+}
+

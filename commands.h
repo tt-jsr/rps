@@ -84,6 +84,7 @@ void CREATEMAP(Machine&);
 // Functional
 void APPLY(Machine& machine);
 void SELECT(Machine& machine);
+void MAP(Machine& machine);
 
 // IO commands
 void PRINT(Machine&);
@@ -113,6 +114,7 @@ void TYPE(Machine&);
 void EVAL(Machine&);
 void EVAL(Machine&, ObjectPtr);
 void CALL(Machine&);
+void REGISTER(Machine&);
 
 // Environment
 void NAMESPACES(Machine&);

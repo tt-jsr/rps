@@ -89,25 +89,26 @@ ENDWHILE
 
 #############################################
 # Save the current stack
+# objn objn-1 obj name sstack CALL =>
 <<
-name STOL
+"tmp" STOL  # save the name
 DEPTH
 TOLIST
-name RCLL
-SWAP DROP
+"tmp" RCLL
 STO
 >> sstack STO
 
 #############################################
 # Restore saved stack
+# name rstack CALL => objn objn-1 obj
 <<
 RCL
-SWAP DROP
 FROMLIST
 >> rstack STO
 
 ############################################
 # Vim edit a list
+# [list] vim CALL => [list]
 <<
 "rpstmp.txt" FWRITE
 "vim rpstmp.txt" SYSTEM
@@ -115,12 +116,28 @@ FROMLIST
 "rm rpstmp.txt" SYSTEM
 >> vedit STO
 
+############################################
+# View edit a list
+# [list] view CALL => [list]
+<<
+"rpstmp.txt" FWRITE
+"view rpstmp.txt" SYSTEM
+"rpstmp.txt" FREAD
+"rm rpstmp.txt" SYSTEM
+>> view STO
+
 ###########################################
 # Less 
+# [list] less CALL => [list]
 <<
 DUP
 "rpstmp.txt" FWRITE
 "less rpstmp.txt" SYSTEM
 "rm rpstmp.txt" SYSTEM
 >> less STO
+
+#########################################
+# see a list item without popping
+<< 1 PICK SWAP GET PRINT
+>> see STO
 

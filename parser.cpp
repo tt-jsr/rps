@@ -710,19 +710,6 @@ void Parser::Parse(Machine& machine, Source& src)
     }
 }
 
-void AddCommand(Machine& machine, const char *name, void (*funcptr)(Machine&))
-{
-    CommandPtr cp;
-    cp.reset(new Command(name, funcptr));
-    machine.commands.emplace(name, cp);
-}
-
-void Category(Machine& machine, const std::string& cat, const std::string& name)
-{
-    std::vector<std::string>& vec = machine.categories[cat];
-    vec.push_back(name);
-}
-
 Parser::Parser(Machine& machine)
 {
     // Stack commands
@@ -848,6 +835,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Functional", "APPLY");
     AddCommand(machine, "SELECT", &SELECT);
     Category(machine, "Functional", "SELECT");
+    AddCommand(machine, "MAP", &MAP);
+    Category(machine, "Functional", "MAP");
 
     // Execution commands
     AddCommand(machine, "EVAL", &EVAL);
@@ -856,6 +845,9 @@ Parser::Parser(Machine& machine)
     Category(machine, "Execution", "CALL");
     AddCommand(machine, "SYSTEM", &SYSTEM);
     Category(machine, "Execution", "SYSTEM");
+
+    AddCommand(machine, "REGISTER", &REGISTER);
+    Category(machine, "Execution", "REGISTER");
 
     // Environment
     AddCommand(machine, "NAMESPACES", &NAMESPACES);

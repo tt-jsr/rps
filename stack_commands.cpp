@@ -141,7 +141,7 @@ void VIEW(Machine& machine, size_t depth)
         std::stringstream strm;
         ToStr(machine, machine.peek(n), strm, true);
         std::string s = strm.str();
-        s = s.substr(0, machine.maxwidth);
+        s = s.substr(0, machine.viewwidth);
         std::cout << n << ":" << s << std::endl;
         --n;
     }

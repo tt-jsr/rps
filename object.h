@@ -62,6 +62,9 @@ public:
 
 typedef std::shared_ptr<Map> MapPtr;
 
+class Program;
+typedef std::shared_ptr<Program> ProgramPtr;
+
 class Command : public Object
 {
 public:
@@ -72,12 +75,11 @@ public:
     {}
     std::string value;
     void (*funcptr)(Machine&);
+
+    ProgramPtr program;
 };
 
 typedef std::shared_ptr<Command> CommandPtr;
-
-class Program;
-typedef std::shared_ptr<Program> ProgramPtr;
 
 class Program : public Object
 {

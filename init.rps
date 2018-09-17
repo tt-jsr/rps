@@ -1,2 +1,8 @@
 import std
 import logfile
+
+std.vedit RCL VEDIT REGISTER
+
+logfile.start RCL START REGISTER
+logfile.pfmt RCL PFMT REGISTER
+
