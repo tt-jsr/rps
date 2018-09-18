@@ -731,8 +731,6 @@ Parser::Parser(Machine& machine)
     Category(machine, "Stack", "DEPTH");
     AddCommand(machine, "VIEW", &VIEW);
     Category(machine, "Stack", "VIEW");
-    AddCommand(machine, "CLONE",  &CLONE);
-    Category(machine, "Stack", "CLONE");
 
     // Logical operators
     AddCommand(machine, "EQ", &EQ);
@@ -765,6 +763,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Variable", "VARNAMES");
     AddCommand(machine, "VARTYPES", &VARTYPES);
     Category(machine, "Variable", "VARTYPES");
+    AddCommand(machine, "REGISTER", &REGISTER);
+    Category(machine, "Variable", "REGISTER");
 
     // Math commands
     AddCommand(machine, "ADD", &ADD);
@@ -846,8 +846,6 @@ Parser::Parser(Machine& machine)
     AddCommand(machine, "SYSTEM", &SYSTEM);
     Category(machine, "Execution", "SYSTEM");
 
-    AddCommand(machine, "REGISTER", &REGISTER);
-    Category(machine, "Execution", "REGISTER");
 
     // Environment
     AddCommand(machine, "NAMESPACES", &NAMESPACES);
@@ -887,6 +885,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Types", "TOSTR");
     AddCommand(machine, "TYPE", &TYPE);
     Category(machine, "Types", "TYPE");
+    AddCommand(machine, "CLONE",  &CLONE);
+    Category(machine, "Types", "CLONE");
 
     // IO
     AddCommand(machine, "PRINT", &PRINT);

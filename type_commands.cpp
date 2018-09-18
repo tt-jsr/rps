@@ -10,8 +10,6 @@
 #include "utilities.h"
 #include "commands.h"
 
-// "str" => int
-// int  => int
 void TOINT(Machine& machine)
 {
     if (machine.help)
@@ -31,8 +29,6 @@ void TOINT(Machine& machine)
     machine.push(optr);
 }
 
-// "str" => "str"
-// int  => "str"
 void TOSTR(Machine& machine)
 {
     if (machine.help)
@@ -52,7 +48,6 @@ void TOSTR(Machine& machine)
     machine.push(optr);
 }
 
-// obj => "str"
 void TYPE(Machine& machine)
 {
     if (machine.help)
@@ -69,6 +64,20 @@ void TYPE(Machine& machine)
     StringPtr sp = MakeString();
     sp->value = ToType(machine, optr);
     optr = sp;
+    machine.push(optr);
+}
+
+void CLONE(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "CLONE: Clone the object at L0";
+        machine.helpstrm() << "obj CLONE => obj obj";
+        return;
+    }
+    stack_required(machine, "CLONE", 1);
+
+    ObjectPtr optr = Clone(machine.stack_[machine.stack_.size()-1]);
     machine.push(optr);
 }
 

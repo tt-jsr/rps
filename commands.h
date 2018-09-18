@@ -38,6 +38,7 @@ void RCLL(Machine& machine);
 void RCLL(Machine& machine, const std::string& name, ObjectPtr& out);
 void VARNAMES(Machine& machine);
 void VARTYPES(Machine& machine);
+void REGISTER(Machine&);
 
 /*
  * Control commands
@@ -114,7 +115,7 @@ void TYPE(Machine&);
 void EVAL(Machine&);
 void EVAL(Machine&, ObjectPtr);
 void CALL(Machine&);
-void REGISTER(Machine&);
+void CLONE(Machine&);
 
 // Environment
 void NAMESPACES(Machine&);
@@ -122,11 +123,6 @@ void SETNS(Machine&);
 void GETNS(Machine&);
 void CD(Machine&);
 void HELP(Machine&);
-
-/*
- * Misc commands
- */
-void CLONE(Machine&);
 
 
 
