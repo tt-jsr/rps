@@ -1,5 +1,6 @@
 import std
 import logfile
+import git
 
 std.vedit RCL VEDIT REGISTER
 

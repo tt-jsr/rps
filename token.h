@@ -52,6 +52,7 @@ enum ObjectType
 static const char *ObjectNames[] = {
     "String"
     , "Integer"
+    , "List"
     , "Map"
     , "Command"
     , "Program"
