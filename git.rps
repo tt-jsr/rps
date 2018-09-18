@@ -30,6 +30,7 @@ files STO
 << files RCL
 std.lget CALL
 "git difftool -y %branch -- %0" FORMAT !
+DROP
 >> gd STO
 
 
