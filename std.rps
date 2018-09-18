@@ -1,3 +1,40 @@
+##########################
+# Logfile help
+<<
+"" PRINT
+"    less: Invoke less ona filename list element" PRINT
+"          filename idx less CALL => " PRINT
+"" PRINT
+"     vim: Invoke vim on a filename list element" PRINT
+"          filename idx vim CALL =>" PRINT
+"" PRINT
+"    show: Primt a list in a numbered output" PRINT
+"          [list] show CALL => [list]" PRINT
+"" PRINT
+"    lget: Show a menu to get a list element" PRINT
+"          [list] lget CALL => obj" PRINT
+"" PRINT
+"  sstack: Save the current stack" PRINT
+"          objn objn-1 obj \"name\" sstack CALL =>" PRINT
+"" PRINT
+"  rstack: Restore a saved stack" PRINT
+"          \"name\" rstack CALL => objn obj-1 obj" PRINT
+"" PRINT
+"   vedit: Edit a list" PRINT
+"          [list] vedit CALL => [list]" PRINT
+"" PRINT
+"    view: view, via vim readonly a list" PRINT
+"          [list] view CALL => [list]" PRINT
+"" PRINT
+"   lview: less a list" PRINT
+"          [list] lview CALL => [list]" PRINT
+"" PRINT
+"     see: print a list item without popping" PRINT
+"          [list] idx see CALL => [list]" PRINT
+"" PRINT
+>>
+help STO
+
 #Invoke less on a filename list element
 #[...]
 # idx
@@ -60,32 +97,6 @@ lst RCLL
     ENDIF
 ENDWHILE
 >> lget STO
-
-###############################################
-# Simple list based menu
-<< prog STOL
-lst STOL
-1 run STOL
-WHILE
-    run RCLL
-    0 GT
-REPEAT
-    lst RCLL
-    lselect CALL
-    sel STOL
-    IF 
-        sel RCLL
-        "q" NEQ
-    THEN
-        sel RCLL
-        prog RCLL
-        EVAL
-        1 run STOL
-    ELSE
-        0 run STOL
-    ENDIF
-ENDWHILE
->> menu STO
 
 #############################################
 # Save the current stack

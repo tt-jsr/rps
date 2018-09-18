@@ -1,3 +1,29 @@
+##########################
+# Logfile help
+<<
+"" PRINT
+"   start: Collect all \"S T A R T\" log lines" PRINT
+"          filename start CALL => [list]" PRINT
+"" PRINT
+" section: Pushes a command line for grabing a section of a logfile" PRINT
+"          filename startbyte endbyte section CALL => \"command\"" PRINT
+"" PRINT
+"getfield: Get a field value from a protobuf" PRINT
+"          protobuf fieldname getfield CALL => value" PRINT
+"" PRINT
+"gettuple: Get a field=value from a protobuf" PRINT
+"          protobuf fieldname gettuple CALL => [name, value]" PRINT
+"" PRINT
+"    pfmt: Protobuf format a list item" PRINT
+"          [list] idx pfmt CALL => [list]" PRINT
+"" PRINT
+"cdinsert: Read inserted customer defaults" PRINT
+"          filename startbyte endbyte cdinsert CALL => [list]" PRINT
+"" PRINT
+
+>>
+help STO
+
 ###################################################
 # Retruns a list of all "S T A R T" lines
 # "logname" start CALL => [list]
@@ -70,3 +96,13 @@ pb RCLL         # value pb
 # [list] idx pfmt CALL => [list]
 << 1 PICK SWAP GET "pfmt" PWRITE
 >> pfmt STO
+
+#########################################
+#
+# Read inserted customer defaults
+# filename startbyte endbyte cdinsert CALL => [list]
+<<
+section CALL
+"| grep \"CUSTOMER_DEFAULTS-.*INSERT\"" CAT PREAD
+>> cdinsert STO
+
