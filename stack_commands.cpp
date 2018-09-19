@@ -108,7 +108,7 @@ void ROLL(Machine& machine)
     if (machine.help)
     {
         machine.helpstrm() << "ROLL: Move the nth item from the stack to L0";
-        machine.helpstrm() << "obj1 obj2... nitem ROLL => obj";
+        machine.helpstrm() << "obj1 obj2 obj3... nitem ROLL => obj2 obj3 obj1";
         return;
     }
 
@@ -129,6 +129,34 @@ void ROLL(Machine& machine)
     ObjectPtr obj = machine.stack_[idx];
     machine.stack_.erase(machine.stack_.begin()+idx);
     machine.stack_.push_back(obj);
+}
+
+void ROLLD(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "ROLLD: Move L0 item from the stack to nth level";
+        machine.helpstrm() << "obj1 obj2 obj3... nitem ROLLD => obj3 obj2 obj1";
+        return;
+    }
+
+    int64_t level;
+    machine.pop(level);
+    ObjectPtr optr;
+
+    if (machine.stack_.size() <= level)
+    {
+        machine.push(level);
+        throw std::runtime_error("ROLLD: stack underflow");
+    }
+    int64_t idx = machine.stack_.size() - level - 1;
+    if (idx < 0 || idx >= machine.stack_.size())
+    {
+        machine.push(level);
+        throw std::runtime_error("ROLLD: Out of range");
+    }
+    machine.pop(optr);
+    machine.stack_.insert(machine.stack_.begin()+idx, optr);
 }
 
 void VIEW(Machine& machine, size_t depth)

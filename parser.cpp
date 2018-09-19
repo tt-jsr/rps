@@ -730,6 +730,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Stack", "PICK");
     AddCommand(machine, "ROLL", &ROLL);
     Category(machine, "Stack", "ROLL");
+    AddCommand(machine, "ROLLD", &ROLLD);
+    Category(machine, "Stack", "ROLLD");
     AddCommand(machine, "DEPTH", &DEPTH);
     Category(machine, "Stack", "DEPTH");
     AddCommand(machine, "VIEW", &VIEW);

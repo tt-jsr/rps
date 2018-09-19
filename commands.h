@@ -13,6 +13,7 @@ void SWAP(Machine& machine);
 void DUP(Machine& machine);
 void PICK(Machine&);
 void ROLL(Machine&);
+void ROLLD(Machine&);
 void VIEW(Machine&);
 void VIEW(Machine&, size_t n);
 void DEPTH(Machine&);
