@@ -376,6 +376,56 @@ void SECOND(Machine& machine)
     GET(machine);
 }
 
+void HEAD(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "HEAD: Get nitems from the head of the list";
+        machine.helpstrm() << "[list] n HEAD => [list]";
+        return;
+    }
+
+    stack_required(machine, "HEAD", 2);
+    throw_required(machine, "HEAD", 0, OBJECT_INTEGER);
+    throw_required(machine, "HEAD", 1, OBJECT_LIST);
+
+    ListPtr lp;
+    int64_t n;
+    machine.pop(n);
+    machine.pop(lp);
+    if (n >=lp->items.size())
+        n = lp->items.size()-1;
+    ListPtr result = MakeList();
+    std::copy(lp->items.begin(), lp->items.begin()+n, std::back_inserter(result->items));
+    machine.push(result);
+}
+
+void TAIL(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "TAIL: Get nitems from the tail of the list";
+        machine.helpstrm() << "[list] n TAIL => [list]";
+        return;
+    }
+
+    stack_required(machine, "TAIL", 2);
+    throw_required(machine, "TAIL", 0, OBJECT_INTEGER);
+    throw_required(machine, "TAIL", 1, OBJECT_LIST);
+
+    ListPtr lp;
+    int64_t n;
+    machine.pop(n);
+    machine.pop(lp);
+    n = lp->items.size() - n;
+    if (n < 0)
+        n = 0;
+
+    ListPtr result = MakeList();
+    std::copy(lp->items.begin()+n, lp->items.end(), std::back_inserter(result->items));
+    machine.push(result);
+}
+
 void TOLIST(Machine& machine)
 {
     if (machine.help)

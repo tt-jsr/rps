@@ -19,7 +19,7 @@ void APPLY(Machine& machine)
         machine.helpstrm() << "[srclist] <<prog>> APPLY => [dstlist]";
         machine.helpstrm() << "srclist: List of items";
         machine.helpstrm() << "prog: Program to execute. The program will have a list item at L0";
-        machine.helpstrm() << "      the program will return an object to be placedon the dstlist";
+        machine.helpstrm() << "      the program will return an object to be placed on the dstlist";
         return;
     }
     stack_required(machine, "APPLY", 2);

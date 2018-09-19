@@ -67,20 +67,24 @@ void OR(Machine&);
 void APPEND(Machine&);
 void GET(Machine&);
 void SUBLIST(Machine&);
-void FIND(Machine&);
 void INSERT(Machine&);
 void LINSERT(Machine&);
-void MINSERT(Machine&);
 void ERASE(Machine&);
 void CLEAR(Machine&);
 void SIZE(Machine&);
 void FIRST(Machine&);
 void SECOND(Machine&);
+void HEAD(Machine&);
+void TAIL(Machine&);
 void TOLIST(Machine&);
-void TOMAP(Machine&);
 void FROMLIST(Machine&);
-void FROMMAP(Machine&);
 void CREATELIST(Machine&);
+
+//Map
+void FIND(Machine&);
+void MINSERT(Machine&);
+void TOMAP(Machine&);
+void FROMMAP(Machine&);
 void CREATEMAP(Machine&);
 
 // Functional

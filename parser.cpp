@@ -819,6 +819,10 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "FROMLIST");
     AddCommand(machine, "CREATELIST", &CREATELIST);
     Category(machine, "List", "CREATELIST");
+    AddCommand(machine, "HEAD", &HEAD);
+    Category(machine, "List", "HEAD");
+    AddCommand(machine, "TAIL", &TAIL);
+    Category(machine, "List", "TAIL");
 
     // Map commands
     Category(machine, "Map", "ERASE");
