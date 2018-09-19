@@ -14,6 +14,14 @@ int main(int argc, char *argv[])
     Machine machine;
     Parser parser(machine);
 
+#if defined(CENTOS)
+    char *p = getenv("PRE_RUN_PATH");
+    if (p)
+        setenv("PATH", p, 1);
+    unsetenv("LD_LIBRARY_PATH");
+    unsetenv("PYTHONPATH");
+    unsetenv("PYTHONHOME");
+#endif
     machine.current_module_ = "interactive";
     machine.CreateModule("interactive");
     Source src(std::cin);
