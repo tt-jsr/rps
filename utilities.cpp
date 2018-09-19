@@ -114,7 +114,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
             {
                 ToStr(machine, *it, strm, view);
                 if ((it+1) != lp->items.end())
-                    strm << ", ";
+                    strm << " ";
             }
             strm << " ]";
         }
@@ -130,7 +130,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
             ++it;
             for (; it != mp->items.end(); ++it)
             {
-                strm << ", ";
+                strm << " ";
                 ToStr(machine, it->first, strm, view);
                 strm << ":";
                 ToStr(machine, it->second, strm, view);
@@ -191,7 +191,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
     case OBJECT_TOKEN:
         {
             if (optr->token == TOKEN_EOL)
-                strm << "<EOL>";
+                strm << "\n";
             else
             {
                 strm << "TOKEN: " << optr->token;

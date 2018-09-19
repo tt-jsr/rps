@@ -62,14 +62,14 @@ void CollectIdentifier(Source& src, Token& token)
 {
     while (src.it != src.line.end())
     {
+        if (*src.it == '>' || *src.it == '}' || *src.it == ']' || *src.it == '!')
+            return;
         if (isalnum(*src.it))
             token.value.push_back(*src.it);
         else if (isdigit(*src.it))
             token.value.push_back(*src.it);
-        else if (*src.it == '.' || *src.it == '_' || *src.it == '-')
+        else if (*src.it != ' ' && *src.it != '\n')
             token.value.push_back(*src.it);
-        else if (*src.it == ' ' || *src.it == ';')
-            return;
         else if (*src.it == '#')
         {
             src.it = src.line.end();
@@ -77,9 +77,7 @@ void CollectIdentifier(Source& src, Token& token)
         }
         else
         {
-            std::stringstream strm;
-            strm << "Identifier received unexpected \'" << *src.it << "\'";
-            throw std::runtime_error(strm.str().c_str());
+            return;
         }
         ++src.it;
     }
@@ -91,19 +89,13 @@ void CollectInteger(Source& src, Token& token)
     {
         if (isdigit(*src.it))
             token.value.push_back(*src.it);
-        else if (*src.it == ' ' || *src.it == ';')
-            return;
         else if (*src.it == '#')
         {
             src.it = src.line.end();
             return;
         }
         else
-        {
-            std::stringstream strm;
-            strm << "Integer received unexpected \'" << *src.it << "\'";
-            throw std::runtime_error(strm.str().c_str());
-        }
+            return;
         ++src.it;
     }
 }
@@ -124,7 +116,7 @@ void GetToken(Source& src, Token& token)
         return;
     }
 
-    if (*src.it == ';')
+    if (*src.it == '\n')
     {
         token.value.push_back(*src.it);
         token.token = TOKEN_EOL;
@@ -134,22 +126,6 @@ void GetToken(Source& src, Token& token)
     if (*src.it == '\"')
     {
         CollectQuoted(src, token);
-        token.token = TOKEN_STRING;
-        return;
-    }
-    if (isdigit(*src.it) || *src.it == '-')
-    {
-        token.value.push_back(*src.it);
-        ++src.it;
-        CollectInteger(src, token);
-        token.token = TOKEN_INTEGER;
-        return;
-    }
-    if (isalpha(*src.it))
-    {
-        token.value.push_back(*src.it);
-        ++src.it;
-        CollectIdentifier(src, token);
         token.token = TOKEN_STRING;
         return;
     }
@@ -207,6 +183,24 @@ void GetToken(Source& src, Token& token)
     {
         src.it = src.line.end();
         token.token = TOKEN_COMMENT;
+    }
+
+    // Unquoted string can start with alpha, _, or --
+    if ((isalpha(*src.it) || *src.it == '_') || (*src.it == '-' && *(src.it+1) == '-' && isalpha(*(src.it+3))))
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        CollectIdentifier(src, token);
+        token.token = TOKEN_STRING;
+        return;
+    }
+    if (isdigit(*src.it) || *src.it == '-')
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        CollectInteger(src, token);
+        token.token = TOKEN_INTEGER;
+        return;
     }
 }
 
@@ -514,6 +508,8 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
         {
             return;
         }
+        else if (optr->token == TOKEN_EOL)
+            ;
         else if (optr->token == TOKEN_START_PROGRAM)
         {
             ProgramPtr pptr;
@@ -526,6 +522,7 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
             enclosingProgram = pptr->enclosingProgram;
             src.prompt = "[] ";
             optr = pptr;
+            lptr->items.push_back(optr);           
         }
         else if (optr->token == TOKEN_START_LIST)
         {
@@ -533,8 +530,10 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
             lp.reset(new List());
             ParseList(machine, lp, src);    // recurse
             optr = lp;
+            lptr->items.push_back(optr);           
         }
-        lptr->items.push_back(optr);           
+        else
+            lptr->items.push_back(optr);           
     }
 }
 
@@ -927,7 +926,7 @@ void Source::Read()
             add_history(pLine);
             line = pLine;
             free(pLine);
-            line += ";";
+            line += "\n";
             ++lineno;
             it = line.begin();
         }
@@ -946,7 +945,7 @@ void Source::Read()
                 std::cout << prompt << std::flush;
             }
             getline(istrm, line);
-            line += ";";
+            line += "\n";
             ++lineno;
             it = line.begin();
         }
