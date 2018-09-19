@@ -183,10 +183,10 @@ void GetToken(Source& src, Token& token)
     {
         src.it = src.line.end();
         token.token = TOKEN_COMMENT;
+        return;
     }
 
-    // Unquoted string can start with alpha, _, or --
-    if ((isalpha(*src.it) || *src.it == '_') || (*src.it == '-' && *(src.it+1) == '-' && isalpha(*(src.it+3))))
+    if (*src.it == '-' && *(src.it+1) == '-' && isalpha(*(src.it+2)))
     {
         token.value.push_back(*src.it);
         ++src.it;
@@ -202,6 +202,10 @@ void GetToken(Source& src, Token& token)
         token.token = TOKEN_INTEGER;
         return;
     }
+    token.value.push_back(*src.it);
+    ++src.it;
+    CollectIdentifier(src, token);
+    token.token = TOKEN_STRING;
 }
 
 bool Parser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
@@ -798,8 +802,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "ERASE");
     AddCommand(machine, "CLEAR", &CLEAR);
     Category(machine, "List", "CLEAR");
-    AddCommand(machine, "LIST-INSERT", &LIST_INSERT);
-    Category(machine, "List", "LIST-INSERT");
+    AddCommand(machine, "LINSERT", &LINSERT);
+    Category(machine, "List", "LINSERT");
     AddCommand(machine, "INSERT", &INSERT);
     AddCommand(machine, "SIZE", &SIZE);
     Category(machine, "List", "SIZE");
@@ -817,8 +821,8 @@ Parser::Parser(Machine& machine)
     // Map commands
     Category(machine, "Map", "ERASE");
     Category(machine, "MAP", "CLEAR");
-    AddCommand(machine, "MAP-INSERT", &MAP_INSERT);
-    Category(machine, "Map", "MAP-INSERT");
+    AddCommand(machine, "MINSERT", &MINSERT);
+    Category(machine, "Map", "MINSERT");
     Category(machine, "Map", "SIZE");
     AddCommand(machine, "FIND", &FIND);
     Category(machine, "Map", "FIND");

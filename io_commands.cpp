@@ -231,6 +231,9 @@ void FSAVE(Machine& machine)
     {
         machine.helpstrm() << "FSAVE: Write obj at L1 to the file on L0";
         machine.helpstrm() << "obj \"filename\" FSAVE =>";
+        machine.helpstrm() << "FSAVE/FRESTORE is suitable for writing any object to a file for editing or";
+        machine.helpstrm() << "archiving";
+
         return;
     }
 
@@ -276,6 +279,7 @@ void FRESTORE(Machine& machine)
     {
         machine.helpstrm() << "FRESTORE: Restore a saved Object";
         machine.helpstrm() << "\"filename\" FRESTORE => obj";
+        machine.helpstrm() << "Restore an object save with FSAVE";
         return;
     }
     stack_required(machine, "FRESTORE", 1);

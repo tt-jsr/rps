@@ -3,7 +3,7 @@
 <<
 "" PRINT
 " gdfiles: git diff files. Get a list of filenames that are different." PRINT
-"          gdfiles CALL =>" PRINT
+"          branch dir gdfiles CALL =>" PRINT
 "          The following variables are used:" PRINT
 "               git.branch: The branch to diff against" PRINT
 "                  git.dir: The directory to limit the scope of changes" PRINT
@@ -19,10 +19,10 @@
 
 >>
 help STO
-"./" dir STO
-"master" branch STO
 
 << 
+dir STO
+branch STO
 "git diff --name-only %branch -- %dir" FORMAT PREAD
 files STO
 >> gdfiles STO
