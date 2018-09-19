@@ -1,6 +1,6 @@
 CC=gcc
 CDEBUG = -g -O0
-CPPFLAGS = $(CDEBUG) -std=c++14 -I.
+CPPFLAGS = $(CDEBUG) -std=c++14 -I. -DCENTOS
 LDFLAGS=-g
 LIBS = -lstdc++ -lreadline
 

@@ -29,7 +29,7 @@ files STO
 
 << files RCL
 std.lget CALL
-"git diff --name-only %branch -- %0" FORMAT !
+"git difftool -y %branch -- %0" FORMAT !
 >> gd STO
 
 
