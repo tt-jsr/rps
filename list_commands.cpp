@@ -433,7 +433,7 @@ void ZIP(Machine& machine)
 
 void UNZIP(Machine& machine)
 {
-    throw std::runtime_error("UNZIP not yet implemented");
+    throw std::runtime_error("ZIP not yet implemented");
 }
 
 //*******************************************************************
