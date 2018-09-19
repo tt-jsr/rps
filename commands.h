@@ -112,6 +112,8 @@ void STRFIND(Machine&);
 void STRCMP(Machine&);
 void STRNCMP(Machine&);
 void SPLIT(Machine&);
+void STRBEGIN(Machine&);
+void STREND(Machine&);
 
 // Types
 void TOINT(Machine&);

@@ -886,6 +886,10 @@ Parser::Parser(Machine& machine)
     AddCommand(machine, "SPLIT", &SPLIT);
     Category(machine, "String", "SPLIT");
     Category(machine, "String", "SIZE");
+    AddCommand(machine, "STRBEGIN", &STRBEGIN);
+    Category(machine, "String", "STRBEGIN");
+    AddCommand(machine, "STREND", &STREND);
+    Category(machine, "String", "STREND");
 
     // Types
     AddCommand(machine, "TOINT", &TOINT);
