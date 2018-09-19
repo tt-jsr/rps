@@ -13,6 +13,7 @@ void SWAP(Machine& machine);
 void DUP(Machine& machine);
 void PICK(Machine&);
 void ROLL(Machine&);
+void ROLLD(Machine&);
 void VIEW(Machine&);
 void VIEW(Machine&, size_t n);
 void DEPTH(Machine&);
@@ -66,20 +67,24 @@ void OR(Machine&);
 void APPEND(Machine&);
 void GET(Machine&);
 void SUBLIST(Machine&);
-void FIND(Machine&);
 void INSERT(Machine&);
-void LIST_INSERT(Machine&);
-void MAP_INSERT(Machine&);
+void LINSERT(Machine&);
 void ERASE(Machine&);
 void CLEAR(Machine&);
 void SIZE(Machine&);
 void FIRST(Machine&);
 void SECOND(Machine&);
+void HEAD(Machine&);
+void TAIL(Machine&);
 void TOLIST(Machine&);
-void TOMAP(Machine&);
 void FROMLIST(Machine&);
-void FROMMAP(Machine&);
 void CREATELIST(Machine&);
+
+//Map
+void FIND(Machine&);
+void MINSERT(Machine&);
+void TOMAP(Machine&);
+void FROMMAP(Machine&);
 void CREATEMAP(Machine&);
 
 // Functional
@@ -94,6 +99,8 @@ void PREAD(Machine&);
 void PWRITE(Machine&);
 void FREAD(Machine&);
 void FWRITE(Machine&);
+void FSAVE(Machine&);
+void FRESTORE(Machine&);
 void SYSTEM(Machine&);
 
 // String commands
@@ -105,6 +112,8 @@ void STRFIND(Machine&);
 void STRCMP(Machine&);
 void STRNCMP(Machine&);
 void SPLIT(Machine&);
+void STRBEGIN(Machine&);
+void STREND(Machine&);
 
 // Types
 void TOINT(Machine&);

@@ -11,7 +11,6 @@
 #include "commands.h"
 #include "utilities.h"
 
-// obj =>
 void DROP(Machine& machine)
 {
     if (machine.help)
@@ -26,7 +25,6 @@ void DROP(Machine& machine)
     machine.stack_.pop_back();
 }
 
-// obj, obj... int =>
 void DROPN(Machine& machine)
 {
     if (machine.help)
@@ -44,12 +42,11 @@ void DROPN(Machine& machine)
         machine.stack_.pop_back();
 }
 
-// obj1 obj0 => obj0 obj1
 void SWAP(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "SWAP: Swap the rop two objects on the stack";
+        machine.helpstrm() << "SWAP: Swap the top two objects on the stack";
         machine.helpstrm() << "obj1 obj2 SWAP => obj2 obj1";
         return;
     }
@@ -63,7 +60,6 @@ void SWAP(Machine& machine)
     machine.push(o2);
 }
 
-// obj => obj obj
 void DUP(Machine& machine)
 {
     if (machine.help)
@@ -108,7 +104,7 @@ void ROLL(Machine& machine)
     if (machine.help)
     {
         machine.helpstrm() << "ROLL: Move the nth item from the stack to L0";
-        machine.helpstrm() << "obj1 obj2... nitem ROLL => obj";
+        machine.helpstrm() << "obj1 obj2 obj3... nitem ROLL => obj2 obj3 obj1";
         return;
     }
 
@@ -131,6 +127,34 @@ void ROLL(Machine& machine)
     machine.stack_.push_back(obj);
 }
 
+void ROLLD(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "ROLLD: Move L0 item from the stack to nth level";
+        machine.helpstrm() << "obj1 obj2 obj3... nitem ROLLD => obj3 obj2 obj1";
+        return;
+    }
+
+    int64_t level;
+    machine.pop(level);
+    ObjectPtr optr;
+
+    if (machine.stack_.size() <= level)
+    {
+        machine.push(level);
+        throw std::runtime_error("ROLLD: stack underflow");
+    }
+    int64_t idx = machine.stack_.size() - level - 1;
+    if (idx < 0 || idx >= machine.stack_.size())
+    {
+        machine.push(level);
+        throw std::runtime_error("ROLLD: Out of range");
+    }
+    machine.pop(optr);
+    machine.stack_.insert(machine.stack_.begin()+idx, optr);
+}
+
 void VIEW(Machine& machine, size_t depth)
 {
     if (machine.stack_.size() == 0)
@@ -139,7 +163,7 @@ void VIEW(Machine& machine, size_t depth)
     while(n >= 0)
     {
         std::stringstream strm;
-        ToStr(machine, machine.peek(n), strm, true);
+        ToStr(machine, machine.peek(n), strm);
         std::string s = strm.str();
         s = s.substr(0, machine.viewwidth);
         std::cout << n << ":" << s << std::endl;
@@ -181,28 +205,5 @@ void DEPTH(Machine& machine)
     }
 
     machine.push(machine.stack_.size());
-}
-
-void REGISTER(Machine& machine)
-{
-    if (machine.help)
-    {
-        machine.helpstrm() << "REGISTER: Register a user defined program";
-        machine.helpstrm() << "<<prog>> \"name\" REGISTER => ";
-        machine.helpstrm() << "Registering a program allows the user invoke the program by name";
-        machine.helpstrm() << "rather than having to issue a CALL statement";
-        return;
-    }
-    stack_required(machine, "REGISTER", 2);
-    throw_required(machine, "REGISTER", 0, OBJECT_STRING);
-    throw_required(machine, "REGISTER", 1, OBJECT_PROGRAM);
-    ObjectPtr prog;
-    std::string name;
-
-    machine.pop(name);
-    machine.pop(prog);
-    ProgramPtr pptr = std::static_pointer_cast<Program>(prog);
-
-    AddCommand(machine, name, pptr);
 }
 

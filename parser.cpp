@@ -62,14 +62,14 @@ void CollectIdentifier(Source& src, Token& token)
 {
     while (src.it != src.line.end())
     {
+        if (*src.it == '>' || *src.it == '}' || *src.it == ']' || *src.it == '!')
+            return;
         if (isalnum(*src.it))
             token.value.push_back(*src.it);
         else if (isdigit(*src.it))
             token.value.push_back(*src.it);
-        else if (*src.it == '.' || *src.it == '_' || *src.it == '-')
+        else if (*src.it != ' ' && *src.it != '\n')
             token.value.push_back(*src.it);
-        else if (*src.it == ' ' || *src.it == ';')
-            return;
         else if (*src.it == '#')
         {
             src.it = src.line.end();
@@ -77,9 +77,7 @@ void CollectIdentifier(Source& src, Token& token)
         }
         else
         {
-            std::stringstream strm;
-            strm << "Identifier received unexpected \'" << *src.it << "\'";
-            throw std::runtime_error(strm.str().c_str());
+            return;
         }
         ++src.it;
     }
@@ -91,19 +89,13 @@ void CollectInteger(Source& src, Token& token)
     {
         if (isdigit(*src.it))
             token.value.push_back(*src.it);
-        else if (*src.it == ' ' || *src.it == ';')
-            return;
         else if (*src.it == '#')
         {
             src.it = src.line.end();
             return;
         }
         else
-        {
-            std::stringstream strm;
-            strm << "Integer received unexpected \'" << *src.it << "\'";
-            throw std::runtime_error(strm.str().c_str());
-        }
+            return;
         ++src.it;
     }
 }
@@ -124,7 +116,7 @@ void GetToken(Source& src, Token& token)
         return;
     }
 
-    if (*src.it == ';')
+    if (*src.it == '\n')
     {
         token.value.push_back(*src.it);
         token.token = TOKEN_EOL;
@@ -134,22 +126,6 @@ void GetToken(Source& src, Token& token)
     if (*src.it == '\"')
     {
         CollectQuoted(src, token);
-        token.token = TOKEN_STRING;
-        return;
-    }
-    if (isdigit(*src.it) || *src.it == '-')
-    {
-        token.value.push_back(*src.it);
-        ++src.it;
-        CollectInteger(src, token);
-        token.token = TOKEN_INTEGER;
-        return;
-    }
-    if (isalpha(*src.it))
-    {
-        token.value.push_back(*src.it);
-        ++src.it;
-        CollectIdentifier(src, token);
         token.token = TOKEN_STRING;
         return;
     }
@@ -207,7 +183,29 @@ void GetToken(Source& src, Token& token)
     {
         src.it = src.line.end();
         token.token = TOKEN_COMMENT;
+        return;
     }
+
+    if (*src.it == '-' && *(src.it+1) == '-' && isalpha(*(src.it+2)))
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        CollectIdentifier(src, token);
+        token.token = TOKEN_STRING;
+        return;
+    }
+    if (isdigit(*src.it) || *src.it == '-')
+    {
+        token.value.push_back(*src.it);
+        ++src.it;
+        CollectInteger(src, token);
+        token.token = TOKEN_INTEGER;
+        return;
+    }
+    token.value.push_back(*src.it);
+    ++src.it;
+    CollectIdentifier(src, token);
+    token.token = TOKEN_STRING;
 }
 
 bool Parser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
@@ -514,6 +512,8 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
         {
             return;
         }
+        else if (optr->token == TOKEN_EOL)
+            ;
         else if (optr->token == TOKEN_START_PROGRAM)
         {
             ProgramPtr pptr;
@@ -526,6 +526,7 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
             enclosingProgram = pptr->enclosingProgram;
             src.prompt = "[] ";
             optr = pptr;
+            lptr->items.push_back(optr);           
         }
         else if (optr->token == TOKEN_START_LIST)
         {
@@ -533,8 +534,10 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
             lp.reset(new List());
             ParseList(machine, lp, src);    // recurse
             optr = lp;
+            lptr->items.push_back(optr);           
         }
-        lptr->items.push_back(optr);           
+        else
+            lptr->items.push_back(optr);           
     }
 }
 
@@ -727,6 +730,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Stack", "PICK");
     AddCommand(machine, "ROLL", &ROLL);
     Category(machine, "Stack", "ROLL");
+    AddCommand(machine, "ROLLD", &ROLLD);
+    Category(machine, "Stack", "ROLLD");
     AddCommand(machine, "DEPTH", &DEPTH);
     Category(machine, "Stack", "DEPTH");
     AddCommand(machine, "VIEW", &VIEW);
@@ -799,8 +804,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "ERASE");
     AddCommand(machine, "CLEAR", &CLEAR);
     Category(machine, "List", "CLEAR");
-    AddCommand(machine, "LIST-INSERT", &LIST_INSERT);
-    Category(machine, "List", "LIST-INSERT");
+    AddCommand(machine, "LINSERT", &LINSERT);
+    Category(machine, "List", "LINSERT");
     AddCommand(machine, "INSERT", &INSERT);
     AddCommand(machine, "SIZE", &SIZE);
     Category(machine, "List", "SIZE");
@@ -814,12 +819,16 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "FROMLIST");
     AddCommand(machine, "CREATELIST", &CREATELIST);
     Category(machine, "List", "CREATELIST");
+    AddCommand(machine, "HEAD", &HEAD);
+    Category(machine, "List", "HEAD");
+    AddCommand(machine, "TAIL", &TAIL);
+    Category(machine, "List", "TAIL");
 
     // Map commands
     Category(machine, "Map", "ERASE");
     Category(machine, "MAP", "CLEAR");
-    AddCommand(machine, "MAP-INSERT", &MAP_INSERT);
-    Category(machine, "Map", "MAP-INSERT");
+    AddCommand(machine, "MINSERT", &MINSERT);
+    Category(machine, "Map", "MINSERT");
     Category(machine, "Map", "SIZE");
     AddCommand(machine, "FIND", &FIND);
     Category(machine, "Map", "FIND");
@@ -877,6 +886,10 @@ Parser::Parser(Machine& machine)
     AddCommand(machine, "SPLIT", &SPLIT);
     Category(machine, "String", "SPLIT");
     Category(machine, "String", "SIZE");
+    AddCommand(machine, "STRBEGIN", &STRBEGIN);
+    Category(machine, "String", "STRBEGIN");
+    AddCommand(machine, "STREND", &STREND);
+    Category(machine, "String", "STREND");
 
     // Types
     AddCommand(machine, "TOINT", &TOINT);
@@ -901,6 +914,10 @@ Parser::Parser(Machine& machine)
     Category(machine, "IO", "PWRITE");
     AddCommand(machine, "FWRITE", &FWRITE);
     Category(machine, "IO", "FWRITE");
+    AddCommand(machine, "FSAVE", &FSAVE);
+    Category(machine, "IO", "FSAVE");
+    AddCommand(machine, "FRESTORE", &FRESTORE);
+    Category(machine, "IO", "FRESTORE");
 }
 
 /********************************************************/
@@ -927,7 +944,7 @@ void Source::Read()
             add_history(pLine);
             line = pLine;
             free(pLine);
-            line += ";";
+            line += "\n";
             ++lineno;
             it = line.begin();
         }
@@ -946,7 +963,7 @@ void Source::Read()
                 std::cout << prompt << std::flush;
             }
             getline(istrm, line);
-            line += ";";
+            line += "\n";
             ++lineno;
             it = line.begin();
         }

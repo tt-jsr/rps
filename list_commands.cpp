@@ -17,8 +17,8 @@ void APPEND(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "APPEND: Append the object at L0 to the list on L1" << std::endl;
-        std::cout << "[list] \"obj\" APPEND => [list]" << std::endl;
+        machine.helpstrm() << "APPEND: Append the object at L0 to the list on L1" << std::endl;
+        machine.helpstrm() << "[list] \"obj\" APPEND => [list]" << std::endl;
         return;
     }
 
@@ -36,9 +36,9 @@ void GET(Machine& machine)
 {
     if (machine.help)
     {
-        std::cout << "GET: Get the object object in a list at the given index" << std::endl;
-        std::cout << "[list] idx GET => obj" << std::endl;
-        std::cout << "If idx < 0 it is taken from the end of the list" << std::endl;
+        machine.helpstrm() << "GET: Get the object in a list at the given index" << std::endl;
+        machine.helpstrm() << "[list] idx GET => obj" << std::endl;
+        machine.helpstrm() << "If idx < 0 it is taken from the end of the list" << std::endl;
         return;
     }
 
@@ -134,18 +134,18 @@ void FIND(Machine& machine)
         machine.push(it->second);
 }
 
-void LIST_INSERT(Machine& machine)
+void LINSERT(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "LIST-INSERT: Insert an item into a list";
+        machine.helpstrm() << "LINSERT: Insert an item into a list";
         machine.helpstrm() << "[list] idx obj => [list]";
         return;
     }
 
-    stack_required(machine, "LIST-INSERT", 3);
-    throw_required(machine, "LIST-INSERT", 2, OBJECT_LIST);
-    throw_required(machine, "LIST-INSERT", 1, OBJECT_INTEGER);
+    stack_required(machine, "LINSERT", 3);
+    throw_required(machine, "LINSERT", 2, OBJECT_LIST);
+    throw_required(machine, "LINSERT", 1, OBJECT_INTEGER);
 
     ListPtr lp;
     int64_t idx;
@@ -169,19 +169,19 @@ void LIST_INSERT(Machine& machine)
     machine.push(lp);
 }
 
-void MAP_INSERT(Machine& machine)
+void MINSERT(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "MAP-INSERT: Insert into a map";
+        machine.helpstrm() << "MINSERT: Insert into a map";
         machine.helpstrm() << "{map} [k,v] => {map}";
         machine.helpstrm() << "list: A tuple of a Key-Value pair";
         return;
     }
 
-    stack_required(machine, "MAP-INSERT",  2);
-    throw_required(machine, "MAP-INSERT",  1, OBJECT_MAP);
-    throw_required(machine, "MAP-INSERT",  0, OBJECT_LIST);
+    stack_required(machine, "MINSERT",  2);
+    throw_required(machine, "MINSERT",  1, OBJECT_MAP);
+    throw_required(machine, "MINSERT",  0, OBJECT_LIST);
 
     MapPtr mp;
     ListPtr kv;
@@ -203,14 +203,14 @@ void INSERT(Machine& machine)
             && machine.peek(2)->type == OBJECT_LIST 
             && machine.peek(1)->type == OBJECT_INTEGER)
     {
-        LIST_INSERT(machine);
+        LINSERT(machine);
         return;
     }
     if (machine.stack_.size() >= 2 
             && machine.peek(1)->type == OBJECT_MAP 
             && machine.peek(0)->type == OBJECT_LIST)
     {
-        MAP_INSERT(machine);
+        MINSERT(machine);
         return;
     }
     std::runtime_error("INSERT: cannot detect map or list insert");
@@ -374,6 +374,56 @@ void SECOND(Machine& machine)
     throw_required(machine, "SECOND", 0, OBJECT_LIST);
     machine.push(1);
     GET(machine);
+}
+
+void HEAD(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "HEAD: Get nitems from the head of the list";
+        machine.helpstrm() << "[list] n HEAD => [list]";
+        return;
+    }
+
+    stack_required(machine, "HEAD", 2);
+    throw_required(machine, "HEAD", 0, OBJECT_INTEGER);
+    throw_required(machine, "HEAD", 1, OBJECT_LIST);
+
+    ListPtr lp;
+    int64_t n;
+    machine.pop(n);
+    machine.pop(lp);
+    if (n >=lp->items.size())
+        n = lp->items.size()-1;
+    ListPtr result = MakeList();
+    std::copy(lp->items.begin(), lp->items.begin()+n, std::back_inserter(result->items));
+    machine.push(result);
+}
+
+void TAIL(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "TAIL: Get nitems from the tail of the list";
+        machine.helpstrm() << "[list] n TAIL => [list]";
+        return;
+    }
+
+    stack_required(machine, "TAIL", 2);
+    throw_required(machine, "TAIL", 0, OBJECT_INTEGER);
+    throw_required(machine, "TAIL", 1, OBJECT_LIST);
+
+    ListPtr lp;
+    int64_t n;
+    machine.pop(n);
+    machine.pop(lp);
+    n = lp->items.size() - n;
+    if (n < 0)
+        n = 0;
+
+    ListPtr result = MakeList();
+    std::copy(lp->items.begin()+n, lp->items.end(), std::back_inserter(result->items));
+    machine.push(result);
 }
 
 void TOLIST(Machine& machine)

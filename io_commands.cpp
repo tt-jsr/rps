@@ -13,6 +13,7 @@
 #include "machine.h"
 #include "commands.h"
 #include "utilities.h"
+#include "parser.h"
 
 void PRINT(Machine& machine)
 {
@@ -146,15 +147,16 @@ void FWRITE(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "FWRITE: Write object at L1 to the file on L0";
-        machine.helpstrm() << "\"obj\" \"filename\" FWRITE =>";
+        machine.helpstrm() << "FWRITE: Write list at L1 to the file on L0";
+        machine.helpstrm() << "[list] \"filename\" FWRITE =>";
         return;
     }
 
    stack_required(machine, "FWRITE", 2);
-   throw_required(machine, "FREAD", 0, OBJECT_STRING);
+   throw_required(machine, "FWRITE", 0, OBJECT_STRING);
+   throw_required(machine, "FWRITE", 1, OBJECT_LIST);
 
-   ObjectPtr data;
+   ListPtr data;
    std::string file;
 
    machine.pop(file);
@@ -163,24 +165,14 @@ void FWRITE(Machine& machine)
    FILE *fp = fopen(file.c_str(), "w");
    if (fp)
    {
-       if (data->type == OBJECT_LIST)
-       {
-            List *lp = (List *)data.get();
-            for (ObjectPtr optr : lp->items)
-            {
-                std::string s = ToStr(machine, optr);
-                fputs(s.c_str(), fp);
-                fputs("\n", fp);
-            }
-       }
-       else
-       {
-           std::string s = ToStr(machine, data);
-           String *sp = (String *)data.get();
-           fputs(sp->value.c_str(), fp);
-           fputs("\n", fp);
-       }
-       fclose(fp);
+        List *lp = (List *)data.get();
+        for (ObjectPtr optr : lp->items)
+        {
+            std::string s = ToStr(machine, optr);
+            fputs(s.c_str(), fp);
+            fputs("\n", fp);
+        }
+        fclose(fp);
    }
 }
 
@@ -231,6 +223,105 @@ void FREAD(Machine& machine)
        fclose(fp);
    }
    machine.push(ret);
+}
+
+void FSAVE(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "FSAVE: Write obj at L1 to the file on L0";
+        machine.helpstrm() << "obj \"filename\" FSAVE =>";
+        machine.helpstrm() << "FSAVE/FRESTORE is suitable for writing any object to a file for editing or";
+        machine.helpstrm() << "archiving";
+
+        return;
+    }
+
+   stack_required(machine, "FSAVE", 2);
+   throw_required(machine, "FSAVE", 0, OBJECT_STRING);
+
+   ObjectPtr data;
+   std::string file;
+
+   machine.pop(file);
+   machine.pop(data);
+
+   FILE *fp = fopen(file.c_str(), "w");
+   if (fp)
+   {
+        if (data->type == OBJECT_LIST)
+        {
+            List *lp = (List *)data.get();
+            fputs("[", fp);
+            fputs("\n", fp);
+            for (ObjectPtr optr : lp->items)
+            {
+                std::string s = ToStr(machine, optr);
+                fputs(s.c_str(), fp);
+                fputs("\n", fp);
+            }
+            fputs("\n", fp);
+            fputs("]", fp);
+        }
+        else
+        {
+            std::string s = ToStr(machine, data);
+            fputs(s.c_str(), fp);
+            fputs("\n", fp);
+        }
+        fclose(fp);
+   }
+}
+
+void FRESTORE(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "FRESTORE: Restore a saved Object";
+        machine.helpstrm() << "\"filename\" FRESTORE => obj";
+        machine.helpstrm() << "Restore an object save with FSAVE";
+        return;
+    }
+    stack_required(machine, "FRESTORE", 1);
+    throw_required(machine, "FRESTORE", 0, OBJECT_STRING);
+
+    std::string file;
+    machine.pop(file);
+    std::string data;
+
+    FILE *fp = fopen(file.c_str(), "r");
+    if (fp)
+    {
+        char buf[10240];
+        while (!feof(fp))
+        {
+            if (fgets(buf, sizeof(buf), fp))
+            {
+                data.append(buf);
+            }
+        }
+        fclose(fp);
+        Parser parser(machine);
+
+        std::stringstream strm;
+        strm.str(data);
+        Source src(strm);
+        src.interactive = false;
+        src.prompt = "> ";
+
+        while (true)
+        {
+            try
+            {
+                parser.Parse(machine, src);
+                return;
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << e.what() << std::endl;
+            }
+        }
+    }
 }
 
 void SYSTEM(Machine& machine)

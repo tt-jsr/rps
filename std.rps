@@ -95,7 +95,6 @@ lst RCLL
     ELSE
         DROP
     ENDIF
-ENDWHILE
 >> lget STO
 
 #############################################
@@ -121,9 +120,9 @@ FROMLIST
 # Vim edit a list
 # [list] vim CALL => [list]
 <<
-"rpstmp.txt" FWRITE
+"rpstmp.txt" FSAVE
 "vim rpstmp.txt" SYSTEM
-"rpstmp.txt" FREAD
+"rpstmp.txt" FRESTORE
 "rm rpstmp.txt" SYSTEM
 >> vedit STO
 
@@ -131,9 +130,8 @@ FROMLIST
 # View edit a list
 # [list] view CALL => [list]
 <<
-"rpstmp.txt" FWRITE
+"rpstmp.txt" FSAVE
 "view rpstmp.txt" SYSTEM
-"rpstmp.txt" FREAD
 "rm rpstmp.txt" SYSTEM
 >> view STO
 

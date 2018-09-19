@@ -12,7 +12,6 @@
 #include "commands.h"
 #include "utilities.h"
 
-// obj obj... "str" => "str"
 void FORMAT(Machine& machine)
 {
     if (machine.help)
@@ -81,7 +80,6 @@ void FORMAT(Machine& machine)
     machine.push(strm.str());
 }
 
-// "str" "str" => "str"
 void CAT(Machine& machine)
 {
     if (machine.help)
@@ -101,7 +99,6 @@ void CAT(Machine& machine)
     machine.push(s2+s1);
 }
 
-// [list]  "str" => "str"
 void JOIN(Machine& machine)
 {
     if (machine.help)
@@ -158,7 +155,63 @@ void SUBSTR(Machine& machine)
     machine.push(str);
 }
 
-// "str" startpos "str to find"  => int
+void STRBEGIN(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "STRBEGIN: Does string begin with the given str";
+        machine.helpstrm() << "\"str\" \"str\" STRBEGIN => int";
+        return;
+    }
+
+    stack_required(machine, "STRBEGIN", 2);
+    throw_required(machine, "STRBEGIN", 0, OBJECT_STRING);
+    throw_required(machine, "STRBEGIN", 1, OBJECT_STRING);
+
+    std::string str;
+    std::string cmp;
+    machine.pop(cmp);
+    machine.pop(str);
+    if (cmp.size() > str.size())
+    {
+        machine.push(0);
+        return;
+    }
+    if (strncmp(str.c_str(), cmp.c_str(), cmp.size()) == 0)
+        machine.push(1);
+    else
+        machine.push(0);
+}
+
+void STREND(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "STREND: Does string begin with the given str";
+        machine.helpstrm() << "\"str\" \"str\" STREND => int";
+        return;
+    }
+
+    stack_required(machine, "STREND", 2);
+    throw_required(machine, "STREND", 0, OBJECT_STRING);
+    throw_required(machine, "STREND", 1, OBJECT_STRING);
+
+    std::string str;
+    std::string cmp;
+    machine.pop(cmp);
+    machine.pop(str);
+    int startpos = str.size() - cmp.size();
+    if (startpos < 0)
+    {
+        machine.push(0);
+        return;
+    }
+    if (strncmp(str.c_str()+startpos, cmp.c_str(), cmp.size()) == 0)
+        machine.push(1);
+    else
+        machine.push(0);
+}
+
 void STRFIND(Machine& machine)
 {
     if (machine.help)
@@ -188,7 +241,6 @@ void STRFIND(Machine& machine)
         machine.push(pos);
 }
 
-// "str" "str" => int
 void STRCMP(Machine& machine)
 {
     if (machine.help)
@@ -211,7 +263,6 @@ void STRCMP(Machine& machine)
     machine.push(n);
 }
 
-// "str" "str" length => int
 void STRNCMP(Machine& machine)
 {
     if (machine.help)

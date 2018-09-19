@@ -2,27 +2,27 @@
 # git help
 <<
 "" PRINT
-" gdfiles: git diff files. Get a list of filenames that sre different." PRINT
-"          gdfiles CALL =>" PRINT
+" gdfiles: git diff files. Get a list of filenames that are different." PRINT
+"          branch dir gdfiles CALL =>" PRINT
 "          The following variables are used:" PRINT
-"               branch: The branch to diff against" PRINT
-"                  dir: The directory to limit the scope of changes" PRINT
-"                files: The file list is stored here" PRINT
+"               git.branch: The branch to diff against" PRINT
+"                  git.dir: The directory to limit the scope of changes" PRINT
+"                git.files: The file list is stored here" PRINT
 "" PRINT
 "      gd: git diff. Launch meld for a diff" PRINT
 "          gdfiles CALL => " PRINT
 "          The following variables are used:" PRINT
-"               branch: The branch to diff against" PRINT
-"                  dir: The directory to limit the scope of changes" PRINT
-"                files: The file list to choose from" PRINT
+"               git.branch: The branch to diff against" PRINT
+"                  git.dir: The directory to limit the scope of changes" PRINT
+"                git.files: The file list to choose from" PRINT
 "" PRINT
 
 >>
 help STO
-"./" dir STO
-"master" branch STO
 
 << 
+dir STO
+branch STO
 "git diff --name-only %branch -- %dir" FORMAT PREAD
 files STO
 >> gdfiles STO
@@ -30,6 +30,7 @@ files STO
 << files RCL
 std.lget CALL
 "git difftool -y %branch -- %0" FORMAT !
+DROP
 >> gd STO
 
 

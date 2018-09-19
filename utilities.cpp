@@ -90,21 +90,18 @@ ObjectPtr Clone(ObjectPtr optr)
     }
 }
 
-void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
+void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm)
 {
     switch (optr->type)
     {
     case OBJECT_STRING:
-        if(view)
-            strm << "\"" << ((String *)optr.get())->value << "\"";
-        else
-            strm << ((String *)optr.get())->value;
+        strm << "\"" << ((String *)optr.get())->value << "\" ";
         break;
     case OBJECT_INTEGER:
-        strm << std::to_string(((Integer *)optr.get())->value);
+        strm << std::to_string(((Integer *)optr.get())->value) << " ";
         break;
     case OBJECT_COMMAND:
-        strm << ((Command *)optr.get())->value;
+        strm << ((Command *)optr.get())->value << " ";
         break;
     case OBJECT_LIST:
         {
@@ -112,11 +109,11 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
             strm << "[ ";
             for (auto it = lp->items.begin(); it != lp->items.end(); ++it)
             {
-                ToStr(machine, *it, strm, view);
+                ToStr(machine, *it, strm);
                 if ((it+1) != lp->items.end())
-                    strm << ", ";
+                    strm << " ";
             }
-            strm << " ]";
+            strm << " ] ";
         }
         break;
     case OBJECT_MAP:
@@ -124,18 +121,18 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
             Map *mp = (Map *)optr.get();
             strm << "{ ";
             auto it = mp->items.begin();
-            ToStr(machine, it->first, strm, view);
+            ToStr(machine, it->first, strm);
             strm << ":";
-            ToStr(machine, it->second, strm, view);
+            ToStr(machine, it->second, strm);
             ++it;
             for (; it != mp->items.end(); ++it)
             {
-                strm << ", ";
-                ToStr(machine, it->first, strm, view);
+                strm << " ";
+                ToStr(machine, it->first, strm);
                 strm << ":";
-                ToStr(machine, it->second, strm, view);
+                ToStr(machine, it->second, strm);
             }
-            strm << " }";
+            strm << " } ";
         }
         break;
     case OBJECT_PROGRAM:
@@ -144,54 +141,57 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
             strm << "<< ";
             for (ObjectPtr& op : pp->program)
             {
-                ToStr(machine, op, strm, view);
+                ToStr(machine, op, strm);
                 strm << " ";
             }
-            strm << " >>";
+            strm << " >> ";
         }
         break;
     case OBJECT_IF:
         {
             If *pif = (If *)optr.get();
-            strm << "IF";
+            strm << "IF ";
             for (ObjectPtr op : pif->cond)
             {
-                ToStr(machine, op, strm, view);
+                ToStr(machine, op, strm);
             }
-            strm << " THEN ";
+            strm << "THEN ";
             for (ObjectPtr op : pif->then)
-                ToStr(machine, op, strm, view);
+                ToStr(machine, op, strm);
             if (pif->els.size())
             {
-                strm << " ELSE ";
+                strm << "ELSE ";
                 for (ObjectPtr op : pif->els)
-                    ToStr(machine, op, strm, view);
+                    ToStr(machine, op, strm);
             }
+            strm << "ENDIF ";
         }
         break;
     case OBJECT_FOR:
         {
-            strm << "FOR";
+            strm << "FOR ";
             For *pfor = (For *)optr.get();
             for (ObjectPtr op : pfor->program)
-                ToStr(machine, op, strm, view);
+                ToStr(machine, op, strm);
+            strm << "ENDFOR ";
         }
         break;
     case OBJECT_WHILE:
         {
-            strm << "WHILE";
+            strm << "WHILE ";
             While *pwhile = (While *)optr.get();
             for (ObjectPtr op : pwhile->cond)
-                ToStr(machine, op, strm, view);
-            strm << " REPEAT ";
+                ToStr(machine, op, strm);
+            strm << "REPEAT ";
             for (ObjectPtr op : pwhile->program)
-                ToStr(machine, op, strm, view);
+                ToStr(machine, op, strm);
+            strm << "ENDWHILE ";
         }
         break;
     case OBJECT_TOKEN:
         {
             if (optr->token == TOKEN_EOL)
-                strm << "<EOL>";
+                strm << "\n";
             else
             {
                 strm << "TOKEN: " << optr->token;
@@ -209,7 +209,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
 std::string ToStr(Machine& machine, ObjectPtr optr)
 {
     std::stringstream strm;
-    ToStr(machine, optr, strm, false);
+    ToStr(machine, optr, strm);
     return strm.str();
 }
 

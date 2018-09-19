@@ -267,3 +267,26 @@ void VARTYPES(Machine& machine)
     machine.push(lp);
 }
 
+void REGISTER(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "REGISTER: Register a user defined program";
+        machine.helpstrm() << "<<prog>> \"name\" REGISTER => ";
+        machine.helpstrm() << "Registering a program allows the user invoke the program by name";
+        machine.helpstrm() << "rather than having to issue a CALL statement";
+        return;
+    }
+    stack_required(machine, "REGISTER", 2);
+    throw_required(machine, "REGISTER", 0, OBJECT_STRING);
+    throw_required(machine, "REGISTER", 1, OBJECT_PROGRAM);
+    ObjectPtr prog;
+    std::string name;
+
+    machine.pop(name);
+    machine.pop(prog);
+    ProgramPtr pptr = std::static_pointer_cast<Program>(prog);
+
+    AddCommand(machine, name, pptr);
+}
+
