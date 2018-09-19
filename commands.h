@@ -94,6 +94,8 @@ void PREAD(Machine&);
 void PWRITE(Machine&);
 void FREAD(Machine&);
 void FWRITE(Machine&);
+void FSAVE(Machine&);
+void FRESTORE(Machine&);
 void SYSTEM(Machine&);
 
 // String commands

@@ -13,6 +13,7 @@
 #include "machine.h"
 #include "commands.h"
 #include "utilities.h"
+#include "parser.h"
 
 void PRINT(Machine& machine)
 {
@@ -222,6 +223,101 @@ void FREAD(Machine& machine)
        fclose(fp);
    }
    machine.push(ret);
+}
+
+void FSAVE(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "FSAVE: Write obj at L1 to the file on L0";
+        machine.helpstrm() << "obj \"filename\" FSAVE =>";
+        return;
+    }
+
+   stack_required(machine, "FSAVE", 2);
+   throw_required(machine, "FSAVE", 0, OBJECT_STRING);
+
+   ObjectPtr data;
+   std::string file;
+
+   machine.pop(file);
+   machine.pop(data);
+
+   FILE *fp = fopen(file.c_str(), "w");
+   if (fp)
+   {
+        if (data->type == OBJECT_LIST)
+        {
+            List *lp = (List *)data.get();
+            fputs("[", fp);
+            fputs("\n", fp);
+            for (ObjectPtr optr : lp->items)
+            {
+                std::string s = ToStr(machine, optr);
+                fputs(s.c_str(), fp);
+                fputs("\n", fp);
+            }
+            fputs("\n", fp);
+            fputs("]", fp);
+        }
+        else
+        {
+            std::string s = ToStr(machine, data);
+            fputs(s.c_str(), fp);
+            fputs("\n", fp);
+        }
+        fclose(fp);
+   }
+}
+
+void FRESTORE(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "FRESTORE: Restore a saved Object";
+        machine.helpstrm() << "\"filename\" FRESTORE => obj";
+        return;
+    }
+    stack_required(machine, "FRESTORE", 1);
+    throw_required(machine, "FRESTORE", 0, OBJECT_STRING);
+
+    std::string file;
+    machine.pop(file);
+    std::string data;
+
+    FILE *fp = fopen(file.c_str(), "r");
+    if (fp)
+    {
+        char buf[10240];
+        while (!feof(fp))
+        {
+            if (fgets(buf, sizeof(buf), fp))
+            {
+                data.append(buf);
+            }
+        }
+        fclose(fp);
+        Parser parser(machine);
+
+        std::stringstream strm;
+        strm.str(data);
+        Source src(strm);
+        src.interactive = false;
+        src.prompt = "> ";
+
+        while (true)
+        {
+            try
+            {
+                parser.Parse(machine, src);
+                return;
+            }
+            catch (std::runtime_error& e)
+            {
+                std::cout << e.what() << std::endl;
+            }
+        }
+    }
 }
 
 void SYSTEM(Machine& machine)

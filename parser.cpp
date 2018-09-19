@@ -900,6 +900,10 @@ Parser::Parser(Machine& machine)
     Category(machine, "IO", "PWRITE");
     AddCommand(machine, "FWRITE", &FWRITE);
     Category(machine, "IO", "FWRITE");
+    AddCommand(machine, "FSAVE", &FSAVE);
+    Category(machine, "IO", "FSAVE");
+    AddCommand(machine, "FRESTORE", &FRESTORE);
+    Category(machine, "IO", "FRESTORE");
 }
 
 /********************************************************/

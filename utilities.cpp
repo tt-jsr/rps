@@ -95,16 +95,13 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
     switch (optr->type)
     {
     case OBJECT_STRING:
-        if(view)
-            strm << "\"" << ((String *)optr.get())->value << "\"";
-        else
-            strm << ((String *)optr.get())->value;
+        strm << "\"" << ((String *)optr.get())->value << "\" ";
         break;
     case OBJECT_INTEGER:
-        strm << std::to_string(((Integer *)optr.get())->value);
+        strm << std::to_string(((Integer *)optr.get())->value) << " ";
         break;
     case OBJECT_COMMAND:
-        strm << ((Command *)optr.get())->value;
+        strm << ((Command *)optr.get())->value << " ";
         break;
     case OBJECT_LIST:
         {
@@ -116,7 +113,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
                 if ((it+1) != lp->items.end())
                     strm << " ";
             }
-            strm << " ]";
+            strm << " ] ";
         }
         break;
     case OBJECT_MAP:
@@ -135,7 +132,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
                 strm << ":";
                 ToStr(machine, it->second, strm, view);
             }
-            strm << " }";
+            strm << " } ";
         }
         break;
     case OBJECT_PROGRAM:
@@ -147,45 +144,48 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm, bool view)
                 ToStr(machine, op, strm, view);
                 strm << " ";
             }
-            strm << " >>";
+            strm << " >> ";
         }
         break;
     case OBJECT_IF:
         {
             If *pif = (If *)optr.get();
-            strm << "IF";
+            strm << "IF ";
             for (ObjectPtr op : pif->cond)
             {
                 ToStr(machine, op, strm, view);
             }
-            strm << " THEN ";
+            strm << "THEN ";
             for (ObjectPtr op : pif->then)
                 ToStr(machine, op, strm, view);
             if (pif->els.size())
             {
-                strm << " ELSE ";
+                strm << "ELSE ";
                 for (ObjectPtr op : pif->els)
                     ToStr(machine, op, strm, view);
             }
+            strm << "ENDIF ";
         }
         break;
     case OBJECT_FOR:
         {
-            strm << "FOR";
+            strm << "FOR ";
             For *pfor = (For *)optr.get();
             for (ObjectPtr op : pfor->program)
                 ToStr(machine, op, strm, view);
+            strm << "ENDFOR ";
         }
         break;
     case OBJECT_WHILE:
         {
-            strm << "WHILE";
+            strm << "WHILE ";
             While *pwhile = (While *)optr.get();
             for (ObjectPtr op : pwhile->cond)
                 ToStr(machine, op, strm, view);
-            strm << " REPEAT ";
+            strm << "REPEAT ";
             for (ObjectPtr op : pwhile->program)
                 ToStr(machine, op, strm, view);
+            strm << "ENDWHILE ";
         }
         break;
     case OBJECT_TOKEN:
