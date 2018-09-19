@@ -146,15 +146,16 @@ void FWRITE(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "FWRITE: Write object at L1 to the file on L0";
-        machine.helpstrm() << "\"obj\" \"filename\" FWRITE =>";
+        machine.helpstrm() << "FWRITE: Write list at L1 to the file on L0";
+        machine.helpstrm() << "[list] \"filename\" FWRITE =>";
         return;
     }
 
    stack_required(machine, "FWRITE", 2);
-   throw_required(machine, "FREAD", 0, OBJECT_STRING);
+   throw_required(machine, "FWRITE", 0, OBJECT_STRING);
+   throw_required(machine, "FWRITE", 1, OBJECT_LIST);
 
-   ObjectPtr data;
+   ListPtr data;
    std::string file;
 
    machine.pop(file);
@@ -163,24 +164,14 @@ void FWRITE(Machine& machine)
    FILE *fp = fopen(file.c_str(), "w");
    if (fp)
    {
-       if (data->type == OBJECT_LIST)
-       {
-            List *lp = (List *)data.get();
-            for (ObjectPtr optr : lp->items)
-            {
-                std::string s = ToStr(machine, optr);
-                fputs(s.c_str(), fp);
-                fputs("\n", fp);
-            }
-       }
-       else
-       {
-           std::string s = ToStr(machine, data);
-           String *sp = (String *)data.get();
-           fputs(sp->value.c_str(), fp);
-           fputs("\n", fp);
-       }
-       fclose(fp);
+        List *lp = (List *)data.get();
+        for (ObjectPtr optr : lp->items)
+        {
+            std::string s = ToStr(machine, optr);
+            fputs(s.c_str(), fp);
+            fputs("\n", fp);
+        }
+        fclose(fp);
    }
 }
 
