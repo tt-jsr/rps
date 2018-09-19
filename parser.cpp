@@ -823,6 +823,10 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "HEAD");
     AddCommand(machine, "TAIL", &TAIL);
     Category(machine, "List", "TAIL");
+    AddCommand(machine, "ZIP", &ZIP);
+    Category(machine, "List", "ZIP");
+    AddCommand(machine, "UNZIP", &UNZIP);
+    Category(machine, "List", "UNZIP");
 
     // Map commands
     Category(machine, "Map", "ERASE");
@@ -838,6 +842,10 @@ Parser::Parser(Machine& machine)
     Category(machine, "Map", "FROMMAP");
     AddCommand(machine, "CREATEMAP", &CREATEMAP);
     Category(machine, "Map", "CREATEMAP");
+    AddCommand(machine, "KEYS", &KEYS);
+    Category(machine, "Map", "KEYS");
+    AddCommand(machine, "VALUES", &VALUES);
+    Category(machine, "Map", "VALUES");
 
     // Functional
     AddCommand(machine, "APPLY", &APPLY);

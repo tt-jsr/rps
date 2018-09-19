@@ -1,27 +1,18 @@
-
-######################################################
-# Get a field from a protobuf
-# protobuf fiedname => value
 <<
-"=" CAT
-field STOL 
-pb STOL  
-pb RCLL  
-0         
-field RCLL 
-STRFIND     
-field RCLL  
-SIZE        
-ADD         
-DUP startpos STOL 
-pb RCLL     
-SWAP        
-" " STRFIND 
-endpos STOL 
-pb RCLL     
-startpos RCLL  
-endpos RCLL startpos RCLL SUB 
-SUBSTR          #
->> getfield STO
-
+CREATEMAP map STOL
+FOR
+    account_id logfile.getfield CALL
+    DUP
+    2 TOLIST
+    map RCLL
+    SWAP
+    MINSERT
+    map STOL
+ENDFOR
+map RCLL
+CREATELIST rtn STOL
+FOR 
+    FIRST
+ENDFOR
+>> test STO
 

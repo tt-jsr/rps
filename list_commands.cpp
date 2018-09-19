@@ -104,36 +104,6 @@ void SUBLIST(Machine& machine)
         std::copy(lp->items.begin()+startpos, lp->items.begin()+startpos+length, std::back_inserter(result->items));
     machine.push(result);
 }
-
-void FIND(Machine& machine)
-{
-    if (machine.help)
-    {
-        machine.helpstrm() << "FIND: Find an item in a map";
-        machine.helpstrm() << "{map} key onError FIND => obj";
-        machine.helpstrm() << "key: Either a string or integer key";
-        machine.helpstrm() << "onError: If the key is not found, this is the value placed on L0";
-        return;
-    }
-
-    stack_required(machine, "FIND", 3);
-    throw_required(machine, "FIND", 2, OBJECT_MAP);
-    if (machine.peek(1)->type != OBJECT_INTEGER && machine.peek(1)->type != OBJECT_STRING)
-        throw std::runtime_error("GET: requires Integer or String key for Map");
-    ObjectPtr key;
-    MapPtr mp;
-    ObjectPtr onError;
-
-    machine.pop(onError);
-    machine.pop(key);
-    machine.pop(mp);
-    auto it = mp->items.find(key);
-    if (it == mp->items.end())
-        EVAL(machine, onError);
-    else
-        machine.push(it->second);
-}
-
 void LINSERT(Machine& machine)
 {
     if (machine.help)
@@ -168,29 +138,6 @@ void LINSERT(Machine& machine)
     lp->items.insert(lp->items.begin()+idx, element);
     machine.push(lp);
 }
-
-void MINSERT(Machine& machine)
-{
-    if (machine.help)
-    {
-        machine.helpstrm() << "MINSERT: Insert into a map";
-        machine.helpstrm() << "{map} [k,v] => {map}";
-        machine.helpstrm() << "list: A tuple of a Key-Value pair";
-        return;
-    }
-
-    stack_required(machine, "MINSERT",  2);
-    throw_required(machine, "MINSERT",  1, OBJECT_MAP);
-    throw_required(machine, "MINSERT",  0, OBJECT_LIST);
-
-    MapPtr mp;
-    ListPtr kv;
-    machine.pop(kv);
-    machine.pop(mp);
-    mp->items[kv->items[0]] =  kv->items[1];
-    machine.push(mp);
-}
-
 void INSERT(Machine& machine)
 {
     if (machine.help)
@@ -449,6 +396,158 @@ void TOLIST(Machine& machine)
     machine.push(lp);
 }
 
+void FROMLIST(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "FROMLIST: Push all items of a list to the stack";
+        machine.helpstrm() << "[list] FROMLIST => obj1, obj2, obj3...";
+        return;
+    }
+
+    ListPtr lp;
+    machine.pop(lp);
+    for (ObjectPtr op : lp->items)
+    {
+        machine.push(op);
+    }
+}
+
+void CREATELIST(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "CREATELIST: Create a list";
+        machine.helpstrm() << "CREATELIST => []";
+        return;
+    }
+
+    ListPtr lp = MakeList();
+    machine.push(lp);
+}
+
+void ZIP(Machine& machine)
+{
+    throw std::runtime_error("ZIP not yet implemented");
+}
+
+void UNZIP(Machine& machine)
+{
+    throw std::runtime_error("UNZIP not yet implemented");
+}
+
+//*******************************************************************
+// maps
+
+void CREATEMAP(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "CREATEMAP: Create a map";
+        machine.helpstrm() << "CREATEMAP => {}";
+        return;
+    }
+
+    MapPtr mp = MakeMap();
+    machine.push(mp);
+}
+
+void KEYS(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "KEYS: Get a list of keys";
+        machine.helpstrm() << "{map} KEYS => []";
+        return;
+    }
+    stack_required(machine, "KEYS", 1);
+    throw_required(machine, "KEYS", 0, OBJECT_MAP);
+
+    ObjectPtr optr;
+    machine.pop(optr);
+    Map *pMap = (Map *)optr.get();
+    ListPtr lp = MakeList();
+    for (auto& pr : pMap->items)
+    {
+        lp->items.push_back(pr.first);
+    }
+    machine.push(lp);
+}
+
+void VALUES(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "VALUES: Get a list of values";
+        machine.helpstrm() << "{map} VALUES => []";
+        return;
+    }
+    stack_required(machine, "VALUES", 1);
+    throw_required(machine, "VALUES", 0, OBJECT_MAP);
+
+    ObjectPtr optr;
+    machine.pop(optr);
+    Map *pMap = (Map *)optr.get();
+    ListPtr lp = MakeList();
+    for (auto& pr : pMap->items)
+    {
+        lp->items.push_back(pr.second);
+    }
+    machine.push(lp);
+}
+
+void FIND(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "FIND: Find an item in a map";
+        machine.helpstrm() << "{map} key onError FIND => obj";
+        machine.helpstrm() << "key: Either a string or integer key";
+        machine.helpstrm() << "onError: If the key is not found, this is the value placed on L0";
+        return;
+    }
+
+    stack_required(machine, "FIND", 3);
+    throw_required(machine, "FIND", 2, OBJECT_MAP);
+    if (machine.peek(1)->type != OBJECT_INTEGER && machine.peek(1)->type != OBJECT_STRING)
+        throw std::runtime_error("GET: requires Integer or String key for Map");
+    ObjectPtr key;
+    MapPtr mp;
+    ObjectPtr onError;
+
+    machine.pop(onError);
+    machine.pop(key);
+    machine.pop(mp);
+    auto it = mp->items.find(key);
+    if (it == mp->items.end())
+        EVAL(machine, onError);
+    else
+        machine.push(it->second);
+}
+
+
+void MINSERT(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "MINSERT: Insert into a map";
+        machine.helpstrm() << "{map} [k,v] => {map}";
+        machine.helpstrm() << "list: A tuple of a Key-Value pair";
+        return;
+    }
+
+    stack_required(machine, "MINSERT",  2);
+    throw_required(machine, "MINSERT",  1, OBJECT_MAP);
+    throw_required(machine, "MINSERT",  0, OBJECT_LIST);
+
+    MapPtr mp;
+    ListPtr kv;
+    machine.pop(kv);
+    machine.pop(mp);
+    mp->items[kv->items[0]] =  kv->items[1];
+    machine.push(mp);
+}
+
 void TOMAP(Machine& machine)
 {
     if (machine.help)
@@ -470,24 +569,6 @@ void TOMAP(Machine& machine)
     }
     machine.push(mp);
 }
-
-void FROMLIST(Machine& machine)
-{
-    if (machine.help)
-    {
-        machine.helpstrm() << "FROMLIST: Push all items of a list to the stack";
-        machine.helpstrm() << "[list] FROMLIST => obj1, obj2, obj3...";
-        return;
-    }
-
-    ListPtr lp;
-    machine.pop(lp);
-    for (ObjectPtr op : lp->items)
-    {
-        machine.push(op);
-    }
-}
-
 void FROMMAP(Machine& machine)
 {
     if (machine.help)
@@ -506,31 +587,5 @@ void FROMMAP(Machine& machine)
         lp->items.push_back(pr.second);
         machine.push(lp);
     }
-}
-
-void CREATELIST(Machine& machine)
-{
-    if (machine.help)
-    {
-        machine.helpstrm() << "CREATELIST: Create a list";
-        machine.helpstrm() << "CREATELIST => []";
-        return;
-    }
-
-    ListPtr lp = MakeList();
-    machine.push(lp);
-}
-
-void CREATEMAP(Machine& machine)
-{
-    if (machine.help)
-    {
-        machine.helpstrm() << "CREATEMAP: Create a map";
-        machine.helpstrm() << "CREATEMAP => {}";
-        return;
-    }
-
-    MapPtr mp = MakeMap();
-    machine.push(mp);
 }
 

@@ -79,6 +79,8 @@ void TAIL(Machine&);
 void TOLIST(Machine&);
 void FROMLIST(Machine&);
 void CREATELIST(Machine&);
+void ZIP(Machine&);
+void UNZIP(Machine&);
 
 //Map
 void FIND(Machine&);
@@ -86,6 +88,8 @@ void MINSERT(Machine&);
 void TOMAP(Machine&);
 void FROMMAP(Machine&);
 void CREATEMAP(Machine&);
+void KEYS(Machine&);
+void VALUES(Machine&);
 
 // Functional
 void APPLY(Machine& machine);

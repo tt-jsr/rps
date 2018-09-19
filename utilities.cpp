@@ -121,18 +121,25 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm)
             Map *mp = (Map *)optr.get();
             strm << "{ ";
             auto it = mp->items.begin();
-            ToStr(machine, it->first, strm);
-            strm << ":";
-            ToStr(machine, it->second, strm);
-            ++it;
-            for (; it != mp->items.end(); ++it)
+            if (it != mp->items.end())
             {
-                strm << " ";
                 ToStr(machine, it->first, strm);
                 strm << ":";
                 ToStr(machine, it->second, strm);
+                ++it;
+                for (; it != mp->items.end(); ++it)
+                {
+                    strm << " ";
+                    ToStr(machine, it->first, strm);
+                    strm << ":";
+                    ToStr(machine, it->second, strm);
+                }
+                strm << " } ";
             }
-            strm << " } ";
+            else
+            {
+                strm << "} ";
+            }
         }
         break;
     case OBJECT_PROGRAM:
