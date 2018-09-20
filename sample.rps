@@ -1,18 +1,2 @@
-<<
-CREATEMAP map STOL
-FOR
-    account_id logfile.getfield CALL
-    DUP
-    2 TOLIST
-    map RCLL
-    SWAP
-    MINSERT
-    map STOL
-ENDFOR
-map RCLL
-CREATELIST rtn STOL
-FOR 
-    FIRST
-ENDFOR
->> test STO
-
+"grep ExecutionReport OC_ice.log" PREAD
+<< account_id logfile.getfield CALL>> APPLY

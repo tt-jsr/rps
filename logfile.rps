@@ -5,8 +5,8 @@
 "   start: Collect all \"S T A R T\" log lines" PRINT
 "          filename start CALL => [list]" PRINT
 "" PRINT
-" section: Pushes a command line for grabing a section of a logfile" PRINT
-"          filename startbyte endbyte section CALL => \"command\"" PRINT
+"      dd: Pushes a command line for grabing a section of a logfile" PRINT
+"          filename startbyte endbyte dd CALL => \"command\"" PRINT
 "" PRINT
 "getfield: Get a field value from a protobuf" PRINT
 "          protobuf fieldname getfield CALL => value" PRINT
@@ -36,7 +36,7 @@ APPLY
 
 ###################################################
 # Retuns a "dd" command for reading a section of a logfile
-# filename startbyte endbyte section CALL => ddcommand
+# filename startbyte endbyte dd CALL => ddcommand
 <<
 TOINT 512 DIV endblock STOL
 TOINT 512 DIV startblock STOL
@@ -51,7 +51,7 @@ THEN
 ELSE
     "dd if=%filename skip=%startblock " FORMAT
 ENDIF
->> section STO
+>> dd STO
 
 ######################################################
 # Get a field value from a protobuf

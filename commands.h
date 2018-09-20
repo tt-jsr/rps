@@ -79,6 +79,7 @@ void TAIL(Machine&);
 void TOLIST(Machine&);
 void FROMLIST(Machine&);
 void CREATELIST(Machine&);
+void UNIQUE(Machine&);
 void ZIP(Machine&);
 void UNZIP(Machine&);
 
@@ -135,6 +136,7 @@ void NAMESPACES(Machine&);
 void SETNS(Machine&);
 void GETNS(Machine&);
 void CD(Machine&);
+void PWD(Machine&);
 void HELP(Machine&);
 
 

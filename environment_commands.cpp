@@ -78,3 +78,18 @@ void CD(Machine& machine)
     chdir(dir.c_str());
 }
 
+void PWD(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "PWD: Present wqorking directory";
+        machine.helpstrm() << "PWD => \"dir\"";
+        return;
+    }
+
+    char *p = getcwd(nullptr, 0);
+    std::string s(p);
+    free(p);
+    machine.push(s);
+}
+

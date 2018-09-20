@@ -6,4 +6,5 @@ std.vedit RCL VEDIT REGISTER
 
 logfile.start RCL START REGISTER
 logfile.pfmt RCL PFMT REGISTER
+logfile.dd RCL DD REGISTER
 

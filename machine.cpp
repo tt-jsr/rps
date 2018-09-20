@@ -202,15 +202,14 @@ void HELP(Machine& machine)
     {
         for (auto& pr : machine.categories)
         {
-            std::cout << pr.first << " commands" << std::endl;
-            std::cout << "    ";
+            std::cout << pr.first << ": ";
             for (auto& c : pr.second)
             {
                 std::cout << c << " ";
             }
             std::cout << std::endl;
         }
-        std::cout << "Command or Category: " << std::flush;
+        std::cout << std::endl << "Command or Category: " << std::flush;
         std::string cmd;
         std::getline(std::cin, cmd);
         if (cmd == "q")

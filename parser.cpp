@@ -827,6 +827,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "ZIP");
     AddCommand(machine, "UNZIP", &UNZIP);
     Category(machine, "List", "UNZIP");
+    AddCommand(machine, "UNIQUE", &UNIQUE);
+    Category(machine, "List", "UNIQUE");
 
     // Map commands
     Category(machine, "Map", "ERASE");
@@ -873,6 +875,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Environment", "GETNS");
     AddCommand(machine, "CD", &CD);
     Category(machine, "Environment", "CD");
+    AddCommand(machine, "PWD", &PWD);
+    Category(machine, "Environment", "PWD");
     AddCommand(machine, "HELP", &HELP);
     Category(machine, "Environment", "HELP");
 

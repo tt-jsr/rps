@@ -24,6 +24,40 @@ namespace std
             assert(false);
         }
     };
+
+    template<>
+    struct less<Object *>
+    {
+        bool operator()(const Object* obj1, const Object* obj2) const
+        {
+            if (obj1->type == OBJECT_INTEGER && obj2->type == OBJECT_INTEGER)
+            {
+                return ((Integer *)obj1)->value < ((Integer *)obj2)->value;
+            }
+            if (obj1->type == OBJECT_STRING && obj2->type == OBJECT_STRING)
+            {
+                return ((String *)obj1)->value < ((String *)obj2)->value;
+            }
+            return obj1 < obj2;
+        }
+    };
+
+    template<>
+    struct equal_to<Object *>
+    {
+        bool operator()(const Object* obj1, const Object* obj2) const
+        {
+            if (obj1->type == OBJECT_INTEGER && obj2->type == OBJECT_INTEGER)
+            {
+                return ((Integer *)obj1)->value == ((Integer *)obj2)->value;
+            }
+            if (obj1->type == OBJECT_STRING && obj2->type == OBJECT_STRING)
+            {
+                return ((String *)obj1)->value == ((String *)obj2)->value;
+            }
+            return obj1 == obj2;
+        }
+    };
 }
 
 class Machine;
