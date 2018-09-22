@@ -823,16 +823,12 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "HEAD");
     AddCommand(machine, "TAIL", &TAIL);
     Category(machine, "List", "TAIL");
-    AddCommand(machine, "ZIP", &ZIP);
-    Category(machine, "List", "ZIP");
-    AddCommand(machine, "UNZIP", &UNZIP);
-    Category(machine, "List", "UNZIP");
     AddCommand(machine, "UNIQUE", &UNIQUE);
     Category(machine, "List", "UNIQUE");
 
     // Map commands
     Category(machine, "Map", "ERASE");
-    Category(machine, "MAP", "CLEAR");
+    Category(machine, "Map", "CLEAR");
     AddCommand(machine, "MINSERT", &MINSERT);
     Category(machine, "Map", "MINSERT");
     Category(machine, "Map", "SIZE");
@@ -889,8 +885,12 @@ Parser::Parser(Machine& machine)
     Category(machine, "String", "JOIN");
     AddCommand(machine, "SUBSTR", &SUBSTR);
     Category(machine, "String", "SUBSTR");
+    AddCommand(machine, "SUBSTRPOS", &SUBSTRPOS);
+    Category(machine, "String", "SUBSTRPOS");
     AddCommand(machine, "STRFIND", &STRFIND);
     Category(machine, "String", "STRFIND");
+    AddCommand(machine, "STRFINDEND", &STRFINDEND);
+    Category(machine, "String", "STRFINDEND");
     AddCommand(machine, "STRCMP", &STRCMP);
     Category(machine, "String", "STRCMP");
     AddCommand(machine, "STRNCMP", &STRNCMP);
@@ -902,6 +902,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "String", "STRBEGIN");
     AddCommand(machine, "STREND", &STREND);
     Category(machine, "String", "STREND");
+    AddCommand(machine, "STRCSPN", &STRCSPN);
+    Category(machine, "String", "STRCSPN");
 
     // Types
     AddCommand(machine, "TOINT", &TOINT);

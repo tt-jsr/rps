@@ -80,10 +80,8 @@ void TOLIST(Machine&);
 void FROMLIST(Machine&);
 void CREATELIST(Machine&);
 void UNIQUE(Machine&);
-void ZIP(Machine&);
-void UNZIP(Machine&);
 
-//Map
+// Map
 void FIND(Machine&);
 void MINSERT(Machine&);
 void TOMAP(Machine&);
@@ -113,12 +111,15 @@ void FORMAT(Machine&);
 void CAT(Machine&);
 void JOIN(Machine&);
 void SUBSTR(Machine&);
+void SUBSTRPOS(Machine&);
 void STRFIND(Machine&);
+void STRFINDEND(Machine&);
 void STRCMP(Machine&);
 void STRNCMP(Machine&);
 void SPLIT(Machine&);
 void STRBEGIN(Machine&);
 void STREND(Machine&);
+void STRCSPN(Machine&);
 
 // Types
 void TOINT(Machine&);

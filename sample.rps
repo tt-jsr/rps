@@ -1,2 +1,4 @@
 "grep ExecutionReport OC_ice.log" PREAD
+ers STO
+ers RCL
 << account_id logfile.getfield CALL>> APPLY

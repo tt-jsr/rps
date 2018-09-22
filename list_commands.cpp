@@ -450,28 +450,6 @@ void UNIQUE(Machine& machine)
     machine.push(rtn);
 }
 
-void ZIP(Machine& machine)
-{
-    if (machine.help)
-    {
-        machine.helpstrm() << "ZIP: Zips n lists together";
-        machine.helpstrm() << "[list]n [list]n-1 [list] n ZIP => [[objn objn-1 obj]...]";
-        return;
-    }
-    throw std::runtime_error("ZIP not yet implemented");
-}
-
-void UNZIP(Machine& machine)
-{
-    if (machine.help)
-    {
-        machine.helpstrm() << "UNZIP: Takes a list of lists and returns each list";
-        machine.helpstrm() << "[[objn, objn-1, obj] n UNZIP => [list]n [list]n-1 [list]";
-        return;
-    }
-    throw std::runtime_error("UNZIP not yet implemented");
-}
-
 //*******************************************************************
 // maps
 

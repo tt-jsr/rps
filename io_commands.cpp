@@ -232,7 +232,8 @@ void FSAVE(Machine& machine)
         machine.helpstrm() << "FSAVE: Write obj at L1 to the file on L0";
         machine.helpstrm() << "obj \"filename\" FSAVE =>";
         machine.helpstrm() << "FSAVE/FRESTORE is suitable for writing any object to a file for editing or";
-        machine.helpstrm() << "archiving";
+        machine.helpstrm() << "archiving.";
+        machine.helpstrm() << "See also: FRESTORE";
 
         return;
     }

@@ -103,7 +103,7 @@ void JOIN(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "Join: Joins a list into a string";
+        machine.helpstrm() << "JOIN: Joins a list into a string";
         machine.helpstrm() << "[list] \"delim\" JOIN =>\"str\"";
         machine.helpstrm() << "delim: The string to join with";
         return;
@@ -133,8 +133,9 @@ void SUBSTR(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "SUBSTR: Push a substring";
+        machine.helpstrm() << "SUBSTR: Return substring given startpos and length";
         machine.helpstrm() << "\"str\" startpos length SUBSTR => \"str\"";
+        machine.helpstrm() << "If length is <= 0, return substr to end of string";
         return;
     }
 
@@ -148,6 +149,34 @@ void SUBSTR(Machine& machine)
     machine.pop(length);
     machine.pop(startpos);
     machine.pop(str);
+    if (length <= 0)
+        str = str.substr(startpos);
+    else
+        str = str.substr(startpos, length);
+    machine.push(str);
+}
+
+void SUBSTRPOS(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "SUBSTRPOS: Return substr given startpos and endpos";
+        machine.helpstrm() << "\"str\" startpos endpos SUBSTRPOS => \"str\"";
+        machine.helpstrm() << "If endpos is <= startpos, return substr to end of string";
+        return;
+    }
+
+    stack_required(machine, "SUBSTRPOS", 3);
+    throw_required(machine, "SUBSTRPOS", 0, OBJECT_INTEGER);
+    throw_required(machine, "SUBSTRPOS", 1, OBJECT_INTEGER);
+    throw_required(machine, "SUBSTRPOS", 2, OBJECT_STRING);
+
+    int64_t startpos, endpos;
+    std::string str;
+    machine.pop(endpos);
+    machine.pop(startpos);
+    machine.pop(str);
+    int64_t length = endpos - startpos;
     if (length < 0)
         str = str.substr(startpos);
     else
@@ -222,10 +251,10 @@ void STRFIND(Machine& machine)
         return;
     }
 
-    stack_required(machine, "FIND", 3);
-    throw_required(machine, "FIND", 0, OBJECT_STRING);
-    throw_required(machine, "FIND", 1, OBJECT_INTEGER);
-    throw_required(machine, "FIND", 2, OBJECT_STRING);
+    stack_required(machine, "STRFIND", 3);
+    throw_required(machine, "STRFIND", 0, OBJECT_STRING);
+    throw_required(machine, "STRFIND", 1, OBJECT_INTEGER);
+    throw_required(machine, "STRFIND", 2, OBJECT_STRING);
 
     int64_t startpos;
     std::string find_str;
@@ -239,6 +268,35 @@ void STRFIND(Machine& machine)
         machine.push(-1);
     else
         machine.push(pos);
+}
+
+void STRFINDEND(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "STRFINDEND: Find the end of a string";
+        machine.helpstrm() << "\"str\" startpos \"str to find\" STRFINDEND => pos";
+        machine.helpstrm() << "Pushes -1 if the string is not found";
+        return;
+    }
+
+    stack_required(machine, "STRFINDEND", 3);
+    throw_required(machine, "STRFINDEND", 0, OBJECT_STRING);
+    throw_required(machine, "STRFINDEND", 1, OBJECT_INTEGER);
+    throw_required(machine, "STRFINDEND", 2, OBJECT_STRING);
+
+    int64_t startpos;
+    std::string find_str;
+    std::string str;
+    machine.pop(find_str);
+    machine.pop(startpos);
+    machine.pop(str);
+
+    size_t pos = str.find(find_str, startpos);
+    if (pos == std::string::npos)
+        machine.push(-1);
+    else
+        machine.push(pos+find_str.size());
 }
 
 void STRCMP(Machine& machine)
@@ -366,4 +424,33 @@ void SPLIT(Machine& machine)
     machine.push(optr);
 }
 
+void STRCSPN(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "STRCSPN: Returns pos of delimiter";
+        machine.helpstrm() << "\"str\" startpos \"delims\" STRCSPN => int";
+        return;
+    }
+    stack_required(machine, "STRCSPN", 3);
+    throw_required(machine, "STRCSPN", 0, OBJECT_STRING);
+    throw_required(machine, "STRCSPN", 1, OBJECT_INTEGER);
+    throw_required(machine, "STRCSPN", 2, OBJECT_STRING);
+
+    std::string delims;
+    std::string str;
+    int64_t startpos;
+    machine.pop(delims);
+    machine.pop(startpos);
+    machine.pop(str);
+    if (startpos >= str.size())
+    {
+         machine.push(str);
+         machine.push(startpos);
+         machine.push(delims);
+         throw std::runtime_error("STRCSPN: startpos out of range");
+    }
+    int64_t pos = strcspn(str.c_str()+startpos, delims.c_str());
+    machine.push(pos);
+}
 

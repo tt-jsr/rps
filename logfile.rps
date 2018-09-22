@@ -102,7 +102,7 @@ pb RCLL         # value pb
 # Read inserted customer defaults
 # filename startbyte endbyte cdinsert CALL => [list]
 <<
-section CALL
+dd CALL
 "| grep \"CUSTOMER_DEFAULTS-.*INSERT\"" CAT PREAD
 >> cdinsert STO
 
