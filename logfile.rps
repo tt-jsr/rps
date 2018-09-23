@@ -5,6 +5,9 @@
 "   start: Collect all \"S T A R T\" log lines" PRINT
 "          filename start CALL => [list]" PRINT
 "" PRINT
+"logstart: Get a tuple of file name and timestamp" PRINT
+"          filename logstart CALL => [list]" PRINT
+"" PRINT
 "      dd: Pushes a command line for grabing a section of a logfile" PRINT
 "          filename startbyte endbyte dd CALL => \"command\"" PRINT
 "" PRINT
@@ -104,4 +107,23 @@ pb RCLL         # value pb
 dd CALL
 "| grep \"CUSTOMER_DEFAULTS-.*INSERT\"" CAT PREAD
 >> cdinsert STO
+
+#########################################
+# Get the first timestamp of a logfile
+# "filename" logstart => "str"
+<< fname STOL
+fname RCLL
+IF .gz STREND
+THEN
+fname RCLL
+"zcat %0 | head -1" FORMAT PREAD
+ELSE
+fname RCLL
+"head -1 %0" FORMAT PREAD
+ENDIF
+0 GET 0 24 SUBSTR
+fname RCLL
+SWAP
+2 TOLIST
+>> logstart STO
 

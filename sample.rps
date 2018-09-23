@@ -1,4 +1,11 @@
-"grep ExecutionReport OC_ice.log" PREAD
-ers STO
-ers RCL
-<< account_id logfile.getfield CALL>> APPLY
+<<
+counter STOL
+exec_type logfile.getfield CALL
+IF EXEC_TYPE_TRADE EQ
+THEN
+counter RCLL
+INC
+counter STOL
+ENDIF
+counter RCLL
+>> countTrades STO

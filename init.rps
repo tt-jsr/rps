@@ -5,6 +5,7 @@ import git
 std.vedit RCL VEDIT REGISTER
 
 logfile.start RCL START REGISTER
+logfile.logstaqrt RCL LOGSTART REGISTER
 logfile.pfmt RCL PFMT REGISTER
 logfile.dd RCL DD REGISTER
 

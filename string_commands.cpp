@@ -216,7 +216,7 @@ void STREND(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "STREND: Does string begin with the given str";
+        machine.helpstrm() << "STREND: Does string end with the given str";
         machine.helpstrm() << "\"str\" \"str\" STREND => int";
         return;
     }

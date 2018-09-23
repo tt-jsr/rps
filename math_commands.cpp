@@ -8,7 +8,6 @@
 #include "module.h"
 #include "machine.h"
 
-// int int => int
 void ADD(Machine& machine)
 {
     if (machine.help)
@@ -27,7 +26,6 @@ void ADD(Machine& machine)
     machine.push(arg1 + arg2);
 }
 
-// int int => int
 void SUB(Machine& machine)
 {
     if (machine.help)
@@ -46,7 +44,6 @@ void SUB(Machine& machine)
     machine.push(arg2 - arg1);
 }
 
-// int int => int
 void MUL(Machine& machine)
 {
     if (machine.help)
@@ -65,7 +62,6 @@ void MUL(Machine& machine)
     machine.push(arg1 * arg2);
 }
 
-// int int => int
 void DIV(Machine& machine)
 {
     if (machine.help)
@@ -84,7 +80,6 @@ void DIV(Machine& machine)
     machine.push(arg2 / arg1);
 }
 
-// int => int
 void INC(Machine& machine)
 {
     if (machine.help)
@@ -102,7 +97,6 @@ void INC(Machine& machine)
     machine.push(n);
 }
 
-// int => int
 void DEC(Machine& machine)
 {
     if (machine.help)

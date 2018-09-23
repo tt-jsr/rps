@@ -123,13 +123,13 @@ void REDUCE(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "REDUCE a function over a list";
+        machine.helpstrm() << "REDUCE a list to an object";
         machine.helpstrm() << "[list] <<prog>> startobj REDUCE => obj ";
-        machine.helpstrm() << "REDUCE calls prog with a list item and an object";
+        machine.helpstrm() << "REDUCE calls prog with a list item and the startobj.";
         machine.helpstrm() << "The program will then return an object to be provided";
-        machine.helpstrm() << "to the next invokation of the program";
+        machine.helpstrm() << "to the next invocation of the program";
         machine.helpstrm() << "<<prog>> must have signiture:";
-        machine.helpstrm() << "   [list] obj => obj";
+        machine.helpstrm() << "   listitem obj => obj";
         return;
     }
 
