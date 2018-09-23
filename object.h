@@ -12,14 +12,12 @@ public:
     Object(ObjectType t, TokenType tok)
     :type(t)
     ,token(tok)
-    ,bSuppressInteractivePrint(false)
     {}
 
     ~Object() {}
 
     ObjectType type;
     TokenType token;
-    bool bSuppressInteractivePrint;
 };
 
 typedef std::shared_ptr<Object> ObjectPtr;
@@ -29,6 +27,7 @@ class String : public Object
 public:
     String(const std::string&s) : Object(OBJECT_STRING, TOKEN_DATA), value(s) {}
     std::string value;
+    bool quoted;
 };
 
 typedef std::shared_ptr<String> StringPtr;

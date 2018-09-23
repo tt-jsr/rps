@@ -72,7 +72,7 @@ ObjectPtr Clone(ObjectPtr);
 
 bool ToBool(Machine&, ObjectPtr);
 
-void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm);
+std::string ToStr(Machine& machine, ObjectPtr optr);
 std::string ToStr(Machine&, ObjectPtr);
 int64_t ToInt(Machine&, ObjectPtr);
 std::string ToType(Machine&, ObjectPtr);

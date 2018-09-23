@@ -90,6 +90,247 @@ ObjectPtr Clone(ObjectPtr optr)
     }
 }
 
+std::string ToStr(Machine& machine, ObjectPtr optr)
+{
+    switch (optr->type)
+    {
+    case OBJECT_STRING:
+        return ((String *)optr.get())->value;
+    case OBJECT_INTEGER:
+        return std::to_string(((Integer *)optr.get())->value);
+    case OBJECT_COMMAND:
+        return ((Command *)optr.get())->value;
+    case OBJECT_LIST:
+        {
+            List *lp = (List *)optr.get();
+            std::stringstream strm;
+            strm << " [";
+            for (auto it = lp->items.begin(); it != lp->items.end(); ++it)
+            {
+                if ((*it)->type == OBJECT_STRING)
+                {
+                    std::string s = ToStr(machine, *it);
+                    if (s.find_first_of(' '))
+                        strm << " \"" << s << "\"";
+                    else
+                        strm << " " << s;
+                }
+                else
+                {
+                    strm << " " << ToStr(machine, *it);
+                }
+            }
+            strm << " ]";
+            return strm.str();
+        }
+        break;
+    case OBJECT_MAP:
+        {
+            Map *mp = (Map *)optr.get();
+            std::stringstream strm;
+            strm << " {";
+            auto it = mp->items.begin();
+            while (it != mp->items.end())
+            {
+                strm << " [";
+                if (it->first->type == OBJECT_STRING)
+                {
+                    std::string s = ToStr(machine, it->first);
+                    if (s.find_first_of(' '))
+                        strm << " \"" << s << "\"";
+                    else
+                        strm << " " << s;
+                }
+                else
+                {
+                    strm << ToStr(machine, it->first);
+                }
+                if (it->second->type == OBJECT_STRING)
+                {
+                    std::string s = ToStr(machine, it->second);
+                    if (s.find_first_of(' '))
+                        strm << " \"" << s << "\"";
+                    else
+                        strm << " " << s;
+                }
+                else
+                {
+                    strm << " " << ToStr(machine, it->second);
+                }
+                strm << " ]";
+                ++it;
+            }
+            strm << " }";
+            return strm.str();
+        }
+        break;
+    case OBJECT_PROGRAM:
+        {
+            Program *pp = (Program *)optr.get();
+            std::stringstream strm;
+            strm << " <<";
+            for (ObjectPtr& op : pp->program)
+            {
+                if (op->type == OBJECT_STRING)
+                {
+                    std::string s = ToStr(machine, op);
+                    if (s.find_first_of(' '))
+                        strm << " \"" << s << "\"";
+                    else
+                        strm << " " << s;
+                }
+                else
+                {
+                    strm << " " << ToStr(machine, op);
+                }
+            }
+            strm << " >>";
+            return strm.str();
+        }
+        break;
+    case OBJECT_IF:
+        {
+            If *pif = (If *)optr.get();
+            std::stringstream strm;
+            strm << " IF";
+            for (ObjectPtr op : pif->cond)
+            {
+                if (op->type == OBJECT_STRING)
+                {
+                    std::string s = ToStr(machine, op);
+                    if (s.find_first_of(' '))
+                        strm << " " << "\"" << s << "\"";
+                    else
+                        strm << " " << s;
+                }
+                else
+                {
+                    strm << " " << ToStr(machine, op);
+                }
+            }
+            strm << " THEN";
+            for (ObjectPtr op : pif->then)
+            {
+                if (op->type == OBJECT_STRING)
+                {
+                    std::string s = ToStr(machine, op);
+                    if (s.find_first_of(' '))
+                        strm << " \"" << s << "\"";
+                    else
+                        strm << " " << s;
+                }
+                else
+                {
+                    strm << " " << ToStr(machine, op);
+                }
+            }
+            if (pif->els.size())
+            {
+                strm << " ELSE";
+                for (ObjectPtr op : pif->els)
+                {
+                    if (op->type == OBJECT_STRING)
+                    {
+                        std::string s = ToStr(machine, op);
+                        if (s.find_first_of(' '))
+                            strm << " \"" << s << "\"";
+                        else
+                            strm << " " << s;
+                    }
+                    else
+                    {
+                        strm << " " << ToStr(machine, op);
+                    }
+                }
+            }
+            strm << " ENDIF";
+            return strm.str();
+        }
+        break;
+    case OBJECT_FOR:
+        {
+            std::stringstream strm;
+            strm << " FOR";
+            For *pfor = (For *)optr.get();
+            for (ObjectPtr op : pfor->program)
+            {
+                if (op->type == OBJECT_STRING)
+                {
+                    std::string s = ToStr(machine, op);
+                    if (s.find_first_of(' '))
+                        strm << " \"" << s << "\"";
+                    else
+                        strm << " " << s;
+                }
+                else
+                {
+                    strm << " " << ToStr(machine, op);
+                }
+            }
+            strm << " ENDFOR";
+            return strm.str();
+        }
+        break;
+    case OBJECT_WHILE:
+        {
+            std::stringstream strm;
+            strm << " WHILE";
+            While *pwhile = (While *)optr.get();
+            for (ObjectPtr op : pwhile->cond)
+            {
+                if (op->type == OBJECT_STRING)
+                {
+                    std::string s = ToStr(machine, op);
+                    if (s.find_first_of(' '))
+                        strm << " \"" << s << "\"";
+                    else
+                        strm << " " << s;
+                }
+                else
+                {
+                    strm << " " << ToStr(machine, op);
+                }
+            }
+            strm << " REPEAT";
+            for (ObjectPtr op : pwhile->program)
+            {
+                if (op->type == OBJECT_STRING)
+                {
+                    std::string s = ToStr(machine, op);
+                    if (s.find_first_of(' '))
+                        strm << " \"" << s << "\"";
+                    else
+                        strm << " " << s;
+                }
+                else
+                {
+                    strm << " " << ToStr(machine, op);
+                }
+            }
+            strm << " ENDWHILE";
+        }
+        break;
+    case OBJECT_TOKEN:
+        {
+            if (optr->token == TOKEN_EOL)
+                return "\n";
+            else
+            {
+                std::stringstream strm;
+                strm << "TOKEN: " << optr->token;
+                strm.str();
+            }
+        }
+        break;
+    default:
+        std::cout << "=== ToStr: " << optr->token << std::endl;
+        assert(false);
+        throw std::runtime_error("ToStr: Unknown type");
+        break;
+    }
+}
+
+/*
 void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm)
 {
     switch (optr->type)
@@ -212,13 +453,7 @@ void ToStr(Machine& machine, ObjectPtr optr, std::stringstream& strm)
         break;
     }
 }
-
-std::string ToStr(Machine& machine, ObjectPtr optr)
-{
-    std::stringstream strm;
-    ToStr(machine, optr, strm);
-    return strm.str();
-}
+*/
 
 std::string ToType(Machine&, ObjectPtr optr)
 {

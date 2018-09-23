@@ -31,8 +31,12 @@ enum TokenType
 
 struct Token
 {
+    Token()
+    :quoted(false)
+    {}
     std::string value;
     TokenType token;
+    bool quoted;
 };
 
 enum ObjectType

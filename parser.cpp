@@ -127,6 +127,7 @@ void GetToken(Source& src, Token& token)
     {
         CollectQuoted(src, token);
         token.token = TOKEN_STRING;
+        token.quoted = true;
         return;
     }
     if (*src.it == '[')
@@ -277,7 +278,11 @@ again:
             goto again;
         }
         else
-            optr.reset(new String(token.value));
+        {
+            String *sp = new String(token.value);
+            sp->quoted = token.quoted;
+            optr.reset(sp);
+        }
     }
 
     return true;
@@ -700,7 +705,7 @@ void Parser::Parse(Machine& machine, Source& src)
             }
             else if (optr->token == TOKEN_EOL)
             {
-                if (src.interactive && !optr->bSuppressInteractivePrint)
+                if (src.interactive )
                 {
                     VIEW(machine, 4);
                 }
