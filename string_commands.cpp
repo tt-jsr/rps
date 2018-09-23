@@ -444,12 +444,7 @@ void STRCSPN(Machine& machine)
     machine.pop(startpos);
     machine.pop(str);
     if (startpos >= str.size())
-    {
-         machine.push(str);
-         machine.push(startpos);
-         machine.push(delims);
          throw std::runtime_error("STRCSPN: startpos out of range");
-    }
     int64_t pos = strcspn(str.c_str()+startpos, delims.c_str());
     machine.push(pos);
 }

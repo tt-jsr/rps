@@ -910,6 +910,7 @@ Parser::Parser(Machine& machine)
     Category(machine, "String", "STREND");
     AddCommand(machine, "STRCSPN", &STRCSPN);
     Category(machine, "String", "STRCSPN");
+    Category(machine, "String", "CLEAR");
 
     // Types
     AddCommand(machine, "TOINT", &TOINT);

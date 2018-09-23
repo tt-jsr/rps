@@ -60,7 +60,6 @@ void GET(Machine& machine)
     }
     if (idx < 0 || idx >= lp->items.size())
     {
-        machine.push(lp);
         throw std::runtime_error("GET: Index out of range for List");
     }
     ObjectPtr p = lp->items[idx];
@@ -97,7 +96,6 @@ void SUBLIST(Machine& machine)
     }
     if (startpos < 0 || startpos >= lp->items.size())
     {
-        machine.push(lp);
         throw std::runtime_error("SUBLIST: startpos out of range for List");
     }
     if ((startpos+length) >= lp->items.size())
@@ -109,6 +107,7 @@ void SUBLIST(Machine& machine)
         std::copy(lp->items.begin()+startpos, lp->items.begin()+startpos+length, std::back_inserter(result->items));
     machine.push(result);
 }
+
 void LINSERT(Machine& machine)
 {
     if (machine.help)
@@ -135,9 +134,6 @@ void LINSERT(Machine& machine)
     }
     if (idx >= lp->items.size())
     {
-        machine.push(lp);
-        machine.push(idx);
-        machine.push(element);
         throw std::runtime_error("List insert: Index out of range");
     }
     lp->items.insert(lp->items.begin()+idx, element);
@@ -194,8 +190,6 @@ void ERASE(Machine& machine)
         }
         if (idx < 0 || idx >= lp->items.size())
         {
-            machine.push(lp);
-            machine.push(idx);
             throw std::runtime_error("ERASE: Index out of range for List");
         }
         lp->items.erase(lp->items.begin() + idx);
@@ -225,11 +219,12 @@ void CLEAR(Machine& machine)
         machine.helpstrm() << "CLEAR: Clear a list or map";
         machine.helpstrm() << "[list] CLEAR => []";
         machine.helpstrm() << "{map} CLEAR => {}";
+        machine.helpstrm() << "\"str\" CLEAR => \"\"";
         return;
     }
 
-    if (machine.stack_.size() < 1)
-        throw std::runtime_error("CLEAR requires a List argument");
+    stack_required(machine, "CLEAR",  1);
+
     if (machine.peek(0)->type == OBJECT_LIST)
     {
         ListPtr lp;
@@ -246,6 +241,14 @@ void CLEAR(Machine& machine)
         machine.push(mp);
         return;
     }
+    if (machine.peek(0)->type == OBJECT_STRING)
+    {
+        std::string s;
+        machine.pop(s);
+        s.clear();
+        machine.push(s);
+        return;
+    }
     throw std::runtime_error("CLEAR: requires List or Map argument");
 }
 
@@ -258,12 +261,12 @@ void SIZE(Machine& machine)
         machine.helpstrm() << "{map} SIZE => int";
         machine.helpstrm() << "\"str\" SIZE => int";
         machine.helpstrm() << "<<prog>> SIZE => int";
-        machine.helpstrm() << "SIZE* will retain the list on the stack";
+        machine.helpstrm() << "SIZE* will retain the obj on the stack";
         return;
     }
 
-    if (machine.stack_.size() < 1)
-        throw std::runtime_error("SIZE requires a List argument");
+    stack_required(machine, "SIZE", 1);
+
     if (machine.peek(0)->type == OBJECT_LIST)
     {
         ListPtr lp;
@@ -484,7 +487,7 @@ void KEYS(Machine& machine)
     if (machine.help)
     {
         machine.helpstrm() << "KEYS: Get a list of keys";
-        machine.helpstrm() << "{map} KEYS => []";
+        machine.helpstrm() << "{map} KEYS => [list]";
         return;
     }
     stack_required(machine, "KEYS", 1);
@@ -506,7 +509,7 @@ void VALUES(Machine& machine)
     if (machine.help)
     {
         machine.helpstrm() << "VALUES: Get a list of values";
-        machine.helpstrm() << "{map} VALUES => []";
+        machine.helpstrm() << "{map} VALUES => [list]";
         return;
     }
     stack_required(machine, "VALUES", 1);
@@ -596,6 +599,7 @@ void TOMAP(Machine& machine)
     }
     machine.push(mp);
 }
+
 void FROMMAP(Machine& machine)
 {
     if (machine.help)

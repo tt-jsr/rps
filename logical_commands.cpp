@@ -108,14 +108,11 @@ void EQ(Machine& machine)
     }
 
     ObjectPtr lhs, rhs;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("EQ requires two arguments");
+    stack_required(machine, "EQ", 2);
     machine.pop(rhs);
     machine.pop(lhs);
     if (lhs->type != rhs->type)
     {
-        machine.push(lhs);
-        machine.push(rhs);
         throw std::runtime_error("EQ: Arguments must be the same type");
     }
     if (lhs->type == OBJECT_INTEGER)
@@ -136,15 +133,13 @@ void NEQ(Machine& machine)
         return;
     }
 
+    stack_required(machine, "NEQ", 2);
     ObjectPtr lhs, rhs;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("NEQ requires two arguments");
+
     machine.pop(rhs);
     machine.pop(lhs);
     if (lhs->type != rhs->type)
     {
-        machine.push(lhs);
-        machine.push(rhs);
         throw std::runtime_error("NQ: Arguments must be the same type");
     }
     if (lhs->type == OBJECT_INTEGER)
@@ -165,15 +160,13 @@ void LT(Machine& machine)
         return;
     }
 
+    stack_required(machine, "LT", 2);
     ObjectPtr lhs, rhs;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("LT requires two arguments");
+
     machine.pop(rhs);
     machine.pop(lhs);
     if (lhs->type != rhs->type)
     {
-        machine.push(lhs);
-        machine.push(rhs);
         throw std::runtime_error("LT: Arguments must be the same type");
     }
     if (lhs->type == OBJECT_INTEGER)
@@ -194,15 +187,13 @@ void LTEQ(Machine& machine)
         return;
     }
 
+    stack_required(machine, "LTEQ", 2);
     ObjectPtr lhs, rhs;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("LTEQ requires two arguments");
+
     machine.pop(rhs);
     machine.pop(lhs);
     if (lhs->type != rhs->type)
     {
-        machine.push(lhs);
-        machine.push(rhs);
         throw std::runtime_error("LTEQ: Arguments must be the same type");
     }
     if (lhs->type == OBJECT_INTEGER)
@@ -223,15 +214,13 @@ void GT(Machine& machine)
         return;
     }
 
+    stack_required(machine, "GT", 2);
     ObjectPtr lhs, rhs;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("GT requires two arguments");
+
     machine.pop(rhs);
     machine.pop(lhs);
     if (lhs->type != rhs->type)
     {
-        machine.push(lhs);
-        machine.push(rhs);
         throw std::runtime_error("GT: Arguments must be the same type");
     }
     if (lhs->type == OBJECT_INTEGER)
@@ -252,15 +241,13 @@ void GTEQ(Machine& machine)
         return;
     }
 
+    stack_required(machine, "GTEQ", 2);
     ObjectPtr lhs, rhs;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("GTEQ requires two arguments");
+
     machine.pop(rhs);
     machine.pop(lhs);
     if (lhs->type != rhs->type)
     {
-        machine.push(lhs);
-        machine.push(rhs);
         throw std::runtime_error("GTEQ: Arguments must be the same type");
     }
     if (lhs->type == OBJECT_INTEGER)
@@ -281,15 +268,11 @@ void AND(Machine& machine)
         return;
     }
 
+    stack_required(machine, "AND", 2);
     ObjectPtr lhs, rhs;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("AND requires two arguments");
-    machine.pop(rhs);
-    machine.pop(lhs);
+
     if (lhs->type != rhs->type)
     {
-        machine.push(lhs);
-        machine.push(rhs);
         throw std::runtime_error("AND: Arguments must be the same type");
     }
     if (lhs->type == OBJECT_INTEGER)
@@ -310,15 +293,13 @@ void OR(Machine& machine)
         return;
     }
 
+    stack_required(machine, "OR", 2);
     ObjectPtr lhs, rhs;
-    if (machine.stack_.size() < 2)
-        throw std::runtime_error("OR requires two arguments");
+
     machine.pop(rhs);
     machine.pop(lhs);
     if (lhs->type != rhs->type)
     {
-        machine.push(lhs);
-        machine.push(rhs);
         throw std::runtime_error("OR: Arguments must be the same type");
     }
     if (lhs->type == OBJECT_INTEGER)

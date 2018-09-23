@@ -123,13 +123,11 @@ void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
     {
         std::stringstream strm;
         strm << "RCL Module " << modname << " not found";
-        machine.push(name);
         throw std::runtime_error(strm.str().c_str());
     }
     auto itVar = itModule->second.variables_.find(varname);
     if (itVar == itModule->second.variables_.end())
     {
-        machine.push(name);
         std::stringstream strm;
         strm << "RCL Variable " << modname << "." << varname << " not found";
         throw std::runtime_error(strm.str().c_str());

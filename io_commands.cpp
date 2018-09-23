@@ -23,8 +23,7 @@ void PRINT(Machine& machine)
         machine.helpstrm() << "\"str\" => ";
         return;
     }
-    if (machine.stack_.size() < 1)
-        throw std::runtime_error("PRINT: Requires object at L0");
+    stack_required(machine, "PRINT", 1);
 
     ObjectPtr optr;
     machine.pop(optr);
@@ -40,9 +39,8 @@ void PROMPT(Machine& machine)
         machine.helpstrm() << "\"prompt\" => \"response\"";
         return;
     }
-    if (machine.stack_.size() < 1)
-        throw std::runtime_error("PROMPT: Requires string at L0");
 
+    stack_required(machine, "PROMPT", 1);
     throw_required(machine, "PROMPT", 0, OBJECT_STRING);
 
     std::string prompt;
