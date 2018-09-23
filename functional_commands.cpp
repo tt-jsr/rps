@@ -15,7 +15,8 @@ void APPLY(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "APPLY: Apply a program to each item in a list";
+        machine.helpstrm() << "APPLY: Apply a program to each item in a list.";
+        machine.helpstrm() << "       Returns a list the same size as the input.";
         machine.helpstrm() << "[srclist] <<prog>> APPLY => [dstlist]";
         machine.helpstrm() << "srclist: List of items";
         machine.helpstrm() << "prog: Program to execute. The program will have a list item at L0";
@@ -51,6 +52,7 @@ void SELECT(Machine& machine)
     if (machine.help)
     {
         machine.helpstrm() << "SELECT Select items from a list";
+        machine.helpstrm() << "       Returns a list of items selected from the input list.";
         machine.helpstrm() << "[srclist] <<prog>> SELECT => [dstlist]";
         machine.helpstrm() << "srclist: List of items";
         machine.helpstrm() << "prog: Program to execute. The program will have a list item at L0";
@@ -116,4 +118,39 @@ void MAP(Machine& machine)
         EVAL(machine, pptr);
     }
 }
+
+void REDUCE(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "REDUCE a function over a list";
+        machine.helpstrm() << "[list] <<prog>> startobj REDUCE => obj ";
+        machine.helpstrm() << "REDUCE calls prog with a list item and an object";
+        machine.helpstrm() << "The program will then return an object to be provided";
+        machine.helpstrm() << "to the next invokation of the program";
+        machine.helpstrm() << "<<prog>> must have signiture:";
+        machine.helpstrm() << "   [list] obj => obj";
+        return;
+    }
+
+    stack_required(machine, "REDUCE", 3);
+    throw_required(machine, "REDUCE", 1, OBJECT_PROGRAM);
+    throw_required(machine, "REDUCE", 2, OBJECT_LIST);
+
+    ProgramPtr prog;
+    ListPtr list;
+    ObjectPtr obj;
+    machine.pop(obj);
+    machine.pop(prog);
+    machine.pop(list);
+    for (ObjectPtr p : list->items)
+    {
+        machine.push(p);
+        machine.push(obj);
+        EVAL(machine, prog);
+        machine.pop(obj);
+    }
+    machine.push(obj);
+}
+
 

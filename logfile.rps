@@ -59,8 +59,7 @@ ENDIF
 <<
 "=" CAT     # pb fieldname=
 field STOL  # pb
-pb STOL     # store the pb
-pb RCLL     # pb
+pb STOL*    # store the pb
 0           # pb 0
 field RCLL  # pb 0 fieldname=
 STRFIND     # pos (the position of fieldname=)

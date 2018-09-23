@@ -39,7 +39,9 @@ void GET(Machine& machine)
     {
         machine.helpstrm() << "GET: Get the object in a list at the given index" << std::endl;
         machine.helpstrm() << "[list] idx GET => obj" << std::endl;
+        machine.helpstrm() << "[list] idx GET* => [list] obj" << std::endl;
         machine.helpstrm() << "If idx < 0 it is taken from the end of the list" << std::endl;
+        machine.helpstrm() << "GET* will retain the list on the stack" << std::endl;
         return;
     }
 
@@ -62,6 +64,8 @@ void GET(Machine& machine)
         throw std::runtime_error("GET: Index out of range for List");
     }
     ObjectPtr p = lp->items[idx];
+    if (machine.nopop)
+        machine.push(lp);
     machine.push(p);
     return;
 }
@@ -254,6 +258,7 @@ void SIZE(Machine& machine)
         machine.helpstrm() << "{map} SIZE => int";
         machine.helpstrm() << "\"str\" SIZE => int";
         machine.helpstrm() << "<<prog>> SIZE => int";
+        machine.helpstrm() << "SIZE* will retain the list on the stack";
         return;
     }
 
@@ -264,6 +269,8 @@ void SIZE(Machine& machine)
         ListPtr lp;
         machine.pop(lp);
         int64_t sz = lp->items.size();
+        if (machine.nopop)
+            machine.push(lp);
         machine.push(sz);
         return;
     }
@@ -272,6 +279,8 @@ void SIZE(Machine& machine)
         MapPtr mp;
         machine.pop(mp);
         int64_t sz = mp->items.size();
+        if (machine.nopop)
+            machine.push(mp);
         machine.push(sz);
         return;
     }
@@ -280,6 +289,8 @@ void SIZE(Machine& machine)
         ObjectPtr optr;
         machine.pop(optr);
         int64_t sz = ((String *)optr.get())->value.size();
+        if (machine.nopop)
+            machine.push(optr);
         machine.push(sz);
         return;
     }
@@ -288,6 +299,8 @@ void SIZE(Machine& machine)
         ObjectPtr optr;
         machine.pop(optr);
         int64_t sz = ((Program *)optr.get())->program.size();
+        if (machine.nopop)
+            machine.push(optr);
         machine.push(sz);
         return;
     }

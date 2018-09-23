@@ -757,10 +757,12 @@ Parser::Parser(Machine& machine)
 
     // Variable commands
     AddCommand(machine, "STO", &STO);
+    AddCommand(machine, "STO*", &STO);
     Category(machine, "Variable", "STO");
     AddCommand(machine, "RCL", &RCL);
     Category(machine, "Variable", "RCL");
     AddCommand(machine, "STOL", &STOL);
+    AddCommand(machine, "STOL*", &STOL);
     Category(machine, "Variable", "STOL");
     AddCommand(machine, "RCLL", &RCLL);
     Category(machine, "Variable", "RCLL");
@@ -795,6 +797,7 @@ Parser::Parser(Machine& machine)
 
     // List commands
     AddCommand(machine, "GET", &GET);
+    AddCommand(machine, "GET*", &GET);
     Category(machine, "List", "GET");
     AddCommand(machine, "SUBLIST", &SUBLIST);
     Category(machine, "List", "SUBLIST");
@@ -808,6 +811,7 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "LINSERT");
     AddCommand(machine, "INSERT", &INSERT);
     AddCommand(machine, "SIZE", &SIZE);
+    AddCommand(machine, "SIZE*", &SIZE);
     Category(machine, "List", "SIZE");
     AddCommand(machine, "FIRST", &FIRST);
     Category(machine, "List", "FIRST");
@@ -852,6 +856,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Functional", "SELECT");
     AddCommand(machine, "MAP", &MAP);
     Category(machine, "Functional", "MAP");
+    AddCommand(machine, "REDUCE", &REDUCE);
+    Category(machine, "Functional", "REDUCE");
 
     // Execution commands
     AddCommand(machine, "EVAL", &EVAL);

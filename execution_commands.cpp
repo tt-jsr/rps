@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <cassert>
+#include <memory>
 #include "token.h"
 #include "object.h"
 #include "module.h"
@@ -115,11 +116,19 @@ void Execute(Machine& machine, ObjectPtr optr)
         break;
     case OBJECT_COMMAND:
         {
-            Command *pCommand = (Command *)optr.get();
-            if (pCommand->program)
-                EVAL(machine, pCommand->program);
+            CommandPtr cmd = std::static_pointer_cast<Command>(optr);
+            if (cmd->program)
+                EVAL(machine, cmd->program);
             else
-                (*pCommand->funcptr)(machine);
+            {
+                if (cmd->value.back() == '*')
+                    machine.nopop = true;
+                if (cmd->value.back() == '?')
+                    ShowHelp(machine, cmd);
+                else
+                    (*cmd->funcptr)(machine);
+                machine.nopop = false;
+            }
         }
         break;
     case OBJECT_TOKEN:

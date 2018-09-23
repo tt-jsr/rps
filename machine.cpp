@@ -16,6 +16,7 @@ Machine::Machine()
 : viewwidth(120)
 , debug(false) 
 , help(false)
+, nopop(false)
 {
 }
 
@@ -116,6 +117,27 @@ void Machine::push(MapPtr& mp)
     push(op);
 }
 
+void Machine::pop(ProgramPtr& pp)
+{
+    if (stack_.empty())
+        throw std::runtime_error("stack underflow");
+    if (peek(0)->type != OBJECT_PROGRAM)
+    {
+        std::stringstream strm;
+        strm << "pop: Expected program, got: " << ToStr(*this, peek());
+        throw std::runtime_error(strm.str().c_str());
+    }
+    ObjectPtr optr;
+    pop(optr);
+    pp = std::static_pointer_cast<Program>(optr);
+}
+
+void Machine::push(ProgramPtr& pp)
+{
+    ObjectPtr op = pp;
+    push(op);
+}
+
 void Machine::pop(std::string& v)
 {
     if (stack_.empty())
@@ -190,6 +212,15 @@ void ShowCategory(Machine& machine, const std::string& cat)
     }
 }
 
+void ShowHelp(Machine& machine, CommandPtr cmd)
+{
+    machine.help = true;
+    machine.hstrm.str("");
+    (*cmd->funcptr)(machine);
+    machine.help = false;
+    std::cout << std::endl << machine.hstrm.str() << std::endl;
+}
+
 void HELP(Machine& machine)
 {
     if (machine.help)
@@ -202,7 +233,9 @@ void HELP(Machine& machine)
     {
         for (auto& pr : machine.categories)
         {
-            std::cout << pr.first << ": ";
+            assert(pr.first.size() <= 12);
+            std::string pad(12-pr.first.size(), ' ');
+            std::cout << pad << pr.first << ": ";
             for (auto& c : pr.second)
             {
                 std::cout << c << " ";
@@ -217,11 +250,7 @@ void HELP(Machine& machine)
         auto it = machine.commands.find(cmd);
         if (it != machine.commands.end())
         {
-            machine.help = true;
-            machine.hstrm.str("");
-            (*it->second->funcptr)(machine);
-            machine.help = false;
-            std::cout << std::endl << machine.hstrm.str() << std::endl;
+            ShowHelp(machine, it->second);
             std::getline(std::cin, cmd);
         }
         else
@@ -254,11 +283,14 @@ void stack_required(Machine& machine, const char *f, int depth)
 }
 
 
-void AddCommand(Machine& machine, const char *name, void (*funcptr)(Machine&))
+void AddCommand(Machine& machine, const std::string& name, void (*funcptr)(Machine&))
 {
     CommandPtr cp;
     cp.reset(new Command(name, funcptr));
     machine.commands.emplace(name, cp);
+
+    cp.reset(new Command(name+"?", funcptr));
+    machine.commands.emplace(name+"?", cp);
 }
 
 void AddCommand(Machine& machine, const std::string& name, ProgramPtr pptr)

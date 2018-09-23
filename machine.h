@@ -31,6 +31,8 @@ public:
     void push(ListPtr&);
     void pop(MapPtr&);
     void push(MapPtr&);
+    void pop(ProgramPtr&);
+    void push(ProgramPtr&);
     void pop();
 
     // settings
@@ -40,6 +42,7 @@ public:
     std::unordered_map<std::string, CommandPtr> commands;
     std::unordered_map<std::string, std::vector<std::string>> categories;
     std::stringstream hstrm;
+    bool nopop;
 };
 
 
@@ -52,5 +55,6 @@ class Program;
 typedef std::shared_ptr<Program> ProgramPtr;
 
 void Category(Machine& machine, const std::string& cat, const std::string& name);
-void AddCommand(Machine& machine, const char *name, void (*funcptr)(Machine&));
+void AddCommand(Machine& machine, const std::string& name, void (*funcptr)(Machine&));
 void AddCommand(Machine& machine, const std::string&, ProgramPtr);
+void ShowHelp(Machine& machine, CommandPtr cmd);

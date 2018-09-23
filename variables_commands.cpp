@@ -24,17 +24,20 @@ ObjectPtr find_local(Machine& machine, const std::string& name)
     return itVar->second;
 }
 
-// obj "str" =>
 void STO(Machine& machine)
 {
     if (machine.help)
     {
         machine.helpstrm() << "STO: Store object";
-        machine.helpstrm() << "obj \"name\" STO =>";
-        machine.helpstrm() << "obj \"namespace.name\" STO =>";
+        machine.helpstrm() << "obj \"name\" opt STO =>";
+        machine.helpstrm() << "obj \"namespace.name\" opt STO =>";
+        machine.helpstrm() << "obj \"name\" opt STO* => obj";
         machine.helpstrm() << "Store an object in the given variable name.";
         machine.helpstrm() << "By default objects are stored in the current namespace which";
         machine.helpstrm() << "is usually the module name or set by SETNS";
+        machine.helpstrm() << "STO* will retain the object in the stack";
+        machine.helpstrm() << "Options: --if-not-exists";
+        machine.helpstrm() << "        Will store the value only if the variable does not exist";
         return;
     }
 
@@ -56,19 +59,22 @@ void STO(Machine& machine)
     machine.pop(optr);
     Module& module = machine.modules_[modname];
     module.variables_[varname] = optr;
+    if (machine.nopop)
+        machine.push(optr);
 }
 
-// obj "str" =>
 void STOL(Machine& machine)
 {
     if (machine.help)
     {
         machine.helpstrm() << "STOL: Store object into local storage";
         machine.helpstrm() << "obj \"name\" STOL =>";
+        machine.helpstrm() << "obj \"name\" STOL* => obj";
         machine.helpstrm() << "Store an object in the given variable name in the local context.";
         machine.helpstrm() << "Local variables are only available in the current program.";
         machine.helpstrm() << "Programs defined within a program have access to local variables of the";
         machine.helpstrm() << "enclosing program";
+        machine.helpstrm() << "STOL* will retain the object in the stack";
         return;
     }
 
@@ -97,9 +103,10 @@ void STOL(Machine& machine)
         pp = pp->enclosingProgram;
     }
     (*machine.current_program->pLocals)[name] = optr;
+    if (machine.nopop)
+        machine.push(optr);
 }
 
-// "str" => obj
 void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
 {
     std::string modname = machine.current_module_;
@@ -130,7 +137,6 @@ void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
     out = itVar->second;
 }
 
-// "str" => obj
 void RCL(Machine& machine)
 {
     if (machine.help)
@@ -154,7 +160,6 @@ void RCL(Machine& machine)
     machine.push(optr);
 }
 
-// "str" => obj
 void RCLL(Machine& machine)
 {
     if (machine.help)
@@ -200,7 +205,6 @@ void RCLL(Machine& machine, const std::string& name, ObjectPtr& out)
     throw std::runtime_error(strm.str().c_str());
 }
 
-// "str" => [list]
 void VARNAMES(Machine& machine)
 {
     if (machine.help)
@@ -233,7 +237,6 @@ void VARNAMES(Machine& machine)
     machine.push(lp);
 }
 
-// "str" => [list]
 void VARTYPES(Machine& machine)
 {
     if (machine.help)

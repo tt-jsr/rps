@@ -94,6 +94,7 @@ void VALUES(Machine&);
 void APPLY(Machine& machine);
 void SELECT(Machine& machine);
 void MAP(Machine& machine);
+void REDUCE(Machine& machine);
 
 // IO commands
 void PRINT(Machine&);
