@@ -344,50 +344,42 @@ void HEAD(Machine& machine)
 {
     if (machine.help)
     {
-        machine.helpstrm() << "HEAD: Get nitems from the head of the list";
-        machine.helpstrm() << "[list] n HEAD => [list]";
+        machine.helpstrm() << "HEAD: Get head and tail of a list";
+        machine.helpstrm() << "[obj1 obj2...objn] HEAD => [ obj1 [obj2...objn] ]";
         return;
     }
 
-    stack_required(machine, "HEAD", 2);
-    throw_required(machine, "HEAD", 0, OBJECT_INTEGER);
-    throw_required(machine, "HEAD", 1, OBJECT_LIST);
+    stack_required(machine, "HEAD", 1);
+    throw_required(machine, "HEAD", 0, OBJECT_LIST);
 
     ListPtr lp;
-    int64_t n;
-    machine.pop(n);
     machine.pop(lp);
-    if (n >=lp->items.size())
-        n = lp->items.size()-1;
-    ListPtr result = MakeList();
-    std::copy(lp->items.begin(), lp->items.begin()+n, std::back_inserter(result->items));
-    machine.push(result);
-}
-
-void TAIL(Machine& machine)
-{
-    if (machine.help)
+    if (lp->items.size() == 2 && lp->items[1]->type == OBJECT_LIST)
     {
-        machine.helpstrm() << "TAIL: Get nitems from the tail of the list";
-        machine.helpstrm() << "[list] n TAIL => [list]";
-        return;
+        if (lp->items[1]->type != OBJECT_LIST)
+            throw std::runtime_error("HEAD: Second element of list must be a list");
+        ListPtr tail = std::static_pointer_cast<List>(lp->items[1]);
+        if (tail->items.size() == 0)
+        {
+            lp->items.clear();
+            machine.push(lp);
+            return;
+        }
+        lp->items[0] = tail->items[0];
+        tail->items.erase(tail->items.begin());
+        machine.push(lp);
     }
-
-    stack_required(machine, "TAIL", 2);
-    throw_required(machine, "TAIL", 0, OBJECT_INTEGER);
-    throw_required(machine, "TAIL", 1, OBJECT_LIST);
-
-    ListPtr lp;
-    int64_t n;
-    machine.pop(n);
-    machine.pop(lp);
-    n = lp->items.size() - n;
-    if (n < 0)
-        n = 0;
-
-    ListPtr result = MakeList();
-    std::copy(lp->items.begin()+n, lp->items.end(), std::back_inserter(result->items));
-    machine.push(result);
+    else
+    {
+        // first head call
+        ListPtr env = MakeList();
+        ListPtr tail = MakeList();
+        std::copy(lp->items.begin()+1, lp->items.end(), std::back_inserter(tail->items));
+        ObjectPtr head = lp->items.front();
+        env->items.push_back(head);
+        env->items.push_back(tail);
+        machine.push(env);
+    }
 }
 
 void TOLIST(Machine& machine)

@@ -75,7 +75,6 @@ void SIZE(Machine&);
 void FIRST(Machine&);
 void SECOND(Machine&);
 void HEAD(Machine&);
-void TAIL(Machine&);
 void TOLIST(Machine&);
 void FROMLIST(Machine&);
 void CREATELIST(Machine&);

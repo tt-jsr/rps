@@ -830,8 +830,6 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "CREATELIST");
     AddCommand(machine, "HEAD", &HEAD);
     Category(machine, "List", "HEAD");
-    AddCommand(machine, "TAIL", &TAIL);
-    Category(machine, "List", "TAIL");
     AddCommand(machine, "UNIQUE", &UNIQUE);
     Category(machine, "List", "UNIQUE");
     AddCommand(machine, "REVERSE", &REVERSE);
