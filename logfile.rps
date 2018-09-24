@@ -118,11 +118,13 @@ dd CALL
 fname RCLL
 IF .gz STREND
 THEN
-fname RCLL
-"zcat %0 | head -1" FORMAT PREAD
+    fname RCLL
+    "zcat %0 | head -1" FORMAT PREAD
+    SWAP DROP
 ELSE
-fname RCLL
-"head -1 %0" FORMAT PREAD
+    fname RCLL
+    "head -1 %0" FORMAT PREAD
+    SWAP DROP
 ENDIF
 0 GET 0 24 SUBSTR
 fname RCLL
