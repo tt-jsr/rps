@@ -34,7 +34,13 @@ help STO
 # Retruns a list of all "S T A R T" lines
 # "logname" start CALL => [list]
 <<
-"grep -b \"S T A R T\" %0" FORMAT PREAD
+DUP
+IF .gz EQ
+THEN
+    "zgrep -b \"S T A R T\" %0" FORMAT PREAD
+ELSE
+    "grep -b \"S T A R T\" %0" FORMAT PREAD
+ENDIF
 SWAP DROP
 << ":" "--1" SPLIT >>
 APPLY
