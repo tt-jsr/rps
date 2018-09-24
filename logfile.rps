@@ -5,8 +5,8 @@
 "   start: Collect all \"S T A R T\" log lines" PRINT
 "          filename start CALL => [list]" PRINT
 "" PRINT
-"  lslog:  List logfiles in reverse timestamp order"
-"          lslog => [list]"
+"  lslog:  List logfiles in reverse timestamp order" PRINT
+"          lslog => [list]" PRINT
 "" PRINT
 "logstart: Get a tuple of file name and timestamp" PRINT
 "          filename logstart CALL => [list]" PRINT

@@ -3,16 +3,31 @@
 #include <iostream>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <signal.h>
 #include "object.h"
 #include "module.h"
 #include "machine.h"
 #include "parser.h"
 #include "utilities.h"
 
+void my_handler(int s)
+{
+    std::cout << "Interrupt" << std::endl;
+    bInterrupt = true;
+}
+
 int main(int argc, char *argv[])
 {
     Machine machine;
     Parser parser(machine);
+
+   struct sigaction sigIntHandler;
+
+   sigIntHandler.sa_handler = my_handler;
+   sigemptyset(&sigIntHandler.sa_mask);
+   sigIntHandler.sa_flags = 0;
+
+   sigaction(SIGINT, &sigIntHandler, NULL);
 
 #if defined(CENTOS)
     char *p = getenv("PRE_RUN_PATH");

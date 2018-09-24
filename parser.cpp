@@ -714,6 +714,7 @@ void Parser::Parse(Machine& machine, Source& src)
             {
                 machine.push(optr);           
             }
+            bInterrupt = false;
         }
     }
 }

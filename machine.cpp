@@ -12,6 +12,8 @@
 #include "commands.h"
 #include "utilities.h"
 
+bool bInterrupt = false;
+
 Machine::Machine()
 : viewwidth(120)
 , debug(false) 
