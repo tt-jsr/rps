@@ -62,7 +62,7 @@ void CollectIdentifier(Source& src, Token& token)
 {
     while (src.it != src.line.end())
     {
-        if (*src.it == '>' || *src.it == '}' || *src.it == ']' || *src.it == '!')
+        if (*src.it == '>' || *src.it == '}' || *src.it == ']' || *src.it == '!' || *src.it == '(')
             return;
         if (isalnum(*src.it))
             token.value.push_back(*src.it);
@@ -187,7 +187,7 @@ void GetToken(Source& src, Token& token)
         return;
     }
 
-    if (*src.it == '-' && *(src.it+1) == '-' && isalpha(*(src.it+2)))
+    if (*src.it == '-' && *(src.it+1) == '-' && isalnum(*(src.it+2)))
     {
         token.value.push_back(*src.it);
         ++src.it;
@@ -294,6 +294,8 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
     std::vector<ObjectPtr> *pVec = &ifptr->cond;
     while(GetObject(machine, src, optr))
     {
+        if (bInterrupt)
+            return;
         if (optr->token == TOKEN_ENDIF)
         {
             return;
@@ -377,6 +379,8 @@ void Parser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
     ObjectPtr optr;
     while(GetObject(machine, src, optr))
     {
+        if (bInterrupt)
+            return;
         if (optr->token == TOKEN_ENDFOR)
         {
             return;
@@ -436,6 +440,8 @@ void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
     std::vector<ObjectPtr> *pVec = &whileptr->cond;
     while(GetObject(machine, src, optr))
     {
+        if (bInterrupt)
+            return;
         if (optr->token == TOKEN_ENDWHILE)
         {
             return;
@@ -513,6 +519,8 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
     ObjectPtr optr;
     while(GetObject(machine, src, optr))
     {
+        if (bInterrupt)
+            return;
         if (optr->token == TOKEN_END_LIST)
         {
             return;
@@ -552,6 +560,8 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
     pptr->module_name = machine.current_module_;
     while(GetObject(machine, src, optr))
     {
+        if (bInterrupt)
+            return;
         if (optr->token == TOKEN_END_PROGRAM)
         {
             return;
@@ -869,6 +879,7 @@ Parser::Parser(Machine& machine)
     AddCommand(machine, "EVAL", &EVAL);
     Category(machine, "Execution", "EVAL");
     AddCommand(machine, "CALL", &CALL);
+    AddCommand(machine, "()", &CALL);
     Category(machine, "Execution", "CALL");
     AddCommand(machine, "SYSTEM", &SYSTEM);
     Category(machine, "Execution", "SYSTEM");
