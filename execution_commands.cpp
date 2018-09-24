@@ -17,6 +17,8 @@ void Execute(Machine& machine, std::vector<ObjectPtr>& vec)
     for (ObjectPtr& op : vec)
     {
         //std::cout << "=== machine::Execute vecsize: " << vec.size() << std::endl;
+        if (bInterrupt)
+            return;
         Execute(machine, op);
     }
 }
@@ -64,6 +66,8 @@ void Execute(Machine& machine, ObjectPtr optr)
                     machine.pop(lp);
                     for (ObjectPtr op : lp->items)
                     {
+                        if (bInterrupt)
+                            return;
                         machine.push(op);
                         Execute(machine, p->program);
                     }
@@ -74,6 +78,8 @@ void Execute(Machine& machine, ObjectPtr optr)
                     machine.pop(mp);
                     for (auto& pr : mp->items)
                     {
+                        if (bInterrupt)
+                            return;
                         ListPtr lp = MakeList();
                         lp->items.push_back(pr.first);
                         lp->items.push_back(pr.second);
@@ -96,6 +102,8 @@ void Execute(Machine& machine, ObjectPtr optr)
             {
                 while (true)
                 {
+                    if (bInterrupt)
+                        return;
                     Execute(machine, p->cond);
                     ObjectPtr optr;
                     machine.pop(optr);

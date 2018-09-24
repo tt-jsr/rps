@@ -3,6 +3,8 @@
 #include <vector>
 #include <sstream>
 
+extern bool bInterrupt;
+
 class Command;
 typedef std::shared_ptr<Command> CommandPtr;
 
