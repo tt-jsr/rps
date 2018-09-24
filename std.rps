@@ -8,7 +8,7 @@
 "     vim: Invoke vim on a filename list element" PRINT
 "          filename idx vim CALL =>" PRINT
 "" PRINT
-"    show: Primt a list in a numbered output" PRINT
+"    show: Print a list in a numbered output" PRINT
 "          [list] show CALL => [list]" PRINT
 "" PRINT
 "    lget: Show a menu to get a list element" PRINT
@@ -61,6 +61,7 @@ idx RCLL
 GET
 CAT
 !
+l RCLL
 >>
 vim STO
 

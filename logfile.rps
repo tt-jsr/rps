@@ -5,6 +5,9 @@
 "   start: Collect all \"S T A R T\" log lines" PRINT
 "          filename start CALL => [list]" PRINT
 "" PRINT
+"  lslog:  List logfiles in reverse timestamp order"
+"          lslog => [list]"
+"" PRINT
 "logstart: Get a tuple of file name and timestamp" PRINT
 "          filename logstart CALL => [list]" PRINT
 "" PRINT
@@ -14,14 +17,14 @@
 "getfield: Get a field value from a protobuf" PRINT
 "          protobuf fieldname getfield CALL => value" PRINT
 "" PRINT
-"gettuple: Get a field=value from a protobuf" PRINT
-"          protobuf fieldname gettuple CALL => [name, value]" PRINT
-"" PRINT
 "    pfmt: Protobuf format a list item" PRINT
 "          [list] idx pfmt CALL => [list]" PRINT
 "" PRINT
 "cdinsert: Read inserted customer defaults" PRINT
 "          filename startbyte endbyte cdinsert CALL => [list]" PRINT
+"" PRINT
+"gettuple: Get a field=value from a protobuf" PRINT
+"          protobuf fieldname gettuple CALL => [name, value]" PRINT
 "" PRINT
 
 >>
@@ -126,4 +129,9 @@ fname RCLL
 SWAP
 2 TOLIST
 >> logstart STO
+
+############################################
+# list logfiles
+<< "ls -rt OC*" PREAD >> lslog STO
+
 

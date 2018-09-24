@@ -25,7 +25,7 @@ typedef std::shared_ptr<Object> ObjectPtr;
 class String : public Object
 {
 public:
-    String(const std::string&s) : Object(OBJECT_STRING, TOKEN_DATA), value(s) {}
+    String(const std::string&s) : Object(OBJECT_STRING, TOKEN_STRING), value(s) {}
     std::string value;
     bool quoted;
 };
@@ -35,7 +35,7 @@ typedef std::shared_ptr<String> StringPtr;
 class Integer : public Object
 {
 public:
-    Integer(int64_t n) : Object(OBJECT_INTEGER, TOKEN_DATA), value(n) {}
+    Integer(int64_t n) : Object(OBJECT_INTEGER, TOKEN_INTEGER), value(n) {}
     int64_t value;
 };
 
@@ -44,7 +44,7 @@ typedef std::shared_ptr<Integer> IntegerPtr;
 class List : public Object
 {
 public:
-    List() : Object(OBJECT_LIST, TOKEN_DATA) {}
+    List() : Object(OBJECT_LIST, TOKEN_NONE) {}
     std::vector<ObjectPtr> items;
 };
 
@@ -53,7 +53,7 @@ typedef std::shared_ptr<List> ListPtr;
 class Map : public Object
 {
 public:
-    Map() : Object(OBJECT_MAP, TOKEN_DATA) {}
+    Map() : Object(OBJECT_MAP, TOKEN_NONE) {}
     std::unordered_map<ObjectPtr, ObjectPtr> items;
 };
 
@@ -81,7 +81,7 @@ typedef std::shared_ptr<Command> CommandPtr;
 class Program : public Object
 {
 public:
-    Program() : Object(OBJECT_PROGRAM, TOKEN_DATA) {}
+    Program() : Object(OBJECT_PROGRAM, TOKEN_NONE) {}
     std::vector<ObjectPtr> program;
     std::string module_name;
     std::unordered_map<std::string, ObjectPtr> *pLocals;
@@ -92,7 +92,7 @@ public:
 class If : public Object
 {
 public:
-    If() : Object(OBJECT_IF, TOKEN_STATEMENT) {}
+    If() : Object(OBJECT_IF, TOKEN_NONE) {}
     std::vector<ObjectPtr> cond;
     std::vector<ObjectPtr> then;
     std::vector<ObjectPtr> els;
@@ -103,7 +103,7 @@ typedef std::shared_ptr<If> IfPtr;
 class For : public Object
 {
 public:
-    For() : Object(OBJECT_FOR, TOKEN_STATEMENT) {}
+    For() : Object(OBJECT_FOR, TOKEN_NONE) {}
     std::vector<ObjectPtr> program;
 };
 
@@ -112,7 +112,7 @@ typedef std::shared_ptr<For> ForPtr;
 class While : public Object
 {
 public:
-    While() : Object(OBJECT_WHILE, TOKEN_STATEMENT) {}
+    While() : Object(OBJECT_WHILE, TOKEN_NONE) {}
     std::vector<ObjectPtr> program;
     std::vector<ObjectPtr> cond;
 };

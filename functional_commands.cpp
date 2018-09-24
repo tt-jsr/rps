@@ -24,7 +24,6 @@ void APPLY(Machine& machine)
         return;
     }
     stack_required(machine, "APPLY", 2);
-    throw_required(machine, "APPLY", 0, OBJECT_PROGRAM);
     throw_required(machine, "APPLY", 1, OBJECT_LIST);
 
     ListPtr result = MakeList();
@@ -33,6 +32,14 @@ void APPLY(Machine& machine)
     ProgramPtr pptr;
 
     machine.pop(optr);
+    if (optr->type == OBJECT_STRING)
+    {
+        std::string name = ((String *)optr.get())->value;
+        RCL(machine, name, optr);
+    }
+    if (optr->type != OBJECT_PROGRAM)
+        throw std::runtime_error("APPLY: Program or program name must be at level 0");
+
     pptr = std::static_pointer_cast<Program>(optr);
 
     machine.pop(lp);

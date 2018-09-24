@@ -80,6 +80,7 @@ void TOLIST(Machine&);
 void FROMLIST(Machine&);
 void CREATELIST(Machine&);
 void UNIQUE(Machine&);
+void REVERSE(Machine&);
 
 // Map
 void FIND(Machine&);

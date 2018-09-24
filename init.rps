@@ -8,4 +8,5 @@ logfile.start RCL START REGISTER
 logfile.logstart RCL LOGSTART REGISTER
 logfile.pfmt RCL PFMT REGISTER
 logfile.dd RCL DD REGISTER
+logfile.lslog RCL LSLOG REGISTER
 

@@ -620,3 +620,20 @@ void FROMMAP(Machine& machine)
     }
 }
 
+void REVERSE(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "REVERSE: Reverse a list";
+        machine.helpstrm() << "[obj1 obj2...objn] REVERSE => [objn...obj2 obj1]";
+        return;
+    }
+
+    stack_required(machine, "REVERSE", 1);
+    throw_required(machine, "REVERSE", 0, OBJECT_LIST);
+
+    ListPtr lp;
+    machine.pop(lp);
+    std::reverse(lp->items.begin(), lp->items.end());
+    machine.push(lp);
+}

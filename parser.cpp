@@ -834,6 +834,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "TAIL");
     AddCommand(machine, "UNIQUE", &UNIQUE);
     Category(machine, "List", "UNIQUE");
+    AddCommand(machine, "REVERSE", &REVERSE);
+    Category(machine, "List", "REVERSE");
 
     // Map commands
     Category(machine, "Map", "ERASE");
