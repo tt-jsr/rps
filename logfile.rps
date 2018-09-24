@@ -54,14 +54,26 @@ TOINT 512 DIV endblock STOL
 TOINT 512 DIV startblock STOL
 filename STOL
 
+filename RCLL
+IF .gz STREND
+THEN
+    "zcat %filename | dd " FORMAT cmd STOL
+ELSE
+    "dd if=%filename " FORMAT cmd STOL
+ENDIF
+
 IF 
     endblock RCLL
     startblock RCLL
     GT
 THEN
-    "dd if=%filename skip=%startblock count=%endblock " FORMAT
+    endblock RCLL
+    startblock RCLL
+    SUB
+    "%cmd skip=%startblock count=%0 " FORMAT
+    SWAP DROP
 ELSE
-    "dd if=%filename skip=%startblock " FORMAT
+    "%cmd skip=%startblock " FORMAT
 ENDIF
 >> dd STO
 
