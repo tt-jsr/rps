@@ -935,6 +935,7 @@ Parser::Parser(Machine& machine)
     AddCommand(machine, "TOSTR", &TOSTR);
     Category(machine, "Types", "TOSTR");
     AddCommand(machine, "TYPE", &TYPE);
+    AddCommand(machine, "TYPE*", &TYPE);
     Category(machine, "Types", "TYPE");
     AddCommand(machine, "CLONE",  &CLONE);
     Category(machine, "Types", "CLONE");

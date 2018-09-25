@@ -54,6 +54,7 @@ void TYPE(Machine& machine)
     {
         machine.helpstrm() << "TYPE: Pushes the type of object at L0";
         machine.helpstrm() << "obj TYPE => \"str\"";
+        machine.helpstrm() << "TYPE* will leave the object on the stack";
         return;
     }
 
@@ -61,6 +62,8 @@ void TYPE(Machine& machine)
     stack_required(machine, "TYPE", 1);
 
     machine.pop(optr);
+    if (machine.nopop)
+        machine.push(optr);
     StringPtr sp = MakeString();
     sp->value = ToType(machine, optr);
     optr = sp;
