@@ -126,12 +126,13 @@ void STRCSPN(Machine&);
 void TOINT(Machine&);
 void TOSTR(Machine&);
 void TYPE(Machine&);
+void CLONE(Machine&);
 
 // Execution
 void EVAL(Machine&);
 void EVAL(Machine&, ObjectPtr);
 void CALL(Machine&);
-void CLONE(Machine&);
+void INTERRUPT(Machine&);
 
 // Environment
 void NAMESPACES(Machine&);

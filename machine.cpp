@@ -216,6 +216,11 @@ void ShowCategory(Machine& machine, const std::string& cat)
 
 void ShowHelp(Machine& machine, CommandPtr cmd)
 {
+    if (cmd->funcptr == nullptr)
+    {
+        std::cout << "Help not available for Registered programs" << std::endl;
+        return;
+    }
     machine.help = true;
     machine.hstrm.str("");
     (*cmd->funcptr)(machine);
@@ -235,8 +240,8 @@ void HELP(Machine& machine)
     {
         for (auto& pr : machine.categories)
         {
-            assert(pr.first.size() <= 12);
-            std::string pad(12-pr.first.size(), ' ');
+            assert(pr.first.size() <= 19);   // This is the width of the longest category name
+            std::string pad(19-pr.first.size(), ' ');
             std::cout << pad << pr.first << ": ";
             for (auto& c : pr.second)
             {
@@ -301,6 +306,8 @@ void AddCommand(Machine& machine, const std::string& name, ProgramPtr pptr)
     cp.reset(new Command(name, nullptr));
     cp->program = pptr;
     machine.commands.emplace(name, cp);
+
+    Category(machine, "RegisteredPrograms", name);
 }
 
 void Category(Machine& machine, const std::string& cat, const std::string& name)

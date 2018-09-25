@@ -229,4 +229,16 @@ void CALL(Machine& machine)
     EVAL(machine);
 }
 
+void INTERRUPT(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "INTERRUPT: Set the interrupt flag";
+        machine.helpstrm() << "INTERRUPT => ...";
+        machine.helpstrm() << "Interrupt performs the same action as CTRL-C.";
+        machine.helpstrm() << "It will stop loops and break out of a program execution";
+        return;
+    }
+    bInterrupt = true;
+}
 

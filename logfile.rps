@@ -115,12 +115,6 @@ pb RCLL         # value pb
 >> gettuple STO
 
 #########################################
-# Protobuf format a list item
-# [list] idx pfmt CALL => [list]
-<< 1 PICK SWAP GET "pfmt" PWRITE
->> pfmt STO
-
-#########################################
 #
 # Read inserted customer defaults
 # filename startbyte endbyte cdinsert CALL => [list]

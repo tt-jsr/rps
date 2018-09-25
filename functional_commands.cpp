@@ -18,6 +18,7 @@ void APPLY(Machine& machine)
         machine.helpstrm() << "APPLY: Apply a program to each item in a list.";
         machine.helpstrm() << "       Returns a list the same size as the input.";
         machine.helpstrm() << "[srclist] <<prog>> APPLY => [dstlist]";
+        machine.helpstrm() << "[srclist] \"progname\" APPLY => [dstlist]";
         machine.helpstrm() << "srclist: List of items";
         machine.helpstrm() << "prog: Program to execute. The program will have a list item at L0";
         machine.helpstrm() << "      the program will return an object to be placed on the dstlist";
@@ -46,6 +47,8 @@ void APPLY(Machine& machine)
 
     for (ObjectPtr p : lp->items)
     {
+        if (bInterrupt)
+            return;
         machine.push(p);
         EVAL(machine, pptr);
         machine.pop(optr);
@@ -69,7 +72,6 @@ void SELECT(Machine& machine)
     }
 
     stack_required(machine, "SELECT", 2);
-    throw_required(machine, "SELECT", 0, OBJECT_PROGRAM);
     throw_required(machine, "SELECT", 1, OBJECT_LIST);
 
     ListPtr result = MakeList();
@@ -78,12 +80,21 @@ void SELECT(Machine& machine)
     ProgramPtr pptr;
 
     machine.pop(optr);
+    if (optr->type == OBJECT_STRING)
+    {
+        std::string name = ((String *)optr.get())->value;
+        RCL(machine, name, optr);
+    }
+    if (optr->type != OBJECT_PROGRAM)
+        throw std::runtime_error("SELECT: Program or program name must be at level 0");
     pptr = std::static_pointer_cast<Program>(optr);
 
     machine.pop(lp);
 
     for (ObjectPtr p : lp->items)
     {
+        if (bInterrupt)
+            return;
         machine.push(p);
         EVAL(machine, pptr);
         machine.pop(optr);
@@ -99,6 +110,7 @@ void MAP(Machine& machine)
     {
         machine.helpstrm() << "MAP a function over a list";
         machine.helpstrm() << "[list] <<prog>> MAP => ";
+        machine.helpstrm() << "[list] \"progname\" MAP => ";
         machine.helpstrm() << "srclist: List of items";
         machine.helpstrm() << "prog: Program to execute. The program will have a list item at L0";
         machine.helpstrm() << "MAP itself does not push anything on the stack, however the executed program may.";
@@ -106,7 +118,6 @@ void MAP(Machine& machine)
     }
 
     stack_required(machine, "MAP", 2);
-    throw_required(machine, "MAP", 0, OBJECT_PROGRAM);
     throw_required(machine, "MAP", 1, OBJECT_LIST);
 
     ListPtr result = MakeList();
@@ -115,12 +126,21 @@ void MAP(Machine& machine)
     ProgramPtr pptr;
 
     machine.pop(optr);
+    if (optr->type == OBJECT_STRING)
+    {
+        std::string name = ((String *)optr.get())->value;
+        RCL(machine, name, optr);
+    }
+    if (optr->type != OBJECT_PROGRAM)
+        throw std::runtime_error("MAP: Program or program name must be at level 0");
     pptr = std::static_pointer_cast<Program>(optr);
 
     machine.pop(lp);
 
     for (ObjectPtr p : lp->items)
     {
+        if (bInterrupt)
+            return;
         machine.push(p);
         EVAL(machine, pptr);
     }
@@ -132,6 +152,7 @@ void REDUCE(Machine& machine)
     {
         machine.helpstrm() << "REDUCE a list to an object";
         machine.helpstrm() << "[list] <<prog>> startobj REDUCE => obj ";
+        machine.helpstrm() << "[list] \"progname\" startobj REDUCE => obj ";
         machine.helpstrm() << "REDUCE calls prog with a list item and the startobj.";
         machine.helpstrm() << "The program will then return an object to be provided";
         machine.helpstrm() << "to the next invocation of the program";
@@ -141,20 +162,31 @@ void REDUCE(Machine& machine)
     }
 
     stack_required(machine, "REDUCE", 3);
-    throw_required(machine, "REDUCE", 1, OBJECT_PROGRAM);
     throw_required(machine, "REDUCE", 2, OBJECT_LIST);
 
-    ProgramPtr prog;
+    ObjectPtr prog;
     ListPtr list;
     ObjectPtr obj;
     machine.pop(obj);
     machine.pop(prog);
+    if (prog->type == OBJECT_STRING)
+    {
+        std::string name = ((String *)prog.get())->value;
+        RCL(machine, name, prog);
+    }
+    if (prog->type != OBJECT_PROGRAM)
+        throw std::runtime_error("REDUCE: Program or program name must be at level 0");
+
+    ProgramPtr pptr;
+    pptr = std::static_pointer_cast<Program>(prog);
     machine.pop(list);
     for (ObjectPtr p : list->items)
     {
+        if (bInterrupt)
+            return;
         machine.push(p);
         machine.push(obj);
-        EVAL(machine, prog);
+        EVAL(machine, pptr);
         machine.pop(obj);
     }
     machine.push(obj);

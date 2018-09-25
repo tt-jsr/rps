@@ -883,6 +883,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Execution", "CALL");
     AddCommand(machine, "SYSTEM", &SYSTEM);
     Category(machine, "Execution", "SYSTEM");
+    AddCommand(machine, "INTERRUPT", &INTERRUPT);
+    Category(machine, "Execution", "INTERRUPT");
 
 
     // Environment
