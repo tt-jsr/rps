@@ -148,4 +148,31 @@ SWAP
 # list logfiles
 << "ls -rt OC*" PREAD >> lslog STO
 
-
+###########################################
+# find-er Find er's with a pattern
+# logfile pattern find-er => [list]
+# Suitable for use with MAP1
+<< 
+pattern STOL
+file STOL*
+"%file" FORMAT PRINT
+IF .gz STREND
+THEN
+    zgrep cmd STOL
+ELSE
+    grep cmd STOL
+ENDIF
+"%cmd -n \"ExecutionReport.*%{pattern}\" %file" FORMAT PREAD
+SIZE* sz STOL
+IF sz RCLL 0 GT
+THEN
+    "Found %sz records" FORMAT PRINT
+ELSE
+    DROP  # drop the empty list
+ENDIF
+"Continue (y/n)?" PROMPT
+IF "n" EQ
+THEN
+    INTERRUPT
+ENDIF
+>> find-er STO

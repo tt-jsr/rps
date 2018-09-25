@@ -9,7 +9,7 @@ logfile.logstart RCL LOGSTART REGISTER
 logfile.dd RCL DD REGISTER
 logfile.lslog RCL LSLOG REGISTER
 
-<<pfmt PWRITE>> PFMT REGISTER
+<<"pfmt|less" PWRITE>> PFMT REGISTER
 <<erformat PWRITE>> ERFORMAT REGISTER
 << <<PRINT>> MAP>> LPRINT REGISTER
 << "grep -n \"ExecutionReport.*order_id=\" %0" FORMAT SWAP DROP PREAD >> ERS REGISTER

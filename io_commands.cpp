@@ -87,6 +87,8 @@ void PREAD(Machine& machine)
        char buf[10240];
        for (int count = 0; count < limit && !feof(fp); ++count)
        {
+           if (bInterrupt)
+               break;
            if (fgets(buf, sizeof(buf), fp))
            {
                size_t l = strlen(buf);
@@ -126,6 +128,8 @@ void PWRITE(Machine& machine)
             List *lp = (List *)data.get();
             for (ObjectPtr optr : lp->items)
             {
+                if (bInterrupt)
+                    break;
                 std::string s = ToStr(machine, optr);
                 fputs(s.c_str(), fp);
                 fputs("\n", fp);
@@ -166,6 +170,8 @@ void FWRITE(Machine& machine)
         List *lp = (List *)data.get();
         for (ObjectPtr optr : lp->items)
         {
+            if (bInterrupt)
+                break;
             std::string s = ToStr(machine, optr);
             fputs(s.c_str(), fp);
             fputs("\n", fp);
@@ -208,6 +214,8 @@ void FREAD(Machine& machine)
        char buf[10240];
        for (int count = 0; count < limit && !feof(fp); ++count)
        {
+           if (bInterrupt)
+               break;
            if (fgets(buf, sizeof(buf), fp))
            {
                size_t l = strlen(buf);
@@ -255,6 +263,8 @@ void FSAVE(Machine& machine)
             fputs("\n", fp);
             for (ObjectPtr optr : lp->items)
             {
+                if (bInterrupt)
+                    break;
                 std::string s = ToStr(machine, optr);
                 fputs(s.c_str(), fp);
                 fputs("\n", fp);

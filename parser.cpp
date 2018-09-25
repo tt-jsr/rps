@@ -868,10 +868,16 @@ Parser::Parser(Machine& machine)
     // Functional
     AddCommand(machine, "APPLY", &APPLY);
     Category(machine, "Functional", "APPLY");
+    AddCommand(machine, "APPLY1", &APPLY1);
+    Category(machine, "Functional", "APPLY1");
     AddCommand(machine, "SELECT", &SELECT);
     Category(machine, "Functional", "SELECT");
+    AddCommand(machine, "SELECT1", &SELECT1);
+    Category(machine, "Functional", "SELECT1");
     AddCommand(machine, "MAP", &MAP);
     Category(machine, "Functional", "MAP");
+    AddCommand(machine, "MAP1", &MAP1);
+    Category(machine, "Functional", "MAP1");
     AddCommand(machine, "REDUCE", &REDUCE);
     Category(machine, "Functional", "REDUCE");
 

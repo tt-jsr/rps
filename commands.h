@@ -92,8 +92,11 @@ void VALUES(Machine&);
 
 // Functional
 void APPLY(Machine& machine);
+void APPLY1(Machine& machine);
 void SELECT(Machine& machine);
+void SELECT1(Machine& machine);
 void MAP(Machine& machine);
+void MAP1(Machine& machine);
 void REDUCE(Machine& machine);
 
 // IO commands
