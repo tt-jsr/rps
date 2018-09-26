@@ -247,6 +247,8 @@ again:
         optr.reset(new Command(token.value, &SYSTEM));
     else if (token.token == TOKEN_EOL)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_EOL));
+    else if (token.value == "None")
+        optr.reset(new None());
     else if (token.value == "EXIT")
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_EXIT));
     else if (token.value == "IF")
@@ -845,6 +847,10 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "UNIQUE");
     AddCommand(machine, "REVERSE", &REVERSE);
     Category(machine, "List", "REVERSE");
+    AddCommand(machine, "ZIP", &ZIP);
+    Category(machine, "List", "ZIP");
+    AddCommand(machine, "UNZIP", &UNZIP);
+    Category(machine, "List", "UNZIP");
 
     // Map commands
     Category(machine, "Map", "ERASE");
@@ -933,6 +939,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "String", "STRBEGIN");
     AddCommand(machine, "STREND", &STREND);
     Category(machine, "String", "STREND");
+    AddCommand(machine, "STRHAS", &STRHAS);
+    Category(machine, "String", "STRHAS");
     AddCommand(machine, "STRCSPN", &STRCSPN);
     Category(machine, "String", "STRCSPN");
     Category(machine, "String", "CLEAR");

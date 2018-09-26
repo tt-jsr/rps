@@ -66,6 +66,7 @@ class Parser;
 StringPtr MakeString();
 IntegerPtr MakeInteger();
 ProgramPtr MakeProgram();
+NonePtr MakeNone();
 ListPtr MakeList();
 MapPtr MakeMap();
 ObjectPtr Clone(ObjectPtr);

@@ -629,3 +629,31 @@ void REVERSE(Machine& machine)
     std::reverse(lp->items.begin(), lp->items.end());
     machine.push(lp);
 }
+
+void ZIP(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "ZIP: zip two lists together";
+        machine.helpstrm() << "[list1] [list] <<prog>> ZIP => [list]";
+        machine.helpstrm() << "[list1] [list] \"prog_name\" ZIP => [list]";
+        machine.helpstrm() << "prog receives two items, one from each list and should return";
+        machine.helpstrm() << "an object to be placed on the returned list.";
+        machine.helpstrm() << "If one list is shorter than the other, None will be passed.";
+        return;
+    }
+}
+
+void UNZIP(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "UNZIP: unzip a list into two lists";
+        machine.helpstrm() << "[list] <<prog>> UNZIP => [list1] [list]";
+        machine.helpstrm() << "[list] \"prog_name\" UNZIP => [list1] [list]";
+        machine.helpstrm() << "prog receives a list items and should return two items to be placed";
+        machine.helpstrm() << "on each list";
+        return;
+    }
+}
+

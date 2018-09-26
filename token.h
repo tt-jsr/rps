@@ -2,7 +2,7 @@
 
 enum TokenType
 {
-    TOKEN_NONE
+    TOKEN_NOTOKEN
     , TOKEN_START_PROGRAM
     , TOKEN_END_PROGRAM
     , TOKEN_COMMAND
@@ -26,6 +26,7 @@ enum TokenType
     , TOKEN_EOL
     , TOKEN_EXIT
     , TOKEN_EOF
+    , TOKEN_NONE
 };
 
 struct Token
@@ -42,6 +43,7 @@ enum ObjectType
 {
     OBJECT_STRING
     ,OBJECT_INTEGER
+    ,OBJECT_NONE
     ,OBJECT_LIST
     ,OBJECT_MAP
     ,OBJECT_COMMAND
@@ -55,6 +57,7 @@ enum ObjectType
 static const char *ObjectNames[] = {
     "String"
     , "Integer"
+    , "None"
     , "List"
     , "Map"
     , "Command"

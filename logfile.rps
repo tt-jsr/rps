@@ -146,7 +146,7 @@ SWAP
 
 ############################################
 # list logfiles
-<< "ls -rt OC*" PREAD >> lslog STO
+<< "ls -t -1 OC*" PREAD >> lslog STO
 
 ###########################################
 # find-er Find er's with a pattern

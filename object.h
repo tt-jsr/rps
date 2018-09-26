@@ -41,10 +41,18 @@ public:
 
 typedef std::shared_ptr<Integer> IntegerPtr;
 
+class None : public Object
+{
+public:
+    None() : Object(OBJECT_NONE, TOKEN_NONE) {}
+};
+
+typedef std::shared_ptr<None> NonePtr;
+
 class List : public Object
 {
 public:
-    List() : Object(OBJECT_LIST, TOKEN_NONE) {}
+    List() : Object(OBJECT_LIST, TOKEN_NOTOKEN) {}
     std::vector<ObjectPtr> items;
 };
 
@@ -53,7 +61,7 @@ typedef std::shared_ptr<List> ListPtr;
 class Map : public Object
 {
 public:
-    Map() : Object(OBJECT_MAP, TOKEN_NONE) {}
+    Map() : Object(OBJECT_MAP, TOKEN_NOTOKEN) {}
     std::unordered_map<ObjectPtr, ObjectPtr> items;
 };
 
@@ -81,7 +89,7 @@ typedef std::shared_ptr<Command> CommandPtr;
 class Program : public Object
 {
 public:
-    Program() : Object(OBJECT_PROGRAM, TOKEN_NONE) {}
+    Program() : Object(OBJECT_PROGRAM, TOKEN_NOTOKEN) {}
     std::vector<ObjectPtr> program;
     std::string module_name;
     std::unordered_map<std::string, ObjectPtr> *pLocals;
@@ -92,7 +100,7 @@ public:
 class If : public Object
 {
 public:
-    If() : Object(OBJECT_IF, TOKEN_NONE) {}
+    If() : Object(OBJECT_IF, TOKEN_NOTOKEN) {}
     std::vector<ObjectPtr> cond;
     std::vector<ObjectPtr> then;
     std::vector<ObjectPtr> els;
@@ -103,7 +111,7 @@ typedef std::shared_ptr<If> IfPtr;
 class For : public Object
 {
 public:
-    For() : Object(OBJECT_FOR, TOKEN_NONE) {}
+    For() : Object(OBJECT_FOR, TOKEN_NOTOKEN) {}
     std::vector<ObjectPtr> program;
 };
 
@@ -112,7 +120,7 @@ typedef std::shared_ptr<For> ForPtr;
 class While : public Object
 {
 public:
-    While() : Object(OBJECT_WHILE, TOKEN_NONE) {}
+    While() : Object(OBJECT_WHILE, TOKEN_NOTOKEN) {}
     std::vector<ObjectPtr> program;
     std::vector<ObjectPtr> cond;
 };

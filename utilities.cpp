@@ -23,6 +23,13 @@ IntegerPtr MakeInteger()
     return ip;
 }
 
+NonePtr MakeNone()
+{
+    NonePtr np;
+    np.reset(new None());
+    return np;
+}
+
 ProgramPtr MakeProgram()
 {
     ProgramPtr pp;
@@ -81,6 +88,12 @@ ObjectPtr Clone(ObjectPtr optr)
             MapPtr mp = MakeMap();
             *mp = *((Map *)optr.get());
             return mp;
+        }
+        break;
+    case OBJECT_NONE:
+        {
+            NonePtr np = MakeNone();
+            return np;
         }
         break;
     default:
@@ -322,6 +335,11 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
             }
         }
         break;
+    case OBJECT_NONE:
+        {
+            return "None";
+        }
+        break;
     default:
         std::cout << "=== ToStr: " << optr->token << std::endl;
         assert(false);
@@ -346,6 +364,8 @@ std::string ToType(Machine&, ObjectPtr optr)
         return "M";
     case OBJECT_PROGRAM:
         return "P";
+    case OBJECT_NONE:
+        return "N";
     default:
         assert(false);
         throw std::runtime_error("Clone: Unknown type");
@@ -370,6 +390,8 @@ bool ToBool(Machine&, ObjectPtr optr)
     case OBJECT_COMMAND:
         assert(false);
         break;
+    case OBJECT_NONE:
+        return false;
     }
 }
 
@@ -390,6 +412,8 @@ int64_t ToInt(Machine& machine, ObjectPtr optr)
         throw std::runtime_error("Invalid Map to Int conversion");
     case OBJECT_PROGRAM:
         throw std::runtime_error("Invalid Program to Int conversion");
+    case OBJECT_NONE:
+        throw std::runtime_error("Invalid None to Int conversion");
     case OBJECT_COMMAND:
         assert(false);
         break;

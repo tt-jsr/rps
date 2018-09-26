@@ -80,6 +80,8 @@ void FROMLIST(Machine&);
 void CREATELIST(Machine&);
 void UNIQUE(Machine&);
 void REVERSE(Machine&);
+void ZIP(Machine&);
+void UNZIP(Machine&);
 
 // Map
 void FIND(Machine&);
@@ -123,6 +125,7 @@ void STRNCMP(Machine&);
 void SPLIT(Machine&);
 void STRBEGIN(Machine&);
 void STREND(Machine&);
+void STRHAS(Machine&);
 void STRCSPN(Machine&);
 
 // Types
