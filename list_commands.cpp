@@ -658,7 +658,7 @@ void ZIP(Machine& machine)
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
-        throw std::runtime_error("APPLY: Program or program name must be at level 0");
+        throw std::runtime_error("ZIP: Program or program name must be at level 0");
 
     pptr = std::static_pointer_cast<Program>(optr);
 
@@ -709,7 +709,7 @@ void UNZIP(Machine& machine)
         machine.helpstrm() << "UNZIP: unzip a list into two lists";
         machine.helpstrm() << "[list] <<prog>> UNZIP => [list1] [list]";
         machine.helpstrm() << "[list] \"prog_name\" UNZIP => [list1] [list]";
-        machine.helpstrm() << "prog receives a list items and should return two items to be placed";
+        machine.helpstrm() << "prog receives a list item and should return two items to be placed";
         machine.helpstrm() << "on each list";
         return;
     }
@@ -730,7 +730,7 @@ void UNZIP(Machine& machine)
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
-        throw std::runtime_error("APPLY: Program or program name must be at level 0");
+        throw std::runtime_error("UNZIP: Program or program name must be at level 0");
 
     pptr = std::static_pointer_cast<Program>(optr);
 

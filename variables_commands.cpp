@@ -145,6 +145,7 @@ void RCL(Machine& machine)
         machine.helpstrm() << "Recall an object from the given variable name.";
         machine.helpstrm() << "By default objects are recalled from the current namespace which";
         machine.helpstrm() << "is usually the module name or set by SETNS";
+        machine.helpstrm() << "See also RCLL, RCLA";
         return;
     }
 
@@ -166,6 +167,7 @@ void RCLL(Machine& machine)
         machine.helpstrm() << "\"name\" RCLL =>";
         machine.helpstrm() << "Local variables can be recalled from the current program";
         machine.helpstrm() << "or local variables of enclosing programs";
+        machine.helpstrm() << "See also RCL, RCLA";
         return;
     }
 
@@ -201,6 +203,76 @@ void RCLL(Machine& machine, const std::string& name, ObjectPtr& out)
     std::stringstream strm;
     strm << "RCLL local Variable " << name << " not found";
     throw std::runtime_error(strm.str().c_str());
+}
+
+void RCLA(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "RCLA: Recall an object, first look in local storage, then global";
+        machine.helpstrm() << "\"name\" RCLA =>";
+        machine.helpstrm() << "Local variables can be recalled from the current program";
+        machine.helpstrm() << "or local variables of enclosing programs";
+        machine.helpstrm() << "\'%\' is a synonym for RCLA";
+        return;
+    }
+
+    stack_required(machine, "RCLA", 1);
+    throw_required(machine, "RCLA", 0, OBJECT_STRING);
+
+    std::string varname;
+    ObjectPtr optr;
+    machine.pop(varname);
+    try
+    {
+        RCLL(machine, varname, optr);
+        machine.push(optr);
+    }
+    catch(std::exception&)
+    {
+        RCL(machine, varname, optr);
+        machine.push(optr);
+    }
+}
+
+void VARS(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "VARS: Print variables and thier contents";
+        machine.helpstrm() << "\"namespace\" VARS =>";
+        return;
+    }
+
+    stack_required(machine, "VARS", 1);
+    throw_required(machine, "VARS", 0, OBJECT_STRING);
+    std::string modname;
+    machine.pop(modname);
+    auto it = machine.modules_.find(modname);
+    if (it == machine.modules_.end())
+    {
+        std::stringstream strm;
+        strm << "VARNAMES: Module " << modname << " not found";
+        throw std::runtime_error(strm.str().c_str());
+    }
+    auto itVars = it->second.variables_.begin();
+    auto itEnd = it->second.variables_.end();
+    ListPtr lp = MakeList();
+    for (; itVars != itEnd; ++itVars)
+    {
+        std::cout << modname << "." << itVars->first 
+            << "[" << ToType(machine,itVars->second )
+            << "] = " ;
+        std::string s = ToStr(machine, itVars->second);
+        for (size_t idx = 0; s[idx] && idx < 80; ++idx)
+        {
+            if (s[idx] == '\n')
+                std::cout << "\\n";
+            else
+                std::cout << s[idx];
+        }
+        std::cout << std::endl;
+    }
 }
 
 void VARNAMES(Machine& machine)

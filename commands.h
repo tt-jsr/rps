@@ -37,8 +37,10 @@ void RCL(Machine& machine, const std::string& name, ObjectPtr& out);
 void STOL(Machine& machine);
 void RCLL(Machine& machine);
 void RCLL(Machine& machine, const std::string& name, ObjectPtr& out);
+void RCLA(Machine& machine);
 void VARNAMES(Machine& machine);
 void VARTYPES(Machine& machine);
+void VARS(Machine& machine);
 void REGISTER(Machine&);
 
 /*

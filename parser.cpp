@@ -62,7 +62,7 @@ void CollectIdentifier(Source& src, Token& token)
 {
     while (src.it != src.line.end())
     {
-        if (*src.it == '>' || *src.it == '}' || *src.it == ']' || *src.it == '!' || *src.it == '(')
+        if (*src.it == '>' || *src.it == '}' || *src.it == ']' || *src.it == '!' || *src.it == '(' || *src.it == '%')
             return;
         if (isalnum(*src.it))
             token.value.push_back(*src.it);
@@ -784,8 +784,13 @@ Parser::Parser(Machine& machine)
     Category(machine, "Variable", "STOL");
     AddCommand(machine, "RCLL", &RCLL);
     Category(machine, "Variable", "RCLL");
+    AddCommand(machine, "RCLA", &RCLA);
+    AddCommand(machine, "%", &RCLA);
+    Category(machine, "Variable", "RCLA");
     AddCommand(machine, "VARNAMES", &VARNAMES);
     Category(machine, "Variable", "VARNAMES");
+    AddCommand(machine, "VARS", &VARS);
+    Category(machine, "Variable", "VARS");
     AddCommand(machine, "VARTYPES", &VARTYPES);
     Category(machine, "Variable", "VARTYPES");
     AddCommand(machine, "REGISTER", &REGISTER);
