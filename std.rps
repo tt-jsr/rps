@@ -118,8 +118,8 @@ FROMLIST
 >> rstack STO
 
 ############################################
-# Vim edit a list
-# [list] vim CALL => [list]
+# Vim edit an object
+# obj vim CALL => [list]
 <<
 "rpstmp.txt" FSAVE
 "vim rpstmp.txt" SYSTEM
@@ -128,8 +128,8 @@ FROMLIST
 >> vedit STO
 
 ############################################
-# View edit a list
-# [list] view CALL => [list]
+# View edit an object
+# obj view CALL => [list]
 <<
 "rpstmp.txt" FSAVE
 "view rpstmp.txt" SYSTEM
@@ -145,9 +145,4 @@ DUP
 "less rpstmp.txt" SYSTEM
 "rm rpstmp.txt" SYSTEM
 >> less STO
-
-#########################################
-# see a list item without popping
-<< 1 PICK SWAP GET PRINT
->> see STO
 

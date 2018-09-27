@@ -9,8 +9,19 @@ logfile.logstart RCL LOGSTART REGISTER
 logfile.dd RCL DD REGISTER
 logfile.lslog RCL LSLOG REGISTER
 
+# format a protobuf
+# "pb" PFMT =>
 <<"pfmt|less" PWRITE>> PFMT REGISTER
+
+# Format an ER
+# "er" ERFORMAT =>
 <<erformat PWRITE>> ERFORMAT REGISTER
+
+# Print all items of a list
+# [list] LPRINT =>
 << <<PRINT>> MAP>> LPRINT REGISTER
+
+# Get all execution reports.
+# logfile ERS => [list]
 << "grep -n \"ExecutionReport.*order_id=\" %0" FORMAT SWAP DROP PREAD >> ERS REGISTER
 

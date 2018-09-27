@@ -79,11 +79,11 @@ void PREAD(Machine& machine)
        machine.pop(opt);
    }
    cmd = opt;
-   ListPtr ret = MakeList();
 
    FILE *fp = popen(cmd.c_str(), "r");
    if (fp)
    {
+       ListPtr ret = MakeList();
        char buf[10240];
        for (int count = 0; count < limit && !feof(fp); ++count)
        {
@@ -100,8 +100,14 @@ void PREAD(Machine& machine)
            }
        }
        pclose(fp);
+       machine.push(ret);
    }
-   machine.push(ret);
+   else
+   {
+       std::stringstream strm;
+       strm << "Failed to open pipe " << cmd.c_str() << " for reading";
+       throw std::runtime_error(strm.str().c_str());
+   }
 }
 
 void PWRITE(Machine& machine)
@@ -143,6 +149,12 @@ void PWRITE(Machine& machine)
        }
        pclose(fp);
    }
+   else
+   {
+       std::stringstream strm;
+       strm << "Failed to open pipe " << cmd.c_str() << " for writing";
+       throw std::runtime_error(strm.str().c_str());
+   }
 }
 
 void FWRITE(Machine& machine)
@@ -176,7 +188,12 @@ void FWRITE(Machine& machine)
             fputs(s.c_str(), fp);
             fputs("\n", fp);
         }
-        fclose(fp);
+   }
+   else
+   {
+       std::stringstream strm;
+       strm << "Failed to open " << file.c_str() << " for writing";
+       throw std::runtime_error(strm.str().c_str());
    }
 }
 
@@ -206,12 +223,12 @@ void FREAD(Machine& machine)
        machine.pop(opt);
    }
    file = opt;
-   ListPtr ret = MakeList();
 
    FILE *fp = fopen(file.c_str(), "r");
    if (fp)
    {
        char buf[10240];
+       ListPtr ret = MakeList();
        for (int count = 0; count < limit && !feof(fp); ++count)
        {
            if (bInterrupt)
@@ -227,8 +244,14 @@ void FREAD(Machine& machine)
            }
        }
        fclose(fp);
+       machine.push(ret);
+   } 
+   else
+   {
+       std::stringstream strm;
+       strm << "Failed to open " << file.c_str() << " for reading";
+       throw std::runtime_error(strm.str().c_str());
    }
-   machine.push(ret);
 }
 
 void FSAVE(Machine& machine)
@@ -269,7 +292,6 @@ void FSAVE(Machine& machine)
                 fputs(s.c_str(), fp);
                 fputs("\n", fp);
             }
-            fputs("\n", fp);
             fputs("]", fp);
         }
         else
@@ -279,6 +301,12 @@ void FSAVE(Machine& machine)
             fputs("\n", fp);
         }
         fclose(fp);
+   }
+   else
+   {
+       std::stringstream strm;
+       strm << "Failed to open " << file.c_str() << " for writing";
+       throw std::runtime_error(strm.str().c_str());
    }
 }
 
@@ -331,6 +359,12 @@ void FRESTORE(Machine& machine)
             }
         }
     }
+   else
+   {
+       std::stringstream strm;
+       strm << "Failed to open " << file.c_str() << " for reading";
+       throw std::runtime_error(strm.str().c_str());
+   }
 }
 
 void SYSTEM(Machine& machine)
