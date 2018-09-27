@@ -44,7 +44,6 @@ public:
     std::unordered_map<std::string, CommandPtr> commands;
     std::unordered_map<std::string, std::vector<std::string>> categories;
     std::stringstream hstrm;
-    bool nopop;
 };
 
 

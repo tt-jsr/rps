@@ -35,7 +35,6 @@ void STO(Machine& machine)
         machine.helpstrm() << "Store an object in the given variable name.";
         machine.helpstrm() << "By default objects are stored in the current namespace which";
         machine.helpstrm() << "is usually the module name or set by SETNS";
-        machine.helpstrm() << "STO* will retain the object in the stack";
         return;
     }
 
@@ -57,8 +56,6 @@ void STO(Machine& machine)
     machine.pop(optr);
     Module& module = machine.modules_[modname];
     module.variables_[varname] = optr;
-    if (machine.nopop)
-        machine.push(optr);
 }
 
 void STOL(Machine& machine)
@@ -72,7 +69,6 @@ void STOL(Machine& machine)
         machine.helpstrm() << "Local variables are only available in the current program.";
         machine.helpstrm() << "Programs defined within a program have access to local variables of the";
         machine.helpstrm() << "enclosing program";
-        machine.helpstrm() << "STOL* will retain the object in the stack";
         return;
     }
 
@@ -101,8 +97,6 @@ void STOL(Machine& machine)
         pp = pp->enclosingProgram;
     }
     (*machine.current_program->pLocals)[name] = optr;
-    if (machine.nopop)
-        machine.push(optr);
 }
 
 void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
@@ -208,7 +202,7 @@ void RCLA(Machine& machine)
     if (machine.help)
     {
         machine.helpstrm() << "RCLA: Recall an object, first look in local storage, then global";
-        machine.helpstrm() << "\"name\" RCLA =>";
+        machine.helpstrm() << "\"name\" RCLA => obj";
         machine.helpstrm() << "Local variables can be recalled from the current program";
         machine.helpstrm() << "or local variables of enclosing programs";
         machine.helpstrm() << "\'%\' is a synonym for RCLA";

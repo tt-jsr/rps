@@ -62,7 +62,8 @@ void CollectIdentifier(Source& src, Token& token)
 {
     while (src.it != src.line.end())
     {
-        if (*src.it == '>' || *src.it == '}' || *src.it == ']' || *src.it == '!' || *src.it == '(' || *src.it == '%')
+        if (*src.it == '>' || *src.it == '}' || *src.it == ']' || *src.it == '!' 
+                || *src.it == '(' || *src.it == '%' || *src.it == '*')
             return;
         if (isalnum(*src.it))
             token.value.push_back(*src.it);
@@ -106,6 +107,20 @@ void GetToken(Source& src, Token& token)
     if(src.iseof())
     {
         token.token = TOKEN_EOF;
+        return;
+    }
+    if (*src.it == '*')
+    {
+        token.value.push_back(*src.it);
+        token.token = TOKEN_STRING;
+        ++src.it;
+        return;
+    }
+    if (*src.it == '%')
+    {
+        token.value.push_back(*src.it);
+        token.token = TOKEN_STRING;
+        ++src.it;
         return;
     }
     if (*src.it == '!')
@@ -743,6 +758,7 @@ Parser::Parser(Machine& machine)
     AddCommand(machine, "SWAP", &SWAP);
     Category(machine, "Stack", "SWAP");
     AddCommand(machine, "DUP", &DUP);
+    AddCommand(machine, "*", &DUP);
     Category(machine, "Stack", "DUP");
     AddCommand(machine, "PICK", &PICK);
     Category(machine, "Stack", "PICK");
@@ -775,12 +791,10 @@ Parser::Parser(Machine& machine)
 
     // Variable commands
     AddCommand(machine, "STO", &STO);
-    AddCommand(machine, "STO*", &STO);
     Category(machine, "Variable", "STO");
     AddCommand(machine, "RCL", &RCL);
     Category(machine, "Variable", "RCL");
     AddCommand(machine, "STOL", &STOL);
-    AddCommand(machine, "STOL*", &STOL);
     Category(machine, "Variable", "STOL");
     AddCommand(machine, "RCLL", &RCLL);
     Category(machine, "Variable", "RCLL");
@@ -820,7 +834,6 @@ Parser::Parser(Machine& machine)
 
     // List commands
     AddCommand(machine, "GET", &GET);
-    AddCommand(machine, "GET*", &GET);
     Category(machine, "List", "GET");
     AddCommand(machine, "SUBLIST", &SUBLIST);
     Category(machine, "List", "SUBLIST");
@@ -834,7 +847,6 @@ Parser::Parser(Machine& machine)
     Category(machine, "List", "LINSERT");
     AddCommand(machine, "INSERT", &INSERT);
     AddCommand(machine, "SIZE", &SIZE);
-    AddCommand(machine, "SIZE*", &SIZE);
     Category(machine, "List", "SIZE");
     AddCommand(machine, "FIRST", &FIRST);
     Category(machine, "List", "FIRST");
@@ -956,7 +968,6 @@ Parser::Parser(Machine& machine)
     AddCommand(machine, "TOSTR", &TOSTR);
     Category(machine, "Types", "TOSTR");
     AddCommand(machine, "TYPE", &TYPE);
-    AddCommand(machine, "TYPE*", &TYPE);
     Category(machine, "Types", "TYPE");
     AddCommand(machine, "CLONE",  &CLONE);
     Category(machine, "Types", "CLONE");

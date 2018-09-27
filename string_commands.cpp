@@ -400,8 +400,6 @@ void SPLIT(Machine& machine)
     }
 
     stack_required(machine, "SPLIT", 2);
-    throw_required(machine, "SPLIT", 0, OBJECT_STRING); // delim
-    throw_required(machine, "SPLIT", 1, OBJECT_STRING); // string to split
 
     std::string str,  delims;
     ListPtr result = MakeList();
@@ -421,6 +419,8 @@ void SPLIT(Machine& machine)
             bCollapse = true;
         }
     }
+    throw_required(machine, "SPLIT", 0, OBJECT_STRING); // delim
+    throw_required(machine, "SPLIT", 1, OBJECT_STRING); // string to split
     machine.pop(delims);
     machine.pop(str);
     std::string s;

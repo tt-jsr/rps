@@ -129,13 +129,10 @@ void Execute(Machine& machine, ObjectPtr optr)
                 EVAL(machine, cmd->program);
             else
             {
-                if (cmd->value.back() == '*')
-                    machine.nopop = true;
                 if (cmd->value.back() == '?')
                     ShowHelp(machine, cmd);
                 else
                     (*cmd->funcptr)(machine);
-                machine.nopop = false;
             }
         }
         break;
@@ -223,6 +220,7 @@ void CALL(Machine& machine)
         machine.helpstrm() << "CALL: Call a program";
         machine.helpstrm() << "\"name\" CALL => ...";
         machine.helpstrm() << "Equivilent to name RCL EVAL";
+        machine.helpstrm() << "() is a synonym for CALL";
         return;
     }
     RCL(machine);

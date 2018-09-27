@@ -77,8 +77,8 @@ void PREAD(Machine& machine)
        {
             limit = std::stoi(&arg.c_str()[8]);
        }
-       throw_required(machine, "PREAD", 0, OBJECT_STRING);
    }
+   throw_required(machine, "PREAD", 0, OBJECT_STRING);
    machine.pop(cmd);
 
    FILE *fp = popen(cmd.c_str(), "r");
@@ -144,8 +144,8 @@ void PWRITE(Machine& machine)
        }
        else
        {
-           String *sp = (String *)data.get();
-           fputs(sp->value.c_str(), fp);
+           std::string s = ToStr(machine, data);
+           fputs(s.c_str(), fp);
            fputs("\n", fp);
        }
        pclose(fp);
@@ -222,8 +222,8 @@ void FREAD(Machine& machine)
        {
             limit = std::stoi(&arg.c_str()[8]);
        }
-       throw_required(machine, "FREAD", 0, OBJECT_STRING);
    }
+   throw_required(machine, "FREAD", 0, OBJECT_STRING);
    machine.pop(file);
 
    FILE *fp = fopen(file.c_str(), "r");
