@@ -408,20 +408,20 @@ void SPLIT(Machine& machine)
     bool bCollapse(false);
     int max = 10000;
 
-    machine.pop(delims);
-    while (strncmp(delims.c_str(), "--", 2) == 0)
+    std::vector<std::string> args;
+    GetArgs(machine, args);
+    for (auto& arg: args)
     {
-        if (isdigit(*(delims.c_str()+2)))
+        if (isdigit(*(arg.c_str()+2)))
         {
-            max = std::stol(delims.c_str()+2);
-            machine.pop(delims);
+            max = std::stol(arg.c_str()+2);
         }
-        if (delims == "--collapse" )
+        if (arg == "--collapse" )
         {
             bCollapse = true;
-            machine.pop(delims);
         }
     }
+    machine.pop(delims);
     machine.pop(str);
     std::string s;
     int nmatch = 0;

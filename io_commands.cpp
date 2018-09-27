@@ -67,18 +67,19 @@ void PREAD(Machine& machine)
 
    std::string opt;
    std::string cmd;
-   machine.pop(opt);
+   std::vector<std::string> args;
    int limit = std::numeric_limits<int>::max();
-   while (strncmp(opt.c_str(), "--", 2) == 0)
+
+   GetArgs(machine, args);
+   for(auto arg : args)
    {
-       if (strncmp(opt.c_str(), "--limit=", 8) == 0)
+       if (strncmp(arg.c_str(), "--limit=", 8) == 0)
        {
-            limit = std::stoi(&opt.c_str()[8]);
+            limit = std::stoi(&arg.c_str()[8]);
        }
        throw_required(machine, "PREAD", 0, OBJECT_STRING);
-       machine.pop(opt);
    }
-   cmd = opt;
+   machine.pop(cmd);
 
    FILE *fp = popen(cmd.c_str(), "r");
    if (fp)
@@ -211,18 +212,19 @@ void FREAD(Machine& machine)
 
    std::string opt;
    std::string file;
-   machine.pop(opt);
    int limit = std::numeric_limits<int>::max();
-   while (strncmp(opt.c_str(), "--", 2) == 0)
+
+   std::vector<std::string> args;
+   GetArgs(machine, args);
+   for (auto& arg : args)
    {
-       if (strncmp(opt.c_str(), "--limit=", 8) == 0)
+       if (strncmp(arg.c_str(), "--limit=", 8) == 0)
        {
-            limit = std::stoi(&opt.c_str()[8]);
+            limit = std::stoi(&arg.c_str()[8]);
        }
        throw_required(machine, "FREAD", 0, OBJECT_STRING);
-       machine.pop(opt);
    }
-   file = opt;
+   machine.pop(file);
 
    FILE *fp = fopen(file.c_str(), "r");
    if (fp)

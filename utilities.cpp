@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+#include <cstring>
 #include "object.h"
 #include "module.h"
 #include "machine.h"
@@ -393,6 +394,7 @@ bool ToBool(Machine&, ObjectPtr optr)
     case OBJECT_NONE:
         return false;
     }
+    assert(false);
 }
 
 int64_t ToInt(Machine& machine, ObjectPtr optr)
@@ -477,4 +479,23 @@ void Import(Machine& machine, Parser& parser, const std::string& modname)
     machine.CreateModule(modname);
     parser.Parse(machine, srcImport);
     machine.current_module_ = savename;
+}
+
+void GetArgs(Machine& machine, std::vector<std::string>& args)
+{
+    ObjectPtr optr;
+    while (machine.stack_.size() > 0)
+    {
+        optr = machine.peek(0);
+        if (optr->type != OBJECT_STRING)
+            return;
+        String *sp = (String *)optr.get();
+        if ((strncmp(sp->value.c_str(), "--", 2) == 0))
+        {
+            args.push_back(sp->value);
+            machine.pop(optr);
+        }
+        else
+            return;
+    }
 }

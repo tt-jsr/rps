@@ -72,6 +72,7 @@ MapPtr MakeMap();
 ObjectPtr Clone(ObjectPtr);
 
 bool ToBool(Machine&, ObjectPtr);
+void GetArgs(Machine&, std::vector<std::string>& args);
 
 std::string ToStr(Machine&, ObjectPtr);
 int64_t ToInt(Machine&, ObjectPtr);

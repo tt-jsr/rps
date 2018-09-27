@@ -36,8 +36,6 @@ void STO(Machine& machine)
         machine.helpstrm() << "By default objects are stored in the current namespace which";
         machine.helpstrm() << "is usually the module name or set by SETNS";
         machine.helpstrm() << "STO* will retain the object in the stack";
-        machine.helpstrm() << "Options: --if-not-exists";
-        machine.helpstrm() << "        Will store the value only if the variable does not exist";
         return;
     }
 
