@@ -642,6 +642,64 @@ void ZIP(Machine& machine)
         machine.helpstrm() << "If one list is shorter than the other, None will be passed.";
         return;
     }
+    stack_required(machine, "ZIP", 3);
+    throw_required(machine, "ZIP", 1, OBJECT_LIST);
+    throw_required(machine, "ZIP", 2, OBJECT_LIST);
+
+    ListPtr result = MakeList();
+    ListPtr lp1, lp2;
+    ObjectPtr optr;
+    ProgramPtr pptr;
+
+    machine.pop(optr);
+    if (optr->type == OBJECT_STRING)
+    {
+        std::string name = ((String *)optr.get())->value;
+        RCL(machine, name, optr);
+    }
+    if (optr->type != OBJECT_PROGRAM)
+        throw std::runtime_error("APPLY: Program or program name must be at level 0");
+
+    pptr = std::static_pointer_cast<Program>(optr);
+
+    machine.pop(lp2);
+    machine.pop(lp1);
+
+    size_t max = std::min(lp1->items.size(), lp2->items.size());
+    size_t idx = 0;
+    for (idx= 0; idx < max; ++idx)
+    {
+        if (bInterrupt)
+            return;
+        machine.push(lp1->items[idx]);
+        machine.push(lp2->items[idx]);
+        EVAL(machine, pptr);
+        machine.pop(optr);
+        result->items.push_back(optr);
+    }
+    for (; idx < lp1->items.size(); ++idx)
+    {
+        if (bInterrupt)
+            return;
+        machine.push(lp1->items[idx]);
+        ObjectPtr np = MakeNone();
+        machine.push(np);
+        EVAL(machine, pptr);
+        machine.pop(optr);
+        result->items.push_back(optr);
+    }
+    for (; idx < lp2->items.size(); ++idx)
+    {
+        if (bInterrupt)
+            return;
+        ObjectPtr np = MakeNone();
+        machine.push(np);
+        machine.push(lp2->items[idx]);
+        EVAL(machine, pptr);
+        machine.pop(optr);
+        result->items.push_back(optr);
+    }
+    machine.push(result);
 }
 
 void UNZIP(Machine& machine)
@@ -655,5 +713,42 @@ void UNZIP(Machine& machine)
         machine.helpstrm() << "on each list";
         return;
     }
+
+    stack_required(machine, "UNZIP", 2);
+    throw_required(machine, "UNZIP", 1, OBJECT_LIST);
+
+    ListPtr result1 = MakeList();
+    ListPtr result2 = MakeList();
+    ListPtr lp;
+    ObjectPtr optr;
+    ProgramPtr pptr;
+
+    machine.pop(optr);
+    if (optr->type == OBJECT_STRING)
+    {
+        std::string name = ((String *)optr.get())->value;
+        RCL(machine, name, optr);
+    }
+    if (optr->type != OBJECT_PROGRAM)
+        throw std::runtime_error("APPLY: Program or program name must be at level 0");
+
+    pptr = std::static_pointer_cast<Program>(optr);
+
+    machine.pop(lp);
+
+    for (ObjectPtr op : lp->items)
+    {
+        if (bInterrupt)
+            return;
+        machine.push(op);
+        EVAL(machine, pptr);
+        ObjectPtr r1, r2;
+        machine.pop(r2);
+        machine.pop(r1);
+        result1->items.push_back(r1);
+        result2->items.push_back(r2);
+    }
+    machine.push(result1);
+    machine.push(result2);
 }
 
