@@ -9,10 +9,7 @@
 "          filename idx vim CALL =>" PRINT
 "" PRINT
 "    show: Print a list in a numbered output" PRINT
-"          [list] show CALL => [list]" PRINT
-"" PRINT
-"    lget: Show a menu to get a list element" PRINT
-"          [list] lget CALL => obj" PRINT
+"          [list] show CALL => " PRINT
 "" PRINT
 "  sstack: Save the current stack" PRINT
 "          objn objn-1 obj \"name\" sstack CALL =>" PRINT
@@ -20,17 +17,11 @@
 "  rstack: Restore a saved stack" PRINT
 "          \"name\" rstack CALL => objn obj-1 obj" PRINT
 "" PRINT
-"   vedit: Edit a list" PRINT
-"          [list] vedit CALL => [list]" PRINT
+"   vedit: Edit an object" PRINT
+"          obj vedit CALL => obj" PRINT
 "" PRINT
-"    view: view, via vim readonly a list" PRINT
-"          [list] view CALL => [list]" PRINT
-"" PRINT
-"   lview: less a list" PRINT
-"          [list] lview CALL => [list]" PRINT
-"" PRINT
-"     see: print a list item without popping" PRINT
-"          [list] idx see CALL => [list]" PRINT
+"    view: view, via vim readonly an object" PRINT
+"          obj view CALL => obj" PRINT
 "" PRINT
 >>
 help STO
@@ -69,34 +60,15 @@ vim STO
 
 # Format list items into a numbers output
 << 
-DUP
 lst STOL
 0 count STOL
-FOR
-    count RCLL
-    "%0: %1" FORMAT 0 showwidth RCL SUBSTR PRINT
-    INC count STOL
-    DROP  # drop the FOR object
-ENDFOR
 lst RCLL
+FOR
+    "%{count}: %0" FORMAT 0 showwidth RCL SUBSTR PRINT
+    DROP  # drop the FOR object
+    count RCLL INC count STOL
+ENDFOR
 >> show STO
-
-################################
-<< 
-    show CALL
-    "Enter => " PROMPT
-    resp STOL
-    IF 
-        resp RCLL
-        "q"  NEQ
-    THEN
-        resp RCLL
-        TOINT
-        GET
-    ELSE
-        DROP
-    ENDIF
->> lget STO
 
 #############################################
 # Save the current stack

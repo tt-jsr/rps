@@ -219,11 +219,11 @@ void CALL(Machine& machine)
     {
         machine.helpstrm() << "CALL: Call a program";
         machine.helpstrm() << "\"name\" CALL => ...";
-        machine.helpstrm() << "Equivilent to name RCL EVAL";
+        machine.helpstrm() << "Equivilent to name RCLA EVAL";
         machine.helpstrm() << "() is a synonym for CALL";
         return;
     }
-    RCL(machine);
+    RCLA(machine);
     EVAL(machine);
 }
 

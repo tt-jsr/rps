@@ -24,13 +24,25 @@ help STO
 dir STO
 branch STO
 "git diff --name-only %branch -- %dir" FORMAT PREAD
-files STO
 >> gdfiles STO
 
-<< files RCL
-std.lget CALL
-"git difftool -y %branch -- %0" FORMAT !
-DROP
+<< 
+files STOL
+WHILE 
+    files RCLL
+    std.show()
+    "Enter=> " PROMPT
+    DUP     # dup the response
+    "q" NEQ
+REPEAT
+    TOINT 
+    files RCLL 
+    SWAP 
+    GET 
+    "git difftool -y %branch -- %0" FORMAT !
+    DROP    # drop the list item
+ENDWHILE
+DROP # drop the "q"
 >> gd STO
 
 

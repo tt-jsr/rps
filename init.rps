@@ -2,6 +2,14 @@ import std
 import logfile
 import git
 
+<<
+"" PRINT
+"VEDIT: Edit an object in vim" PRINT
+"       obj VEDIT => obj" PRINT
+"" PRINT
+"... to be completed" PRINT
+>> help STO
+
 std.vedit RCL VEDIT REGISTER
 
 logfile.start RCL START REGISTER
