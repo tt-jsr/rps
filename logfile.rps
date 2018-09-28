@@ -26,6 +26,11 @@
 "gettuple: Get a field=value from a protobuf" PRINT
 "          protobuf fieldname gettuple CALL => [name, value]" PRINT
 "" PRINT
+"find-ers: Find ExecutionReports given a pattern in a file" PRINT
+"          logfile pattern find-er => [list]" PRINT
+"          Suitable for use with MAP1" PRINT
+"               [list_of_files] pattern MAP1 => [listn] [listn-1] [list]" PRINT
+"" PRINT
 
 >>
 help STO
@@ -83,7 +88,7 @@ ENDIF
 <<
 "=" CAT     # pb fieldname=
 field STOL  # pb
-pb STOL*    # store the pb
+DUP pb STOL    # store the pb
 0           # pb 0
 field RCLL  # pb 0 fieldname=
 STRFIND     # pos (the position of fieldname=)
@@ -152,10 +157,12 @@ SWAP
 # find-er Find er's with a pattern
 # logfile pattern find-er => [list]
 # Suitable for use with MAP1
+#    [list_of_files] find-ers pattern MAP1 => [listn] [listn-1] [list]
 << 
 pattern STOL
-file STOL*
+file STOL
 "%file" FORMAT PRINT
+file RCLL
 IF .gz STREND
 THEN
     zgrep cmd STOL
@@ -163,16 +170,11 @@ ELSE
     grep cmd STOL
 ENDIF
 "%cmd -n \"ExecutionReport.*%{pattern}\" %file" FORMAT PREAD
-SIZE* sz STOL
+DUP SIZE sz STOL
 IF sz RCLL 0 GT
 THEN
     "Found %sz records" FORMAT PRINT
 ELSE
     DROP  # drop the empty list
 ENDIF
-"Continue (y/n)?" PROMPT
-IF "n" EQ
-THEN
-    INTERRUPT
-ENDIF
->> find-er STO
+>> find-ers STO
