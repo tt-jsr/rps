@@ -66,7 +66,6 @@ void DUP(Machine& machine)
     {
         machine.helpstrm() << "DUP: Duplicate the toptwo objects on the stack";
         machine.helpstrm() << "obj DUP => obj obj";
-        machine.helpstrm() << "\'%\' is a synonym for DUP";
         return;
     }
 

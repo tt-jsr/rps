@@ -758,7 +758,6 @@ Parser::Parser(Machine& machine)
     AddCommand(machine, "SWAP", &SWAP);
     Category(machine, "Stack", "SWAP");
     AddCommand(machine, "DUP", &DUP);
-    AddCommand(machine, "*", &DUP);
     Category(machine, "Stack", "DUP");
     AddCommand(machine, "PICK", &PICK);
     Category(machine, "Stack", "PICK");
