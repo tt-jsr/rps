@@ -268,23 +268,33 @@ void MAP1(Machine& machine)
     if (machine.help)
     {
         machine.helpstrm() << "MAP1 a function over a list with an argument";
-        machine.helpstrm() << "[list] <<prog>> argObj MAP => ";
-        machine.helpstrm() << "[list] \"progname\" argObj MAP => ";
+        machine.helpstrm() << "[list] <<prog>> argObj opt MAP => ";
+        machine.helpstrm() << "[list] \"progname\" argObj opt MAP => ";
         machine.helpstrm() << "srclist: List of items";
         machine.helpstrm() << "prog: Program to execute. The program will have a list item at L1 and argObj at L0";
+        machine.helpstrm() << "opt: Optional options.";
+        machine.helpstrm() << "     --query: Prompt the user to continue";
         machine.helpstrm() << "MAP1 itself does not push anything on the stack, however the executed program may.";
         return;
     }
 
     stack_required(machine, "MAP1", 3);
-    throw_required(machine, "MAP1", 2, OBJECT_LIST);
 
     ListPtr result = MakeList();
     ListPtr lp;
     ObjectPtr optr;
     ProgramPtr pptr;
     ObjectPtr arg;
+    std::vector<std::string> args;
+    GetArgs(machine, args);
+    bool query(false);
+    for (auto& arg : args)
+    {
+        if (arg == "--query")
+            query = true;
+    }
 
+    throw_required(machine, "MAP1", 2, OBJECT_LIST);
     machine.pop(arg);
 
     machine.pop(optr);
@@ -299,6 +309,7 @@ void MAP1(Machine& machine)
 
     machine.pop(lp);
 
+    std::string input;
     for (ObjectPtr p : lp->items)
     {
         if (bInterrupt)
@@ -306,6 +317,13 @@ void MAP1(Machine& machine)
         machine.push(p);
         machine.push(arg);
         EVAL(machine, pptr);
+        if (query)
+        {
+            std::cout << "Continue (y/n)" << std::flush;
+            std::getline(std::cin, input);
+            if (input[0] == 'n')
+                return;
+        }
     }
 }
 
