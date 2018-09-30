@@ -109,18 +109,7 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
     switch (optr->type)
     {
     case OBJECT_STRING:
-        {
-            std::string str;
-            String *sp = (String *)optr.get();
-            str.reserve(sp->value.size());
-            for(char c : sp->value)
-            {
-                if (c == '\"')
-                    str.push_back('\\');
-                str.push_back(c);
-            }
-            return str;
-        }
+        return ((String *)optr.get())->value;
     case OBJECT_INTEGER:
         return std::to_string(((Integer *)optr.get())->value);
     case OBJECT_COMMAND:

@@ -96,7 +96,7 @@ FROMLIST
 "rpstmp.txt" FSAVE
 "vim rpstmp.txt" SYSTEM
 "rpstmp.txt" FRESTORE
-#"rm rpstmp.txt" SYSTEM
+"rm rpstmp.txt" SYSTEM
 >> vedit STO
 
 ############################################
