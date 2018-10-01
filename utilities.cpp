@@ -322,6 +322,7 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
                 }
             }
             strm << " ENDWHILE";
+            return strm.str();
         }
         break;
     case OBJECT_TOKEN:

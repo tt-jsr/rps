@@ -21,7 +21,7 @@ void DROP(Machine& machine)
     }
 
     stack_required(machine, "DROP", 1);
-    machine.stack_.pop_back();
+    machine.pop();
 }
 
 void DROPN(Machine& machine)
@@ -39,7 +39,7 @@ void DROPN(Machine& machine)
     machine.pop(n);
     stack_required(machine, "DROPN", n);
     while (n--)
-        machine.stack_.pop_back();
+        machine.pop();
 }
 
 void SWAP(Machine& machine)
