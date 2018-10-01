@@ -59,7 +59,7 @@ ObjectPtr Clone(ObjectPtr optr)
     case OBJECT_STRING:
         {
             StringPtr sp = MakeString();
-            sp->value = ((String *)optr.get())->value;
+            sp->set(((String *)optr.get())->get());
             return sp;
         }
         break;
@@ -109,7 +109,7 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
     switch (optr->type)
     {
     case OBJECT_STRING:
-        return ((String *)optr.get())->value;
+        return ((String *)optr.get())->get();
     case OBJECT_INTEGER:
         return std::to_string(((Integer *)optr.get())->value);
     case OBJECT_COMMAND:
@@ -380,7 +380,7 @@ bool ToBool(Machine&, ObjectPtr optr)
     switch(optr->type)
     {
     case OBJECT_STRING:
-        return !((String *)optr.get())->value.empty();
+        return !((String *)optr.get())->get().empty();
     case OBJECT_INTEGER:
         return ((Integer *)optr.get())->value != 0;
     case OBJECT_LIST:
@@ -405,7 +405,7 @@ int64_t ToInt(Machine& machine, ObjectPtr optr)
     case OBJECT_STRING:
         {
             String *p =  (String *)optr.get();
-            return std::stoll(p->value);
+            return std::stoll(p->get());
         }
     case OBJECT_INTEGER:
         return ((Integer *)optr.get())->value;
@@ -491,9 +491,9 @@ void GetArgs(Machine& machine, std::vector<std::string>& args)
         if (optr->type != OBJECT_STRING)
             return;
         String *sp = (String *)optr.get();
-        if ((strncmp(sp->value.c_str(), "--", 2) == 0))
+        if ((strncmp(sp->get().c_str(), "--", 2) == 0))
         {
-            args.push_back(sp->value);
+            args.push_back(sp->get());
             machine.pop(optr);
         }
         else

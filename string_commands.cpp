@@ -430,7 +430,7 @@ void SPLIT(Machine& machine)
         if (delims.find_first_of(*it) != std::string::npos)
         {
             StringPtr sp = MakeString();
-            sp->value = s;
+            sp->set(s);
             result->items.push_back(sp);
             s = "";
             ++nmatch;
@@ -438,7 +438,7 @@ void SPLIT(Machine& machine)
             {
                 StringPtr sp = MakeString();
                 ++it;
-                sp->value = &*it;
+                sp->set(&*it);
                 result->items.push_back(sp);
                 break;
             }
@@ -457,7 +457,7 @@ void SPLIT(Machine& machine)
     if (s.size())
     {
         StringPtr sp = MakeString();
-        sp->value = s;
+        sp->set(s);
         result->items.push_back(sp);
     }
     ObjectPtr optr = result;

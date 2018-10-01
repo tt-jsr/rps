@@ -26,8 +26,10 @@ class String : public Object
 {
 public:
     String(const std::string&s) : Object(OBJECT_STRING, TOKEN_STRING), value(s) {}
+    void set(const std::string&);
+    const std::string& get() const { return value;}
+private:
     std::string value;
-    bool quoted;
 };
 
 typedef std::shared_ptr<String> StringPtr;

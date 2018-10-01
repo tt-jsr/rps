@@ -35,7 +35,7 @@ void APPLY(Machine& machine)
     machine.pop(optr);
     if (optr->type == OBJECT_STRING)
     {
-        std::string name = ((String *)optr.get())->value;
+        std::string name = ((String *)optr.get())->get();
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
@@ -83,7 +83,7 @@ void APPLY1(Machine& machine)
     machine.pop(optr);
     if (optr->type == OBJECT_STRING)
     {
-        std::string name = ((String *)optr.get())->value;
+        std::string name = ((String *)optr.get())->get();
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
@@ -131,7 +131,7 @@ void SELECT(Machine& machine)
     machine.pop(optr);
     if (optr->type == OBJECT_STRING)
     {
-        std::string name = ((String *)optr.get())->value;
+        std::string name = ((String *)optr.get())->get();
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
@@ -180,7 +180,7 @@ void SELECT1(Machine& machine)
     machine.pop(optr);
     if (optr->type == OBJECT_STRING)
     {
-        std::string name = ((String *)optr.get())->value;
+        std::string name = ((String *)optr.get())->get();
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
@@ -237,7 +237,7 @@ void MAP(Machine& machine)
     machine.pop(optr);
     if (optr->type == OBJECT_STRING)
     {
-        std::string name = ((String *)optr.get())->value;
+        std::string name = ((String *)optr.get())->get();
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
@@ -300,7 +300,7 @@ void MAP1(Machine& machine)
     machine.pop(optr);
     if (optr->type == OBJECT_STRING)
     {
-        std::string name = ((String *)optr.get())->value;
+        std::string name = ((String *)optr.get())->get();
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
@@ -352,7 +352,7 @@ void REDUCE(Machine& machine)
     machine.pop(prog);
     if (prog->type == OBJECT_STRING)
     {
-        std::string name = ((String *)prog.get())->value;
+        std::string name = ((String *)prog.get())->get();
         RCL(machine, name, prog);
     }
     if (prog->type != OBJECT_PROGRAM)

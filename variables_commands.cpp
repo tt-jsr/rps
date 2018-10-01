@@ -293,7 +293,7 @@ void VARNAMES(Machine& machine)
     for (; itVars != itEnd; ++itVars)
     {
         StringPtr sp = MakeString();
-        sp->value = modname + "." + itVars->first;
+        sp->set(modname + "." + itVars->first);
         lp->items.push_back(sp);
     }
     machine.push(lp);
@@ -326,7 +326,7 @@ void VARTYPES(Machine& machine)
     for (; itVars != itEnd; ++itVars)
     {
         StringPtr sp = MakeString();
-        sp->value = ToType(machine, itVars->second) + ":" + modname + "." + itVars->first;
+        sp->set(ToType(machine, itVars->second) + ":" + modname + "." + itVars->first);
         lp->items.push_back(sp);
     }
     machine.push(lp);

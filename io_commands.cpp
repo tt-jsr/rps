@@ -96,7 +96,7 @@ void PREAD(Machine& machine)
                if (buf[l-1] == '\n')
                    buf[l-1] = '\0';
                StringPtr sp = MakeString();
-               sp->value = buf;
+               sp->set(buf);
                ret->items.push_back(sp);
            }
        }
@@ -241,7 +241,7 @@ void FREAD(Machine& machine)
                if (buf[l-1] == '\n')
                    buf[l-1] = '\0';
                StringPtr sp = MakeString();
-               sp->value = buf;
+               sp->set(buf);
                ret->items.push_back(sp);
            }
        }

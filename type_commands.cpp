@@ -43,7 +43,7 @@ void TOSTR(Machine& machine)
 
     machine.pop(optr);
     StringPtr sp = MakeString();
-    sp->value = ToStr(machine, optr);
+    sp->set(ToStr(machine, optr));
     optr = sp;
     machine.push(optr);
 }
@@ -62,7 +62,7 @@ void TYPE(Machine& machine)
 
     machine.pop(optr);
     StringPtr sp = MakeString();
-    sp->value = ToType(machine, optr);
+    sp->set(ToType(machine, optr));
     optr = sp;
     machine.push(optr);
 }

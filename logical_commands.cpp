@@ -69,28 +69,28 @@ void LogicalString(Machine& machine, ObjectPtr olhs, ObjectPtr orhs, Operator op
     switch (oper)
     {
     case OP_EQ:
-        machine.push(lhs->value == rhs->value ? 1 : 0);
+        machine.push(lhs->get() == rhs->get() ? 1 : 0);
         break;
     case OP_NEQ:
-        machine.push(lhs->value != rhs->value ? 1 : 0);
+        machine.push(lhs->get() != rhs->get() ? 1 : 0);
         break;
     case OP_LT:
-        machine.push(lhs->value < rhs->value ? 1 : 0);
+        machine.push(lhs->get() < rhs->get() ? 1 : 0);
         break;
     case OP_LTEQ:
-        machine.push(lhs->value <= rhs->value ? 1 : 0);
+        machine.push(lhs->get() <= rhs->get() ? 1 : 0);
         break;
     case OP_GT:
-        machine.push(lhs->value > rhs->value ? 1 : 0);
+        machine.push(lhs->get() > rhs->get() ? 1 : 0);
         break;
     case OP_GTEQ:
-        machine.push(lhs->value >= rhs->value ? 1 : 0);
+        machine.push(lhs->get() >= rhs->get() ? 1 : 0);
         break;
     case OP_AND:
-        machine.push(!lhs->value.empty() && !rhs->value.empty() ? 1 : 0);
+        machine.push(!lhs->get().empty() && !rhs->get().empty() ? 1 : 0);
         break;
     case OP_OR:
-        machine.push(!lhs->value.empty() || !rhs->value.empty() ? 1 : 0);
+        machine.push(!lhs->get().empty() || !rhs->get().empty() ? 1 : 0);
         break;
     default:
         assert(false);

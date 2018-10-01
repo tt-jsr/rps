@@ -297,7 +297,6 @@ again:
         else
         {
             String *sp = new String(token.value);
-            sp->quoted = token.quoted;
             optr.reset(sp);
         }
     }

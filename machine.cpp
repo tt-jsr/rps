@@ -152,7 +152,7 @@ void Machine::pop(std::string& v)
     ObjectPtr optr;
     pop(optr);
     String *sp = (String *)optr.get();
-    v = sp->value;
+    v = sp->get();
 }
 
 void Machine::push(const std::string& v)

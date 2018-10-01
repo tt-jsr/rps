@@ -283,7 +283,7 @@ void SIZE(Machine& machine)
     {
         ObjectPtr optr;
         machine.pop(optr);
-        int64_t sz = ((String *)optr.get())->value.size();
+        int64_t sz = ((String *)optr.get())->get().size();
         machine.push(sz);
         return;
     }
@@ -642,7 +642,7 @@ void ZIP(Machine& machine)
     machine.pop(optr);
     if (optr->type == OBJECT_STRING)
     {
-        std::string name = ((String *)optr.get())->value;
+        std::string name = ((String *)optr.get())->get();
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
@@ -714,7 +714,7 @@ void UNZIP(Machine& machine)
     machine.pop(optr);
     if (optr->type == OBJECT_STRING)
     {
-        std::string name = ((String *)optr.get())->value;
+        std::string name = ((String *)optr.get())->get();
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)

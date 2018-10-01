@@ -17,7 +17,7 @@ namespace std
             }
             if (obj->type == OBJECT_STRING)
             {
-                std::string s = ((const String *)obj)->value;
+                std::string s = ((const String *)obj)->get();
                 std::hash<std::string> h;
                 return h(s);
             }
@@ -36,7 +36,7 @@ namespace std
             }
             if (obj1->type == OBJECT_STRING && obj2->type == OBJECT_STRING)
             {
-                return ((String *)obj1)->value < ((String *)obj2)->value;
+                return ((String *)obj1)->get() < ((String *)obj2)->get();
             }
             return obj1 < obj2;
         }
@@ -53,7 +53,7 @@ namespace std
             }
             if (obj1->type == OBJECT_STRING && obj2->type == OBJECT_STRING)
             {
-                return ((String *)obj1)->value == ((String *)obj2)->value;
+                return ((String *)obj1)->get() == ((String *)obj2)->get();
             }
             return obj1 == obj2;
         }

@@ -26,7 +26,7 @@ void NAMESPACES(Machine& machine)
     for (auto& pr : machine.modules_)
     {
         StringPtr sp = MakeString();
-        sp->value = pr.first;
+        sp->set(pr.first);
         lp->items.push_back(sp);
     }
     machine.push(lp);
