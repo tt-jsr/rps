@@ -40,15 +40,15 @@ help STO
 # "logname" start CALL => [list]
 <<
 DUP
-IF .gz EQ
+IF .gz STREND
 THEN
-    "zgrep -b \"S T A R T\" %0" FORMAT PREAD
+    DUP PRINT
+    "zgrep -b \"S T A R T\" %0" FORMAT SYSTEM
 ELSE
-    "grep -b \"S T A R T\" %0" FORMAT PREAD
+    DUP PRINT
+    "grep -b \"S T A R T\" %0" FORMAT SYSTEM
 ENDIF
-SWAP DROP
-<< ":" "--1" SPLIT >>
-APPLY
+DROP
 >> start STO
 
 ###################################################
