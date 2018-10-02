@@ -13,6 +13,7 @@ import git
 std.vedit RCL VEDIT REGISTER
 
 logfile.start RCL START REGISTER
+logfile.build RCL BUILD REGISTER
 logfile.logstart RCL LOGSTART REGISTER
 logfile.dd RCL DD REGISTER
 logfile.lslog RCL LSLOG REGISTER

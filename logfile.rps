@@ -3,13 +3,16 @@
 <<
 "" PRINT
 "   start: Collect all \"S T A R T\" log lines" PRINT
-"          filename start CALL => [list]" PRINT
+"          filename start CALL =>" PRINT
 "" PRINT
-"  lslog:  List logfiles in reverse timestamp order" PRINT
+"   build: Collect all \"build \" log lines" PRINT
+"          filename build CALL =>" PRINT
+"" PRINT
+"  lslog:  List logfiles in timestamp order" PRINT
 "          lslog => [list]" PRINT
 "" PRINT
 "logstart: Get a tuple of file name and timestamp" PRINT
-"          filename logstart CALL => [list]" PRINT
+"          filename logstart CALL =>" PRINT
 "" PRINT
 "      dd: Pushes a command line for grabing a section of a logfile" PRINT
 "          filename startbyte endbyte dd CALL => \"command\"" PRINT
@@ -50,6 +53,22 @@ ELSE
 ENDIF
 DROP
 >> start STO
+
+###################################################
+# Retruns a list of all "build " lines
+# "logname" build CALL => [list]
+<<
+DUP
+IF .gz STREND
+THEN
+    DUP PRINT
+    "zgrep -b \"build \" %0" FORMAT SYSTEM
+ELSE
+    DUP PRINT
+    "grep -b \"build \" %0" FORMAT SYSTEM
+ENDIF
+DROP
+>> build STO
 
 ###################################################
 # Retuns a "dd" command for reading a section of a logfile
