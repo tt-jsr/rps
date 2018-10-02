@@ -143,10 +143,9 @@ ELSE
     "head -1 %0" FORMAT PREAD
     SWAP DROP
 ENDIF
-0 GET 0 24 SUBSTR
-fname RCLL
-SWAP
-2 TOLIST
+0 GET 0 24 SUBSTR 
+"%fname : %0" FORMAT PRINT
+DROP
 >> logstart STO
 
 ############################################
