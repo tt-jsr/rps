@@ -5,6 +5,7 @@
 #include <sstream>
 #include <cassert>
 #include <memory>
+#include <algorithm>
 #include "token.h"
 #include "object.h"
 #include "module.h"
@@ -307,6 +308,16 @@ void AddCommand(Machine& machine, const std::string& name, ProgramPtr pptr)
     machine.commands.emplace(name, cp);
 
     Category(machine, "RegisteredPrograms", name);
+}
+
+void RemoveCommand(Machine& machine, const std::string& name)
+{
+    machine.commands.erase(name);
+
+    std::vector<std::string>& vec = machine.categories["RegisteredPrograms"];
+    auto it = std::find(vec.begin(), vec.end(), name);
+    if (it != vec.end())
+        vec.erase(it);
 }
 
 void Category(Machine& machine, const std::string& cat, const std::string& name)

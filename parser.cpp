@@ -109,13 +109,6 @@ void GetToken(Source& src, Token& token)
         token.token = TOKEN_EOF;
         return;
     }
-    if (*src.it == '*')
-    {
-        token.value.push_back(*src.it);
-        token.token = TOKEN_STRING;
-        ++src.it;
-        return;
-    }
     if (*src.it == '%')
     {
         token.value.push_back(*src.it);
@@ -736,6 +729,15 @@ void Parser::Parse(Machine& machine, Source& src)
                     VIEW(machine, 4);
                 }
             }
+            else if (optr->type == OBJECT_STRING)
+            {
+                String *sp = (String *)optr.get();
+                if (sp->get()[0] == '&')
+                {
+                    sp->set(sp->get().substr(1));
+                }
+                machine.push(optr);           
+            }
             else
             {
                 machine.push(optr);           
@@ -807,6 +809,8 @@ Parser::Parser(Machine& machine)
     Category(machine, "Variable", "VARTYPES");
     AddCommand(machine, "REGISTER", &REGISTER);
     Category(machine, "Variable", "REGISTER");
+    AddCommand(machine, "UNREGISTER", &UNREGISTER);
+    Category(machine, "Variable", "UNREGISTER");
 
     // Math commands
     AddCommand(machine, "ADD", &ADD);

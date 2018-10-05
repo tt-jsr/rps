@@ -355,3 +355,21 @@ void REGISTER(Machine& machine)
     AddCommand(machine, name, pptr);
 }
 
+void UNREGISTER(Machine& machine)
+{
+    if (machine.help)
+    {
+        machine.helpstrm() << "UNREGISTER: Unregister a user defined program";
+        machine.helpstrm() << "\"name\" UNREGISTER => ";
+        machine.helpstrm() << "Unregisters a previous registered program";
+        return;
+    }
+    stack_required(machine, "UNREGISTER", 1);
+    throw_required(machine, "UNREGISTER", 0, OBJECT_STRING);
+    std::string name;
+
+    machine.pop(name);
+
+    RemoveCommand(machine, name);
+}
+

@@ -10,27 +10,26 @@ import git
 "... to be completed" PRINT
 >> help STO
 
-std.vedit RCL VEDIT REGISTER
-
-logfile.start RCL START REGISTER
-logfile.build RCL BUILD REGISTER
-logfile.logstart RCL LOGSTART REGISTER
-logfile.dd RCL DD REGISTER
-logfile.lslog RCL LSLOG REGISTER
+std.vedit RCL &VEDIT REGISTER
+logfile.start RCL &START REGISTER
+logfile.build RCL &BUILD REGISTER
+logfile.logstart RCL &LOGSTART REGISTER
+logfile.dd RCL &DD REGISTER
+logfile.lslog RCL &LSLOG REGISTER
 
 # format a protobuf
 # "pb" PFMT =>
-<<"pfmt|less" PWRITE>> PFMT REGISTER
+<<"pfmt|less" PWRITE>> &PFMT REGISTER
 
 # Format an ER
 # "er" ERFORMAT =>
-<<erformat PWRITE>> ERFORMAT REGISTER
+<<erformat PWRITE>> &ERFORMAT REGISTER
 
 # Print all items of a list
 # [list] LPRINT =>
-<< <<PRINT>> MAP>> LPRINT REGISTER
+<< <<PRINT>> MAP>> &LPRINT REGISTER
 
 # Get all execution reports.
 # logfile ERS => [list]
-<< "grep -n \"ExecutionReport.*order_id=\" %0" FORMAT SWAP DROP PREAD >> ERS REGISTER
+<< "grep -n \"ExecutionReport.*order_id=\" %0" FORMAT SWAP DROP PREAD >> &ERS REGISTER
 

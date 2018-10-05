@@ -58,4 +58,5 @@ typedef std::shared_ptr<Program> ProgramPtr;
 void Category(Machine& machine, const std::string& cat, const std::string& name);
 void AddCommand(Machine& machine, const std::string& name, void (*funcptr)(Machine&));
 void AddCommand(Machine& machine, const std::string&, ProgramPtr);
+void RemoveCommand(Machine& machine, const std::string&);
 void ShowHelp(Machine& machine, CommandPtr cmd);

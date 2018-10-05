@@ -42,6 +42,7 @@ void VARNAMES(Machine& machine);
 void VARTYPES(Machine& machine);
 void VARS(Machine& machine);
 void REGISTER(Machine&);
+void UNREGISTER(Machine&);
 
 /*
  * Control commands
