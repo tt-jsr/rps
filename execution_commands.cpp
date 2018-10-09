@@ -158,7 +158,16 @@ void EVAL(Machine& machine, ObjectPtr optr)
     switch(optr->type)
     {
     case OBJECT_STRING:
-        machine.push(optr);
+        {
+            String *sp = (String *)optr.get();
+            auto it = machine.commands.find(sp->get());
+            if (it != machine.commands.end())
+            {
+                (*(it->second)->funcptr)(machine);
+            }
+            else
+                machine.push(optr);
+        }
         break;
     case OBJECT_INTEGER:
         machine.push(optr);
