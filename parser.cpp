@@ -801,7 +801,20 @@ void Parser::ShellParse(Machine& machine, const std::string& commandLine)
     std::string word;
     for (auto it = commandLine.begin(); it != commandLine.end(); ++it)
     {
-        if (*it == '|')
+        if (*it == ' ' || *it == '\t')
+        {
+            if (!word.empty())
+            {
+                PushWord(machine, word.c_str());
+                word.clear();
+            }
+        }
+        else if (*it == '\"')
+        {
+            while (it != commandLine.end() && *it != '\"')
+                word.push_back(*it);
+        }
+        else if (*it == '|')
         {
             if (!word.empty())
             {

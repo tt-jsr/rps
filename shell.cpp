@@ -213,6 +213,7 @@ namespace rps
                     const char *argv[cmd.args.size()+1];
                     for (size_t n = 0; n < cmd.args.size(); ++n)
                     {
+                        //std::cout << "=== cmd[" << n << "]: " << cmd.args[n] << std::endl;
                         argv[n] = cmd.args[n].c_str();
                     }
                     argv[cmd.args.size()] = '\0';
@@ -225,7 +226,6 @@ namespace rps
 #if defined(FD_CHECK)
                     fd_check();
 #endif
-                    std::cout << "executing " << cmdpath << std::endl;
                     execvp(cmdpath, (char *const *)argv);
                     std::cout << "Cannot execute " << cmdpath << std::endl;
                     _exit(EXIT_FAILURE);
