@@ -113,6 +113,20 @@ void GetToken(Source& src, Token& token)
         token.token = TOKEN_EOF;
         return;
     }
+    if (src.line == "$\n")
+    {
+        token.value.push_back(*src.it);
+        token.token = TOKEN_SHELL;
+        ++src.it;
+        return;
+    }
+    if (src.line[0] == '$')
+    {
+        token.value = src.line.substr(1);
+        token.token = TOKEN_SHELL_COMMAND;
+        src.it = src.line.end();
+        return;
+    }
     if (*src.it == '%')
     {
         token.value.push_back(*src.it);
@@ -233,6 +247,19 @@ again:
         return false;
     //std::cout << "===GetObject: " << token.token << ":\"" << token.value << "\"" << std::endl;
 
+    if (token.token == TOKEN_SHELL)
+    {
+        src.it = src.line.end();
+        ShellParse(machine, src);
+        optr.reset();
+        return true;
+    }
+    if (token.token == TOKEN_SHELL_COMMAND)
+    {
+        ShellParse(machine, token.value);
+        optr.reset();
+        return true;
+    }
     auto it = machine.commands.find(token.value);
     if (it != machine.commands.end())
     {
@@ -639,11 +666,13 @@ void Parser::Parse(Machine& machine, Source& src)
         ObjectPtr optr;
         while(GetObject(machine, src, optr))
         {
+            if (!optr)
+                continue;
             if (optr->token == TOKEN_EXIT)
             {
                 return;
             }
-            else if (optr->token == TOKEN_START_LIST)
+            if (optr->token == TOKEN_START_LIST)
             {
                 src.prompt = "[] ";
                 ListPtr lptr;
@@ -753,74 +782,87 @@ void Parser::Parse(Machine& machine, Source& src)
 
 void Parser::ShellParse(Machine& machine, Source& src)
 {
-    std::string word;
+    machine.shellExit = false;
+    std::string savePrompt = src.prompt;
+    src.prompt = "$ ";
     while (!src.istrm.eof())
     {
-        if (src.it == src.line.end())
-            src.Read();
-        if (*src.it == '|')
+        src.Read();
+        src.it = src.line.end();
+        ShellParse(machine, src.line);
+        if (machine.shellExit)
+            break;;
+    }
+    src.prompt = savePrompt;
+}
+
+void Parser::ShellParse(Machine& machine, const std::string& commandLine)
+{
+    std::string word;
+    for (auto it = commandLine.begin(); it != commandLine.end(); ++it)
+    {
+        if (*it == '|')
         {
             if (!word.empty())
             {
-                PushWord(word.c_str());
+                PushWord(machine, word.c_str());
                 word.clear();
             }
-            PushBar();
+            PushBar(machine);
         }
-        else if (*src.it == '>')
+        else if (*it == '>')
         {
             if (!word.empty())
             {
-                PushWord(word.c_str());
+                PushWord(machine, word.c_str());
                 word.clear();
             }
-            if (*(src.it+1) == '>')
+            if (*(it+1) == '>')
             {
-                ++src.it;
-                PushGTGT();
+                ++it;
+                PushGTGT(machine);
             }
             else
-                PushGT();
+                PushGT(machine);
         }
-        else if (*src.it == '<')
+        else if (*it == '<')
         {
             if (!word.empty())
             {
-                PushWord(word.c_str());
+                PushWord(machine, word.c_str());
                 word.clear();
             }
-            PushLT();
+            PushLT(machine);
         }
-        else if (*src.it == ';')
+        else if (*it == ';')
         {
             if (!word.empty())
             {
-                PushWord(word.c_str());
+                PushWord(machine, word.c_str());
                 word.clear();
             }
-            PushSemi();
+            PushSemi(machine);
         }
-        else if (*src.it == '&')
+        else if (*it == '&')
         {
             if (!word.empty())
             {
-                PushWord(word.c_str());
+                PushWord(machine, word.c_str());
                 word.clear();
             }
-            PushAmp();
+            PushAmp(machine);
         }
-        else if (*src.it == '\n')
+        else if (*it == '\n')
         {
             if (!word.empty())
             {
-                PushWord(word.c_str());
+                PushWord(machine, word.c_str());
                 word.clear();
             }
-            PushNL();
+            PushNL(machine);
         }
         else
-            word.push_back(*src.it);
-        ++src.it;
+            word.push_back(*it);
     }
 }
 

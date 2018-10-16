@@ -44,12 +44,12 @@ int main(int argc, char *argv[])
     src.prompt = "> ";
 
     using_history();
-    //rps::Import(machine, parser, "init");
+    rps::Import(machine, parser, "init");
     while (true)
     {
         try
         {
-            parser.ShellParse(machine, src);
+            parser.Parse(machine, src);
             return 0;
         }
         catch (std::runtime_error& e)

@@ -11,6 +11,10 @@
 #include <vector>
 #include <cassert>
 #include <cstring>
+#include <memory>
+#include "object.h"
+#include "module.h"
+#include "machine.h"
 
 #define PERM_FILE		(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
@@ -122,7 +126,7 @@ namespace rps
 
     CommandLine commandLine;
 
-    void Invoke(CommandLine& cl, pid_t& waitPid)
+    void Invoke(Machine& machine, CommandLine& cl, pid_t& waitPid)
     {
         int idx = commandLine.commands.size()-1; 
 
@@ -130,101 +134,117 @@ namespace rps
         while(idx >= 0)
         {
             CommandItem& cmd = commandLine.commands[idx];
-            pid_t pid = fork();
-            switch(pid)
+            if (cmd.args[0] == "cd")
             {
-            case -1:
-                throw std::runtime_error("fork() failed");
-                break;
-            case 0: //child
-                if (IsPipe(cmd.redir))
-                {
-                    if ((cmd.redir & PIPE_IN) == PIPE_IN)
-                    {
-                        assert(cmd.fd_in != STDIN_FILENO);
-                        dup2(cmd.fd_in, STDIN_FILENO);
-                    }
-                    if ((cmd.redir & PIPE_OUT) == PIPE_OUT)
-                    {
-                        assert(cmd.fd_out != STDOUT_FILENO);
-                        dup2(cmd.fd_out, STDOUT_FILENO);
-                    }
-                    for (size_t n = 0; n < commandLine.commands.size(); ++n)
-                    {
-                        if (commandLine.commands[n].fd_in != STDIN_FILENO)
-                            close(commandLine.commands[n].fd_in);
-                        if (commandLine.commands[n].fd_out != STDOUT_FILENO)
-                            close(commandLine.commands[n].fd_out);
-                    }
-                }
-                if (IsFileOut(cmd.redir))
-                {
-                    int flags = O_WRONLY | O_CREAT;
-                    if (cmd.append)
-                        flags |= O_APPEND;
-                    else
-                        flags |= O_TRUNC;
-                    cmd.fd_out = open(cmd.file_out.c_str(), flags, PERM_FILE);
-                    if (cmd.fd_out < 0)
-                    {
-                        std::cout << "Unable to open " << cmd.file_out << " for writing, err: " << strerror(errno) << std::endl;
-                        _exit(EXIT_FAILURE);
-                    }
-                    if (dup2(cmd.fd_out, STDOUT_FILENO) < 0)
-                    {
-                        std::cout << "dup2 failed" << std::endl;
-                        _exit(EXIT_FAILURE);
-                    }
-                    close(cmd.fd_out);
-                }
-                if (IsFileIn(cmd.redir))
-                {
-                    cmd.fd_in = open(cmd.file_in.c_str(), O_RDONLY);
-                    if (cmd.fd_in < 0)
-                    {
-                        std::cout << "Unable to open \"" << cmd.file_in << "\" for reading, err: " << strerror(errno) << std::endl;
-                        _exit(EXIT_FAILURE);
-                    }
-                    if (dup2(cmd.fd_in, STDIN_FILENO) < 0)
-                    {
-                        std::cout << "dup2 failed" << std::endl;
-                        _exit(EXIT_FAILURE);
-                    }
-                    close(cmd.fd_in);
-                }
-                const char *argv[cmd.args.size()+1];
-                for (size_t n = 0; n < cmd.args.size(); ++n)
-                {
-                    argv[n] = cmd.args[n].c_str();
-                }
-                argv[cmd.args.size()] = '\0';
-                const char *cmdname = strrchr(argv[0], '/');
-                if (cmdname == nullptr)
-                    cmdname = argv[0];
-                else
-                    cmdname++;
-                const char *cmdpath = argv[0];
-#if defined(FD_CHECK)
-                fd_check();
-#endif
-                execvp(cmdpath, (char *const *)argv);
-                std::cout << "Cannot execute " << cmdpath << std::endl;
-                _exit(EXIT_FAILURE);
-                break;
+                if (cmd.args.size() == 1)
+                    return;
+
+               if (chdir(cmd.args[1].c_str()) != 0)
+                   std::cout << "cd: " << cmd.args[1] << ": " << strerror(errno) << std::endl; 
             }
-            //parent
-            if (waitPid == -1)
-                waitPid = pid;
-            if (cmd.fd_in != STDIN_FILENO)
-                close(cmd.fd_in);
-            if (cmd.fd_out != STDOUT_FILENO)
-                close(cmd.fd_out);
+            else if (cmd.args[0] == "exit")
+            {
+                machine.shellExit = true;
+            }
+            else
+            {
+                pid_t pid = fork();
+                switch(pid)
+                {
+                case -1:
+                    throw std::runtime_error("fork() failed");
+                    break;
+                case 0: //child
+                    if (IsPipe(cmd.redir))
+                    {
+                        if ((cmd.redir & PIPE_IN) == PIPE_IN)
+                        {
+                            assert(cmd.fd_in != STDIN_FILENO);
+                            dup2(cmd.fd_in, STDIN_FILENO);
+                        }
+                        if ((cmd.redir & PIPE_OUT) == PIPE_OUT)
+                        {
+                            assert(cmd.fd_out != STDOUT_FILENO);
+                            dup2(cmd.fd_out, STDOUT_FILENO);
+                        }
+                        for (size_t n = 0; n < commandLine.commands.size(); ++n)
+                        {
+                            if (commandLine.commands[n].fd_in != STDIN_FILENO)
+                                close(commandLine.commands[n].fd_in);
+                            if (commandLine.commands[n].fd_out != STDOUT_FILENO)
+                                close(commandLine.commands[n].fd_out);
+                        }
+                    }
+                    if (IsFileOut(cmd.redir))
+                    {
+                        int flags = O_WRONLY | O_CREAT;
+                        if (cmd.append)
+                            flags |= O_APPEND;
+                        else
+                            flags |= O_TRUNC;
+                        cmd.fd_out = open(cmd.file_out.c_str(), flags, PERM_FILE);
+                        if (cmd.fd_out < 0)
+                        {
+                            std::cout << "Unable to open " << cmd.file_out << " for writing, err: " << strerror(errno) << std::endl;
+                            _exit(EXIT_FAILURE);
+                        }
+                        if (dup2(cmd.fd_out, STDOUT_FILENO) < 0)
+                        {
+                            std::cout << "dup2 failed" << std::endl;
+                            _exit(EXIT_FAILURE);
+                        }
+                        close(cmd.fd_out);
+                    }
+                    if (IsFileIn(cmd.redir))
+                    {
+                        cmd.fd_in = open(cmd.file_in.c_str(), O_RDONLY);
+                        if (cmd.fd_in < 0)
+                        {
+                            std::cout << "Unable to open \"" << cmd.file_in << "\" for reading, err: " << strerror(errno) << std::endl;
+                            _exit(EXIT_FAILURE);
+                        }
+                        if (dup2(cmd.fd_in, STDIN_FILENO) < 0)
+                        {
+                            std::cout << "dup2 failed" << std::endl;
+                            _exit(EXIT_FAILURE);
+                        }
+                        close(cmd.fd_in);
+                    }
+                    const char *argv[cmd.args.size()+1];
+                    for (size_t n = 0; n < cmd.args.size(); ++n)
+                    {
+                        argv[n] = cmd.args[n].c_str();
+                    }
+                    argv[cmd.args.size()] = '\0';
+                    const char *cmdname = strrchr(argv[0], '/');
+                    if (cmdname == nullptr)
+                        cmdname = argv[0];
+                    else
+                        cmdname++;
+                    const char *cmdpath = argv[0];
+#if defined(FD_CHECK)
+                    fd_check();
+#endif
+                    std::cout << "executing " << cmdpath << std::endl;
+                    execvp(cmdpath, (char *const *)argv);
+                    std::cout << "Cannot execute " << cmdpath << std::endl;
+                    _exit(EXIT_FAILURE);
+                    break;
+                }
+                //parent
+                if (waitPid == -1)
+                    waitPid = pid;
+                if (cmd.fd_in != STDIN_FILENO)
+                    close(cmd.fd_in);
+                if (cmd.fd_out != STDOUT_FILENO)
+                    close(cmd.fd_out);
+            }
             --idx;
         }
     }
 
     //TODO: Need support for stderror
-    void PushWord(const char *w)
+    void PushWord(Machine& machine, const char *w)
     {
         CommandItem& cmd = commandLine.commands.back();
         if (IsFileIn(cmd.redir))
@@ -245,7 +265,7 @@ namespace rps
         }
     }
 
-    void PushBar()
+    void PushBar(Machine& machine)
     {
         CommandItem& cmd = commandLine.commands.back();
         if (cmd.fd_out < 0)
@@ -260,7 +280,7 @@ namespace rps
         cmd2.redir |= PIPE_IN;
     }
 
-    void PushLT()
+    void PushLT(Machine& machine)
     {
         CommandItem& cmd = commandLine.commands.back();
         if (cmd.fd_in < 0)
@@ -269,7 +289,7 @@ namespace rps
         cmd.fd_in = -1;
     }
 
-    void PushGT()
+    void PushGT(Machine& machine)
     {
         CommandItem& cmd = commandLine.commands.back();
         if (cmd.fd_out < 0)
@@ -278,7 +298,7 @@ namespace rps
         cmd.fd_out = -1;
     }
 
-    void PushGTGT()
+    void PushGTGT(Machine& machine)
     {
         CommandItem& cmd = commandLine.commands.back();
         if (cmd.fd_out < 0)
@@ -288,7 +308,7 @@ namespace rps
         cmd.append = true;
     }
 
-    void PushAmp()
+    void PushAmp(Machine& machine)
     {
         CommandItem& cmd = commandLine.commands.back();
         cmd.background = true;
@@ -296,19 +316,19 @@ namespace rps
         commandLine.reset();
     }
 
-    void PushSemi()
+    void PushSemi(Machine& machine)
     {
         pid_t w;
-        Invoke(commandLine, w);
+        Invoke(machine, commandLine, w);
         commandLine.reset();
     }
 
-    void PushNL()
+    void PushNL(Machine& machine)
     {
         pid_t w;
         if (commandLine.commands[0].args.size() == 0)
             return;
-        Invoke(commandLine, w);
+        Invoke(machine, commandLine, w);
         wait_and_display(w);
         commandLine.reset();
     }

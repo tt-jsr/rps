@@ -30,6 +30,7 @@ public:
     void ParseWhile(Machine&, WhilePtr& whileptr, Source& src);
 
     void ShellParse(Machine&, Source&);
+    void ShellParse(Machine&, const std::string&);
 
     ProgramPtr enclosingProgram;
 };

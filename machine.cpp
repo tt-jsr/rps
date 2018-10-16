@@ -22,6 +22,7 @@ Machine::Machine()
 : viewwidth(120)
 , debug(false) 
 , help(false)
+, shellExit(false)
 {
 }
 

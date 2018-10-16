@@ -44,6 +44,7 @@ public:
     size_t viewwidth;
     bool debug;
     bool help;
+    bool shellExit;
     std::unordered_map<std::string, CommandPtr> commands;
     std::unordered_map<std::string, std::vector<std::string>> categories;
     std::stringstream hstrm;

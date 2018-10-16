@@ -3,14 +3,16 @@
 
 namespace rps
 {
-    void PushWord(const char *w);
-    void PushBar();
-    void PushLT();
-    void PushGT();
-    void PushGTGT();
-    void PushAmp();
-    void PushSemi();
-    void PushNL();
+    class Machine;
+
+    void PushWord(Machine&, const char *w);
+    void PushBar(Machine&);
+    void PushLT(Machine&);
+    void PushGT(Machine&);
+    void PushGTGT(Machine&);
+    void PushAmp(Machine&);
+    void PushSemi(Machine&);
+    void PushNL(Machine&);
 }
 
 #endif

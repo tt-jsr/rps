@@ -30,6 +30,8 @@ enum TokenType
     , TOKEN_EXIT
     , TOKEN_EOF
     , TOKEN_NONE
+    , TOKEN_SHELL
+    , TOKEN_SHELL_COMMAND
 };
 
 struct Token
