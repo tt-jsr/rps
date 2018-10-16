@@ -11,6 +11,9 @@
 #include "commands.h"
 #include "utilities.h"
 
+namespace rps
+{
+
 void APPLY(Machine& machine)
 {
     if (machine.help)
@@ -373,4 +376,6 @@ void REDUCE(Machine& machine)
     machine.push(obj);
 }
 
+
+} // namespace rps
 

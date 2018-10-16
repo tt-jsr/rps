@@ -3,6 +3,9 @@
 #include <vector>
 #include <sstream>
 
+namespace rps
+{
+
 extern bool bInterrupt;
 
 class Command;
@@ -60,3 +63,6 @@ void AddCommand(Machine& machine, const std::string& name, void (*funcptr)(Machi
 void AddCommand(Machine& machine, const std::string&, ProgramPtr);
 void RemoveCommand(Machine& machine, const std::string&);
 void ShowHelp(Machine& machine, CommandPtr cmd);
+
+} // namespace rps
+

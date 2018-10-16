@@ -10,6 +10,9 @@
 #include "utilities.h"
 #include "commands.h"
 
+namespace rps
+{
+
 void IFT(Machine& machine)
 {
     if (machine.help)
@@ -97,4 +100,6 @@ void TRYCATCH(Machine& machine)
         EVAL(machine, catch_);
     }
 }
+
+} // namespace rps
 

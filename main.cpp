@@ -13,13 +13,13 @@
 void my_handler(int s)
 {
     std::cout << "Interrupt" << std::endl;
-    bInterrupt = true;
+    rps::bInterrupt = true;
 }
 
 int main(int argc, char *argv[])
 {
-    Machine machine;
-    Parser parser(machine);
+    rps::Machine machine;
+    rps::Parser parser(machine);
 
    struct sigaction sigIntHandler;
 
@@ -39,17 +39,17 @@ int main(int argc, char *argv[])
 #endif
     machine.current_module_ = "interactive";
     machine.CreateModule("interactive");
-    Source src(std::cin);
+    rps::Source src(std::cin);
     src.interactive = true;
     src.prompt = "> ";
 
     using_history();
-    Import(machine, parser, "init");
+    //rps::Import(machine, parser, "init");
     while (true)
     {
         try
         {
-            parser.Parse(machine, src);
+            parser.ShellParse(machine, src);
             return 0;
         }
         catch (std::runtime_error& e)

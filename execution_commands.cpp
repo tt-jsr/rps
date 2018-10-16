@@ -12,6 +12,9 @@
 #include "commands.h"
 #include "utilities.h"
 
+namespace rps
+{
+
 void Execute(Machine& machine, std::vector<ObjectPtr>& vec)
 {
     for (ObjectPtr& op : vec)
@@ -248,4 +251,6 @@ void INTERRUPT(Machine& machine)
     }
     bInterrupt = true;
 }
+
+} // namespace rps
 

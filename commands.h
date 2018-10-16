@@ -1,5 +1,8 @@
 #pragma once
 
+namespace rps
+{
+
 class Machine;
 
 /*
@@ -152,4 +155,4 @@ void PWD(Machine&);
 void HELP(Machine&);
 
 
-
+} // namespace rps

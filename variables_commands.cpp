@@ -10,6 +10,9 @@
 #include "utilities.h"
 #include "commands.h"
 
+namespace rps
+{
+
 
 ObjectPtr find_local(Machine& machine, const std::string& name)
 {
@@ -372,4 +375,7 @@ void UNREGISTER(Machine& machine)
 
     RemoveCommand(machine, name);
 }
+
+
+} // namespace rps
 

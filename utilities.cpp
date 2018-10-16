@@ -10,6 +10,9 @@
 #include "machine.h"
 #include "parser.h"
 
+namespace rps
+{
+
 StringPtr MakeString()
 {
     StringPtr sp;
@@ -500,3 +503,6 @@ void GetArgs(Machine& machine, std::vector<std::string>& args)
             return;
     }
 }
+
+} // namespace rps
+

@@ -12,6 +12,9 @@
 #include "commands.h"
 #include "utilities.h"
 
+namespace rps
+{
+
 void FORMAT(Machine& machine)
 {
     if (machine.help)
@@ -488,4 +491,7 @@ void STRCSPN(Machine& machine)
     int64_t pos = strcspn(str.c_str()+startpos, delims.c_str());
     machine.push(pos);
 }
+
+
+} // namespace rps
 

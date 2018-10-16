@@ -13,6 +13,9 @@
 #include "commands.h"
 #include "utilities.h"
 
+namespace rps
+{
+
 bool bInterrupt = false;
 
 Machine::Machine()
@@ -325,4 +328,7 @@ void Category(Machine& machine, const std::string& cat, const std::string& name)
     std::vector<std::string>& vec = machine.categories[cat];
     vec.push_back(name);
 }
+
+} // namespace rps
+
 

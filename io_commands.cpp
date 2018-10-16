@@ -15,6 +15,9 @@
 #include "utilities.h"
 #include "parser.h"
 
+namespace rps
+{
+
 void PRINT(Machine& machine)
 {
     if (machine.help)
@@ -384,3 +387,6 @@ void SYSTEM(Machine& machine)
     machine.pop(cmd);
     system(cmd.c_str());
 }
+
+} // namespace rps
+

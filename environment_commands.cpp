@@ -12,6 +12,9 @@
 #include "commands.h"
 #include "utilities.h"
 
+namespace rps
+{
+
 
 void NAMESPACES(Machine& machine)
 {
@@ -92,4 +95,6 @@ void PWD(Machine& machine)
     free(p);
     machine.push(s);
 }
+
+} // namespace rps
 

@@ -13,6 +13,10 @@
 #include "parser.h"
 #include "commands.h"
 #include "utilities.h"
+#include "shell.h"
+
+namespace rps
+{
 
 void SkipWhitespace(Source& src)
 {
@@ -747,6 +751,79 @@ void Parser::Parse(Machine& machine, Source& src)
     }
 }
 
+void Parser::ShellParse(Machine& machine, Source& src)
+{
+    std::string word;
+    while (!src.istrm.eof())
+    {
+        if (src.it == src.line.end())
+            src.Read();
+        if (*src.it == '|')
+        {
+            if (!word.empty())
+            {
+                PushWord(word.c_str());
+                word.clear();
+            }
+            PushBar();
+        }
+        else if (*src.it == '>')
+        {
+            if (!word.empty())
+            {
+                PushWord(word.c_str());
+                word.clear();
+            }
+            if (*(src.it+1) == '>')
+            {
+                ++src.it;
+                PushGTGT();
+            }
+            else
+                PushGT();
+        }
+        else if (*src.it == '<')
+        {
+            if (!word.empty())
+            {
+                PushWord(word.c_str());
+                word.clear();
+            }
+            PushLT();
+        }
+        else if (*src.it == ';')
+        {
+            if (!word.empty())
+            {
+                PushWord(word.c_str());
+                word.clear();
+            }
+            PushSemi();
+        }
+        else if (*src.it == '&')
+        {
+            if (!word.empty())
+            {
+                PushWord(word.c_str());
+                word.clear();
+            }
+            PushAmp();
+        }
+        else if (*src.it == '\n')
+        {
+            if (!word.empty())
+            {
+                PushWord(word.c_str());
+                word.clear();
+            }
+            PushNL();
+        }
+        else
+            word.push_back(*src.it);
+        ++src.it;
+    }
+}
+
 Parser::Parser(Machine& machine)
 {
     // Stack commands
@@ -1042,3 +1119,6 @@ void Source::Read()
         }
     }
 }
+
+} // namespace rps
+

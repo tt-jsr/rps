@@ -11,6 +11,9 @@
 #include "machine.h"
 #include "commands.h"
 
+namespace rps
+{
+
 enum Operator
 {
     OP_EQ
@@ -310,4 +313,6 @@ void OR(Machine& machine)
         throw std::runtime_error("OR: Argument must be String or Integer");
 }
 
+
+} // namespace rps
 

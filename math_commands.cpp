@@ -8,6 +8,9 @@
 #include "module.h"
 #include "machine.h"
 
+namespace rps
+{
+
 void ADD(Machine& machine)
 {
     if (machine.help)
@@ -114,5 +117,6 @@ void DEC(Machine& machine)
     machine.push(n);
 }
 
+} // namespace rps
 
 

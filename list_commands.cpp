@@ -14,6 +14,9 @@
 #include "commands.h"
 #include "utilities.h"
 
+namespace rps
+{
+
 void APPEND(Machine& machine)
 {
     if (machine.help)
@@ -739,4 +742,6 @@ void UNZIP(Machine& machine)
     machine.push(result1);
     machine.push(result2);
 }
+
+} // namespace rps
 

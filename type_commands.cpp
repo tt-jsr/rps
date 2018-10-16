@@ -10,6 +10,9 @@
 #include "utilities.h"
 #include "commands.h"
 
+namespace rps
+{
+
 void TOINT(Machine& machine)
 {
     if (machine.help)
@@ -80,4 +83,7 @@ void CLONE(Machine& machine)
     ObjectPtr optr = Clone(machine.stack_[machine.stack_.size()-1]);
     machine.push(optr);
 }
+
+
+} // namespace rps
 

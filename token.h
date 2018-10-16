@@ -1,5 +1,8 @@
 #pragma once
 
+namespace rps
+{
+
 enum TokenType
 {
     TOKEN_NOTOKEN
@@ -67,3 +70,6 @@ static const char *ObjectNames[] = {
     , "For"
     , "While"
 };
+
+} // namespace rps
+

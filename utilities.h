@@ -5,19 +5,19 @@
 namespace std
 {
     template<>
-    struct hash<Object *>
+    struct hash<rps::Object *>
     {
-        size_t operator()(const Object* obj) const
+        size_t operator()(const rps::Object* obj) const
         {
-            if (obj->type == OBJECT_INTEGER)
+            if (obj->type == rps::OBJECT_INTEGER)
             {
-                int64_t v = ((const Integer *)obj)->value;
+                int64_t v = ((const rps::Integer *)obj)->value;
                 std::hash<int64_t> h;
                 return h(v);
             }
-            if (obj->type == OBJECT_STRING)
+            if (obj->type == rps::OBJECT_STRING)
             {
-                std::string s = ((const String *)obj)->get();
+                std::string s = ((const rps::String *)obj)->get();
                 std::hash<std::string> h;
                 return h(s);
             }
@@ -26,39 +26,42 @@ namespace std
     };
 
     template<>
-    struct less<Object *>
+    struct less<rps::Object *>
     {
-        bool operator()(const Object* obj1, const Object* obj2) const
+        bool operator()(const rps::Object* obj1, const rps::Object* obj2) const
         {
-            if (obj1->type == OBJECT_INTEGER && obj2->type == OBJECT_INTEGER)
+            if (obj1->type == rps::OBJECT_INTEGER && obj2->type == rps::OBJECT_INTEGER)
             {
-                return ((Integer *)obj1)->value < ((Integer *)obj2)->value;
+                return ((rps::Integer *)obj1)->value < ((rps::Integer *)obj2)->value;
             }
-            if (obj1->type == OBJECT_STRING && obj2->type == OBJECT_STRING)
+            if (obj1->type == rps::OBJECT_STRING && obj2->type == rps::OBJECT_STRING)
             {
-                return ((String *)obj1)->get() < ((String *)obj2)->get();
+                return ((rps::String *)obj1)->get() < ((rps::String *)obj2)->get();
             }
             return obj1 < obj2;
         }
     };
 
     template<>
-    struct equal_to<Object *>
+    struct equal_to<rps::Object *>
     {
-        bool operator()(const Object* obj1, const Object* obj2) const
+        bool operator()(const rps::Object* obj1, const rps::Object* obj2) const
         {
-            if (obj1->type == OBJECT_INTEGER && obj2->type == OBJECT_INTEGER)
+            if (obj1->type == rps::OBJECT_INTEGER && obj2->type == rps::OBJECT_INTEGER)
             {
-                return ((Integer *)obj1)->value == ((Integer *)obj2)->value;
+                return ((rps::Integer *)obj1)->value == ((rps::Integer *)obj2)->value;
             }
-            if (obj1->type == OBJECT_STRING && obj2->type == OBJECT_STRING)
+            if (obj1->type == rps::OBJECT_STRING && obj2->type == rps::OBJECT_STRING)
             {
-                return ((String *)obj1)->get() == ((String *)obj2)->get();
+                return ((rps::String *)obj1)->get() == ((rps::String *)obj2)->get();
             }
             return obj1 == obj2;
         }
     };
 }
+
+namespace rps
+{
 
 class Machine;
 class Parser;
@@ -81,3 +84,6 @@ std::string ToType(Machine&, ObjectPtr);
 
 void split(const std::string& str, std::vector<std::string>& out, const std::string& delim, bool bCollapse = false);
 void Import(Machine& machine, Parser& parser, const std::string& modname);
+
+} // namespace rps
+

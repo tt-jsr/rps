@@ -11,6 +11,9 @@
 #include "commands.h"
 #include "utilities.h"
 
+namespace rps
+{
+
 void DROP(Machine& machine)
 {
     if (machine.help)
@@ -183,4 +186,7 @@ void DEPTH(Machine& machine)
 
     machine.push(machine.stack_.size());
 }
+
+
+} // namespace rps
 

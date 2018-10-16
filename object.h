@@ -4,6 +4,9 @@
 #include <unordered_map>
 #include "token.h"
 
+namespace rps
+{
+
 class Machine;
 
 class Object
@@ -128,4 +131,6 @@ public:
 };
 
 typedef std::shared_ptr<While> WhilePtr;
+
+} // namespace rps
 

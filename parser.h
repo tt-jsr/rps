@@ -1,5 +1,8 @@
 #pragma once 
 
+namespace rps
+{
+
 struct Source
 {
     Source(std::istream& is);
@@ -26,5 +29,10 @@ public:
     void ParseFor(Machine&, ForPtr& forptr, Source& src);
     void ParseWhile(Machine&, WhilePtr& whileptr, Source& src);
 
+    void ShellParse(Machine&, Source&);
+
     ProgramPtr enclosingProgram;
 };
+
+} // namespace rps
+
