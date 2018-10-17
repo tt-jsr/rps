@@ -143,6 +143,12 @@ namespace rps
                if (chdir(cmd.args[1].c_str()) != 0)
                    std::cout << "cd: " << cmd.args[1] << ": " << strerror(errno) << std::endl; 
             }
+            else if (cmd.args[0] == "pwd")
+            {
+                char *p = getcwd(nullptr, 0);
+                std::cout << p << std::endl;
+                free(p);
+            }
             else if (cmd.args[0] == "exit")
             {
                 machine.SetProperty("shellExit", 1);
