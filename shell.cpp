@@ -15,6 +15,7 @@
 #include "object.h"
 #include "module.h"
 #include "machine.h"
+#include "commands.h"
 
 #define PERM_FILE		(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
@@ -145,6 +146,13 @@ namespace rps
             else if (cmd.args[0] == "exit")
             {
                 machine.shellExit = true;
+            }
+            else if (cmd.args[0] == "stack")
+            {
+                int depth(4);
+                if (cmd.args.size() > 1)
+                    depth = std::strtol(cmd.args[1].c_str(), nullptr, 10);
+                VIEW(machine, depth);
             }
             else
             {

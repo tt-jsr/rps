@@ -787,6 +787,7 @@ void Parser::ShellParse(Machine& machine, Source& src)
     src.prompt = "$ ";
     while (!src.istrm.eof())
     {
+        src.it = src.line.end();
         src.Read();
         src.it = src.line.end();
         ShellParse(machine, src.line);
@@ -801,7 +802,55 @@ void Parser::ShellParse(Machine& machine, const std::string& commandLine)
     std::string word;
     for (auto it = commandLine.begin(); it != commandLine.end(); ++it)
     {
-        if (*it == ' ' || *it == '\t')
+        if (*it == '%')
+        {
+            std::stringstream strm;
+            std::string spec;
+            ++it;
+            if (*it == '{')
+            {
+                ++it;
+                while(*it != '\n' && *it != '}')
+                {
+                    spec.push_back(*it);
+                    ++it;
+                }
+                if(*it != '\n')
+                    ++it;
+            }
+            else
+            {
+                while(it != commandLine.end() && (isalnum(*it) || *it == '.' || *it == '_'))
+                {
+                    spec.push_back(*it);
+                    ++it;
+                }
+                --it;
+            }
+            if (isdigit(spec[0]))
+            {
+                int n = strtol(spec.c_str(), nullptr, 10);
+                if (n >= machine.stack_.size())
+                    throw std::runtime_error("FORMAT: Stack out of bounds");
+                strm << ToStr(machine, machine.peek(n));
+            }
+            else 
+            {
+                ObjectPtr optr;
+                try 
+                {
+                    RCL(machine, spec, optr);
+                    strm << ToStr(machine, optr);
+                }
+                catch(std::exception&)
+                {
+                    strm << spec;
+                }
+            }
+            word += strm.str();
+            //std::cout << "=== word: " << word <<std::endl;
+        }
+        else if (*it == ' ' || *it == '\t')
         {
             if (!word.empty())
             {
