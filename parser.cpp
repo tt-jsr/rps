@@ -1112,6 +1112,10 @@ Parser::Parser(Machine& machine)
     Category(machine, "Environment", "PWD");
     AddCommand(machine, "HELP", &HELP);
     Category(machine, "Environment", "HELP");
+    AddCommand(machine, "GETPROPERTY", &GETPROPERTY);
+    Category(machine, "Environment", "GETPROPERTY");
+    AddCommand(machine, "SETPROPERTY", &SETPROPERTY);
+    Category(machine, "Environment", "SETPROPERTY");
 
     // String
     AddCommand(machine, "FORMAT", &FORMAT);

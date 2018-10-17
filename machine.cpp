@@ -198,6 +198,11 @@ void Machine::SetProperty(const std::string& name, const std::string& value)
     properties[name] = sp;
 }
 
+void Machine::SetProperty(const std::string& name, ObjectPtr optr)
+{
+    properties[name] = optr;
+}
+
 int64_t Machine::GetProperty(const std::string& name, int64_t def)
 {
     auto it = properties.find(name);
@@ -218,6 +223,14 @@ std::string Machine::GetProperty(const std::string& name, const std::string& def
     if (optr->type != OBJECT_STRING)
         return def;
     return ((String *)optr.get())->get();
+}
+
+ObjectPtr Machine::GetProperty(const std::string& name)
+{
+    auto it = properties.find(name);
+    if (it == properties.end())
+        return ObjectPtr();
+    return it->second;
 }
 
 std::ostream& Machine::helpstrm()

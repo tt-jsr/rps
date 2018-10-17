@@ -153,6 +153,8 @@ void GETNS(Machine&);
 void CD(Machine&);
 void PWD(Machine&);
 void HELP(Machine&);
+void SETPROPERTY(Machine&);
+void GETPROPERTY(Machine&);
 
 
 } // namespace rps

@@ -96,5 +96,45 @@ void PWD(Machine& machine)
     machine.push(s);
 }
 
+void SETPROPERTY(Machine& machine)
+{
+    if (machine.GetProperty("help", 0))
+    {
+        machine.helpstrm() << "SETPROPERTY: Set a property";
+        machine.helpstrm() << "name value SETPROPERTY => ";
+        return;
+    }
+
+    stack_required(machine, "SETPROPERTY", 2);
+    throw_required(machine, "SETPROPERTY", 1, OBJECT_STRING);
+
+    ObjectPtr value;
+    std::string name;
+
+    machine.pop(value);
+    machine.pop(name);
+    machine.SetProperty(name, value);
+}
+
+void GETPROPERTY(Machine& machine)
+{
+    if (machine.GetProperty("help", 0))
+    {
+        machine.helpstrm() << "GETPROPERTY: Get a property";
+        machine.helpstrm() << "name GETPROPERTY => value";
+        return;
+    }
+
+    stack_required(machine, "GETPROPERTY", 1);
+    throw_required(machine, "GETPROPERTY", 0, OBJECT_STRING);
+
+    std::string name;
+
+    machine.pop(name);
+    ObjectPtr optr = machine.GetProperty(name);
+    if (optr)
+        machine.push(optr);
+}
+
 } // namespace rps
 
