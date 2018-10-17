@@ -16,7 +16,7 @@ namespace rps
 
 void DROP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "DROP: Pop the item at L0";
         machine.helpstrm() << "obj DROP => ";
@@ -29,7 +29,7 @@ void DROP(Machine& machine)
 
 void DROPN(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "DROPN: Pop n items from the stack";
         machine.helpstrm() << "obj1 obj2 obj3... nitems DROPN =>";
@@ -47,7 +47,7 @@ void DROPN(Machine& machine)
 
 void SWAP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SWAP: Swap the top two objects on the stack";
         machine.helpstrm() << "obj1 obj2 SWAP => obj2 obj1";
@@ -65,7 +65,7 @@ void SWAP(Machine& machine)
 
 void DUP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "DUP: Duplicate the toptwo objects on the stack";
         machine.helpstrm() << "obj DUP => obj obj";
@@ -80,7 +80,7 @@ void DUP(Machine& machine)
 
 void PICK(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "PICK: Copy the nth item from the stack and copy to L0";
         machine.helpstrm() << "obj1 obj2 level PICK => obj";
@@ -98,7 +98,7 @@ void PICK(Machine& machine)
 
 void ROLL(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "ROLL: Move the nth item from the stack to L0";
         machine.helpstrm() << "obj1 obj2 obj3... nitem ROLL => obj2 obj3 obj1";
@@ -118,7 +118,7 @@ void ROLL(Machine& machine)
 
 void ROLLD(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "ROLLD: Move L0 item from the stack to nth level";
         machine.helpstrm() << "obj1 obj2 obj3... nitem ROLLD => obj3 obj2 obj1";
@@ -139,13 +139,14 @@ void ROLLD(Machine& machine)
 
 void VIEW(Machine& machine, size_t depth)
 {
+    int64_t viewwidth = machine.GetProperty("viewwidth", 120);
     if (machine.stack_.size() == 0)
         return;
     int n = std::min(depth, machine.stack_.size() - 1);
     while(n >= 0)
     {
         std::string s = ToStr(machine, machine.peek(n));
-        s = s.substr(0, machine.viewwidth);
+        s = s.substr(0, viewwidth);
         std::cout << n << ":" << s << std::endl;
         --n;
     }
@@ -153,7 +154,7 @@ void VIEW(Machine& machine, size_t depth)
 
 void VIEW(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "VIEW: View the items in the stack";
         machine.helpstrm() << "obj1 obj2... VIEW => obj1 obj2...";
@@ -165,7 +166,7 @@ void VIEW(Machine& machine)
 
 void CLRSTK(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "CLRSTK: Clear the stack";
         machine.helpstrm() << "obj1 obj2 obj3... CLRSTK =>";
@@ -177,7 +178,7 @@ void CLRSTK(Machine& machine)
 
 void DEPTH(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "DEPTH: Pushes the number of items on the stack";
         machine.helpstrm() << "obj1 obj2 ob3... DEPTH => obj1 obj2 obj3... int";

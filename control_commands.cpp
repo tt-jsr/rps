@@ -15,7 +15,7 @@ namespace rps
 
 void IFT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "Help not available";
         return;
@@ -45,7 +45,7 @@ void IFT(Machine& machine)
 
 void IFTE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "Help not available";
         return;
@@ -79,7 +79,7 @@ void IFTE(Machine& machine)
 
 void TRYCATCH(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "Help not available";
         return;

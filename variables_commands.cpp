@@ -29,7 +29,7 @@ ObjectPtr find_local(Machine& machine, const std::string& name)
 
 void STO(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STO: Store object";
         machine.helpstrm() << "obj \"name\" opt STO =>";
@@ -63,7 +63,7 @@ void STO(Machine& machine)
 
 void STOL(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STOL: Store object into local storage";
         machine.helpstrm() << "obj \"name\" STOL =>";
@@ -132,7 +132,7 @@ void RCL(Machine& machine, const std::string& name, ObjectPtr& out)
 
 void RCL(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "RCL: Recall object";
         machine.helpstrm() << "\"name\" RCL => obj";
@@ -156,7 +156,7 @@ void RCL(Machine& machine)
 
 void RCLL(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "RCLL: Recall a local object";
         machine.helpstrm() << "\"name\" RCLL =>";
@@ -202,7 +202,7 @@ void RCLL(Machine& machine, const std::string& name, ObjectPtr& out)
 
 void RCLA(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "RCLA: Recall an object, first look in local storage, then global";
         machine.helpstrm() << "\"name\" RCLA => obj";
@@ -232,7 +232,7 @@ void RCLA(Machine& machine)
 
 void VARS(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "VARS: Print variables and thier contents";
         machine.helpstrm() << "\"namespace\" VARS =>";
@@ -272,7 +272,7 @@ void VARS(Machine& machine)
 
 void VARNAMES(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "VARNAMES: List variables";
         machine.helpstrm() << "\"namespace\" VARNAMES => [list]";
@@ -304,7 +304,7 @@ void VARNAMES(Machine& machine)
 
 void VARTYPES(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "VARTYPES: List variable types";
         machine.helpstrm() << "\"namespace\" VARTYPES => [list]";
@@ -337,7 +337,7 @@ void VARTYPES(Machine& machine)
 
 void REGISTER(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "REGISTER: Register a user defined program";
         machine.helpstrm() << "<<prog>> \"name\" REGISTER => ";
@@ -360,7 +360,7 @@ void REGISTER(Machine& machine)
 
 void UNREGISTER(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "UNREGISTER: Unregister a user defined program";
         machine.helpstrm() << "\"name\" UNREGISTER => ";

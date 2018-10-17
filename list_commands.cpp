@@ -19,7 +19,7 @@ namespace rps
 
 void APPEND(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "APPEND: Append the object at L0 to the list on L1" << std::endl;
         machine.helpstrm() << "[list] \"obj\" APPEND => [list]" << std::endl;
@@ -38,7 +38,7 @@ void APPEND(Machine& machine)
 
 void GET(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "GET: Get the object in a list at the given index" << std::endl;
         machine.helpstrm() << "[list] idx GET => obj" << std::endl;
@@ -71,7 +71,7 @@ void GET(Machine& machine)
 
 void SUBLIST(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SUBLIST: Push a sublist";
         machine.helpstrm() << "[list] startpos length SUBLIST => [list]";
@@ -110,7 +110,7 @@ void SUBLIST(Machine& machine)
 
 void LINSERT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "LINSERT: Insert an item into a list";
         machine.helpstrm() << "[list] idx obj => [list]";
@@ -141,7 +141,7 @@ void LINSERT(Machine& machine)
 }
 void INSERT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "Help not available";
         return;
@@ -166,7 +166,7 @@ void INSERT(Machine& machine)
 
 void ERASE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "ERASE: Erase an item from a list or a map";
         machine.helpstrm() << "[list] idx ERASE => [list]";
@@ -214,7 +214,7 @@ void ERASE(Machine& machine)
 
 void CLEAR(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "CLEAR: Clear a list or map";
         machine.helpstrm() << "[list] CLEAR => []";
@@ -254,7 +254,7 @@ void CLEAR(Machine& machine)
 
 void SIZE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SIZE: Return the size of an object";
         machine.helpstrm() << "[list] SIZE => int";
@@ -303,7 +303,7 @@ void SIZE(Machine& machine)
 
 void FIRST(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "FIRST: Get the fist element of a list";
         machine.helpstrm() << "[list] FIRST => obj";
@@ -318,7 +318,7 @@ void FIRST(Machine& machine)
 
 void SECOND(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SECOND: Get the second element of a list";
         machine.helpstrm() << "[list] SECOND => obj";
@@ -333,7 +333,7 @@ void SECOND(Machine& machine)
 
 void HEAD(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "HEAD: Get head and tail of a list";
         machine.helpstrm() << "[obj1 obj2...objn] HEAD => [ obj1 [obj2...objn] ]";
@@ -375,7 +375,7 @@ void HEAD(Machine& machine)
 
 void TOLIST(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "TOLIST: Take n items from the stack and create a list";
         machine.helpstrm() << "obj1 obj2 obj3... nitems TOLIST => [list]";
@@ -398,7 +398,7 @@ void TOLIST(Machine& machine)
 
 void FROMLIST(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "FROMLIST: Push all items of a list to the stack";
         machine.helpstrm() << "[list] FROMLIST => obj1, obj2, obj3...";
@@ -415,7 +415,7 @@ void FROMLIST(Machine& machine)
 
 void CREATELIST(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "CREATELIST: Create a list";
         machine.helpstrm() << "CREATELIST => []";
@@ -428,7 +428,7 @@ void CREATELIST(Machine& machine)
 
 void UNIQUE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "UNIQUE: Returns a unique list of items from a List";
         machine.helpstrm() << "[list] UNIQUE => [list]";
@@ -454,7 +454,7 @@ void UNIQUE(Machine& machine)
 
 void CREATEMAP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "CREATEMAP: Create a map";
         machine.helpstrm() << "CREATEMAP => {}";
@@ -467,7 +467,7 @@ void CREATEMAP(Machine& machine)
 
 void KEYS(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "KEYS: Get a list of keys";
         machine.helpstrm() << "{map} KEYS => [list]";
@@ -489,7 +489,7 @@ void KEYS(Machine& machine)
 
 void VALUES(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "VALUES: Get a list of values";
         machine.helpstrm() << "{map} VALUES => [list]";
@@ -511,7 +511,7 @@ void VALUES(Machine& machine)
 
 void FIND(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "FIND: Find an item in a map";
         machine.helpstrm() << "{map} key onError FIND => obj";
@@ -541,7 +541,7 @@ void FIND(Machine& machine)
 
 void MINSERT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "MINSERT: Insert into a map";
         machine.helpstrm() << "{map} [k,v] => {map}";
@@ -563,7 +563,7 @@ void MINSERT(Machine& machine)
 
 void TOMAP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "TOMAP: Take n tuples from the stack and create a map";
         machine.helpstrm() << "[k,v] [k,v] [k,v]... nitems TOMAP => {map}";
@@ -585,7 +585,7 @@ void TOMAP(Machine& machine)
 
 void FROMMAP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "FROMMAP: Push all key/values of a map onto the stack";
         machine.helpstrm() << "{map} FROMMAP => [k, v] [k, v] [k,v]...";
@@ -605,7 +605,7 @@ void FROMMAP(Machine& machine)
 
 void REVERSE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "REVERSE: Reverse a list";
         machine.helpstrm() << "[obj1 obj2...objn] REVERSE => [objn...obj2 obj1]";
@@ -623,7 +623,7 @@ void REVERSE(Machine& machine)
 
 void ZIP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "ZIP: zip two lists together";
         machine.helpstrm() << "[list1] [list] <<prog>> ZIP => [list]";
@@ -695,7 +695,7 @@ void ZIP(Machine& machine)
 
 void UNZIP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "UNZIP: unzip a list into two lists";
         machine.helpstrm() << "[list] <<prog>> UNZIP => [list1] [list]";

@@ -19,11 +19,11 @@ namespace rps
 bool bInterrupt = false;
 
 Machine::Machine()
-: viewwidth(120)
-, debug(false) 
-, help(false)
-, shellExit(false)
 {
+    SetProperty("viewwidth", 120);
+    SetProperty("debug", 0);
+    SetProperty("help", 0);
+    SetProperty("shellExit", 0);
 }
 
 void Machine::CreateModule(const std::string& name)
@@ -35,6 +35,7 @@ void Machine::CreateModule(const std::string& name)
 
 void Machine::push(ObjectPtr& optr)
 {
+    int64_t debug = GetProperty("debug", 0);
     assert(optr->type != OBJECT_COMMAND);
     if (debug)
         std::cout << "push: " << ToStr(*this, optr) << std::endl;
@@ -50,6 +51,7 @@ void Machine::pop()
 
 void Machine::pop(ObjectPtr& optr)
 {
+    int64_t debug = GetProperty("debug", 0);
     if (stack_.empty())
         throw std::runtime_error("stack underflow");
     optr = stack_.back();
@@ -182,6 +184,42 @@ ObjectPtr& Machine::peek(size_t n)
     return stack_[stack_.size()-n];
 }
 
+void Machine::SetProperty(const std::string& name, int64_t n)
+{
+    IntegerPtr ip = MakeInteger();
+    ip->value = n;
+    properties[name] = ip;
+}
+
+void Machine::SetProperty(const std::string& name, const std::string& value)
+{
+    StringPtr sp = MakeString();
+    sp->set(value);
+    properties[name] = sp;
+}
+
+int64_t Machine::GetProperty(const std::string& name, int64_t def)
+{
+    auto it = properties.find(name);
+    if (it == properties.end())
+        return def;
+    ObjectPtr optr = it->second;
+    if (optr->type != OBJECT_INTEGER)
+        return def;
+    return ((Integer *)optr.get())->value;
+}
+
+std::string Machine::GetProperty(const std::string& name, const std::string& def)
+{
+    auto it = properties.find(name);
+    if (it == properties.end())
+        return def;
+    ObjectPtr optr = it->second;
+    if (optr->type != OBJECT_STRING)
+        return def;
+    return ((String *)optr.get())->get();
+}
+
 std::ostream& Machine::helpstrm()
 {
     if (hstrm.str().size())
@@ -193,10 +231,10 @@ std::string GetFunctionSynopsis(Machine& machine, const std::string& cmd)
     auto it = machine.commands.find(cmd);
     if (it != machine.commands.end())
     {
-        machine.help = true;
+        machine.SetProperty("help", 1);
         machine.hstrm.str("");
         (*it->second->funcptr)(machine);
-        machine.help = false;
+        machine.SetProperty("help", 0);
         std::string s = machine.hstrm.str();
         size_t pos = s.find_first_of('\n');
         if (pos != std::string::npos)
@@ -225,16 +263,16 @@ void ShowHelp(Machine& machine, CommandPtr cmd)
         std::cout << "Help not available for Registered programs" << std::endl;
         return;
     }
-    machine.help = true;
+    machine.SetProperty("help", 1);
     machine.hstrm.str("");
     (*cmd->funcptr)(machine);
-    machine.help = false;
+    machine.SetProperty("help", 0);
     std::cout << std::endl << machine.hstrm.str() << std::endl;
 }
 
 void HELP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "HELP: HELP system";
         machine.helpstrm() << "HELP =>";

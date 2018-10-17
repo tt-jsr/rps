@@ -18,7 +18,7 @@ namespace rps
 
 void NAMESPACES(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "NAMESPACES: List namespaces";
         machine.helpstrm() << "NAMESPACES => [list]";
@@ -37,7 +37,7 @@ void NAMESPACES(Machine& machine)
 
 void SETNS(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SETNS: Create or change namespace";
         machine.helpstrm() << "\"namespace\" SETNS =>";
@@ -55,7 +55,7 @@ void SETNS(Machine& machine)
 
 void GETNS(Machine& machine)
 { 
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "GETNS: Push current namespace";
         machine.helpstrm() << "GETNS => \"namespace\"";
@@ -67,7 +67,7 @@ void GETNS(Machine& machine)
 
 void CD(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "CD: Change current dir";
         machine.helpstrm() << "\"dir\" CD =>";
@@ -83,7 +83,7 @@ void CD(Machine& machine)
 
 void PWD(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "PWD: Present wqorking directory";
         machine.helpstrm() << "PWD => \"dir\"";

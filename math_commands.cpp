@@ -13,7 +13,7 @@ namespace rps
 
 void ADD(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "ADD: Addition";
         machine.helpstrm() << "int1 int2 ADD => int";
@@ -31,7 +31,7 @@ void ADD(Machine& machine)
 
 void SUB(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SUB: Subraction";
         machine.helpstrm() << "int1 int2 SUB => int";
@@ -49,7 +49,7 @@ void SUB(Machine& machine)
 
 void MUL(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "MUL: Multilication";
         machine.helpstrm() << "int1 int2 MUL => int";
@@ -67,7 +67,7 @@ void MUL(Machine& machine)
 
 void DIV(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "DIV: Division";
         machine.helpstrm() << "int1 int2 DIV => int";
@@ -85,7 +85,7 @@ void DIV(Machine& machine)
 
 void INC(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "INC: Increment";
         machine.helpstrm() << "int INC => int";
@@ -102,7 +102,7 @@ void INC(Machine& machine)
 
 void DEC(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "DEC: Decrement";
         machine.helpstrm() << "int DEC => int";

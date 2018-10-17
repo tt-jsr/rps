@@ -145,7 +145,7 @@ namespace rps
             }
             else if (cmd.args[0] == "exit")
             {
-                machine.shellExit = true;
+                machine.SetProperty("shellExit", 1);
             }
             else if (cmd.args[0] == "stack")
             {

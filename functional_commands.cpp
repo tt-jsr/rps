@@ -16,7 +16,7 @@ namespace rps
 
 void APPLY(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "APPLY: Apply a program to each item in a list.";
         machine.helpstrm() << "       Returns a list the same size as the input.";
@@ -62,7 +62,7 @@ void APPLY(Machine& machine)
 
 void APPLY1(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "APPLY1: Apply a program to each item in a list with an argument.";
         machine.helpstrm() << "       Returns a list the same size as the input.";
@@ -111,7 +111,7 @@ void APPLY1(Machine& machine)
 
 void SELECT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SELECT Select items from a list";
         machine.helpstrm() << "       Returns a list of items selected from the input list.";
@@ -158,7 +158,7 @@ void SELECT(Machine& machine)
 
 void SELECT1(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SELECT1 Select items from a list with an argument";
         machine.helpstrm() << "       Returns a list of items selected from the input list.";
@@ -208,7 +208,7 @@ void SELECT1(Machine& machine)
 
 void MAP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "MAP a function over a list";
         machine.helpstrm() << "[list] <<prog>> opt MAP => ";
@@ -268,7 +268,7 @@ void MAP(Machine& machine)
 
 void MAP1(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "MAP1 a function over a list with an argument";
         machine.helpstrm() << "[list] <<prog>> argObj opt MAP => ";
@@ -332,7 +332,7 @@ void MAP1(Machine& machine)
 
 void REDUCE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "REDUCE a list to an object";
         machine.helpstrm() << "[list] <<prog>> startobj REDUCE => obj ";

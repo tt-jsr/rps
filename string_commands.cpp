@@ -17,7 +17,7 @@ namespace rps
 
 void FORMAT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "FORMAT: Format a string";
         machine.helpstrm() << "\"str\" FORMAT => \"str\"";
@@ -98,7 +98,7 @@ void FORMAT(Machine& machine)
 
 void CAT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "CAT: Concatenate two strings";
         machine.helpstrm() << "\"str1\" \"str2\" CAT => \"str1str2\"";
@@ -117,7 +117,7 @@ void CAT(Machine& machine)
 
 void JOIN(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "JOIN: Joins a list into a string";
         machine.helpstrm() << "[list] \"delim\" JOIN =>\"str\"";
@@ -147,7 +147,7 @@ void JOIN(Machine& machine)
 
 void SUBSTR(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SUBSTR: Return substring given startpos and length";
         machine.helpstrm() << "\"str\" startpos length SUBSTR => \"str\"";
@@ -174,7 +174,7 @@ void SUBSTR(Machine& machine)
 
 void SUBSTRPOS(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SUBSTRPOS: Return substr given startpos and endpos";
         machine.helpstrm() << "\"str\" startpos endpos SUBSTRPOS => \"str\"";
@@ -202,7 +202,7 @@ void SUBSTRPOS(Machine& machine)
 
 void STRBEGIN(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STRBEGIN: Does string begin with the given str";
         machine.helpstrm() << "\"str\" \"str\" STRBEGIN => int";
@@ -230,7 +230,7 @@ void STRBEGIN(Machine& machine)
 
 void STREND(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STREND: Does string end with the given str";
         machine.helpstrm() << "\"str\" \"str\" STREND => int";
@@ -259,7 +259,7 @@ void STREND(Machine& machine)
 
 void STRHAS(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STRHAS: Does string contain the given str";
         machine.helpstrm() << "\"str\" \"str\" STRHAS => int";
@@ -285,7 +285,7 @@ void STRHAS(Machine& machine)
 
 void STRFIND(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STRFIND: Find a string";
         machine.helpstrm() << "\"str\" startpos \"str to find\" STRFIND => pos";
@@ -314,7 +314,7 @@ void STRFIND(Machine& machine)
 
 void STRFINDEND(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STRFINDEND: Find the end of a string";
         machine.helpstrm() << "\"str\" startpos \"str to find\" STRFINDEND => pos";
@@ -344,7 +344,7 @@ void STRFINDEND(Machine& machine)
 
 void STRCMP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STRCMP: Compare two strings";
         machine.helpstrm() << "\"str1\" \"str2\" STRCMP => int";
@@ -366,7 +366,7 @@ void STRCMP(Machine& machine)
 
 void STRNCMP(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STRNCMP: Compare two strings for the given length";
         machine.helpstrm() << "\"str1\" \"str2\" length STRNCMP => int";
@@ -391,7 +391,7 @@ void STRNCMP(Machine& machine)
 
 void SPLIT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SPLIT: Split a string";
         machine.helpstrm() << "\"str\" \"delim\" opts SPLIT => [list]";
@@ -469,7 +469,7 @@ void SPLIT(Machine& machine)
 
 void STRCSPN(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STRCSPN: Returns pos of delimiter";
         machine.helpstrm() << "\"str\" startpos \"delims\" STRCSPN => int";

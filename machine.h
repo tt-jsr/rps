@@ -41,12 +41,17 @@ public:
     void pop();
 
     // settings
-    size_t viewwidth;
-    bool debug;
-    bool help;
-    bool shellExit;
+    int64_t GetProperty(const std::string& name, int64_t def);
+    std::string GetProperty(const std::string& name, const std::string& def);
+    void SetProperty(const std::string& name, int64_t value);
+    void SetProperty(const std::string& name, const std::string& value);
+    //size_t viewwidth;
+    //bool debug;
+    //bool help;
+    //bool shellExit;
     std::unordered_map<std::string, CommandPtr> commands;
     std::unordered_map<std::string, std::vector<std::string>> categories;
+    std::unordered_map<std::string, ObjectPtr> properties;
     std::stringstream hstrm;
 };
 

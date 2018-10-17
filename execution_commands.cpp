@@ -214,7 +214,7 @@ void EVAL(Machine& machine, ObjectPtr optr)
 
 void EVAL(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "EVAL: Evaluate an object";
         machine.helpstrm() << "obj EVAL => ...";
@@ -227,7 +227,7 @@ void EVAL(Machine& machine)
 
 void CALL(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "CALL: Call a program";
         machine.helpstrm() << "\"name\" CALL => ...";
@@ -241,7 +241,7 @@ void CALL(Machine& machine)
 
 void INTERRUPT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "INTERRUPT: Set the interrupt flag";
         machine.helpstrm() << "INTERRUPT => ...";

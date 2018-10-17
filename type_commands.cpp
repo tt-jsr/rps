@@ -15,7 +15,7 @@ namespace rps
 
 void TOINT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "TOINT: Convert to integer";
         machine.helpstrm() << "obj TOINT => int";
@@ -34,7 +34,7 @@ void TOINT(Machine& machine)
 
 void TOSTR(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "TOSTR: Convert to string";
         machine.helpstrm() << "obj TOSTR => \"str\"";
@@ -53,7 +53,7 @@ void TOSTR(Machine& machine)
 
 void TYPE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "TYPE: Pushes the type of object at L0";
         machine.helpstrm() << "obj TYPE => \"str\"";
@@ -72,7 +72,7 @@ void TYPE(Machine& machine)
 
 void CLONE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "CLONE: Clone the object at L0";
         machine.helpstrm() << "obj CLONE => obj obj";

@@ -102,7 +102,7 @@ void LogicalString(Machine& machine, ObjectPtr olhs, ObjectPtr orhs, Operator op
 
 void EQ(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "EQ: Compare for equality";
         machine.helpstrm() << "\"str1\" \"str2\" EQ => int";
@@ -128,7 +128,7 @@ void EQ(Machine& machine)
 
 void NEQ(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "NEQ: Compare for not equal";
         machine.helpstrm() << "\"str1\" \"str2\" NEQ => int";
@@ -155,7 +155,7 @@ void NEQ(Machine& machine)
 
 void LT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "LT: Compare for less than";
         machine.helpstrm() << "\"str1\" \"str2\" LT => int";
@@ -182,7 +182,7 @@ void LT(Machine& machine)
 
 void LTEQ(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "LTEQ: Compare for less than or equal";
         machine.helpstrm() << "\"str1\" \"str2\" LTEQ => int";
@@ -209,7 +209,7 @@ void LTEQ(Machine& machine)
 
 void GT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "GT: Compare for greater than";
         machine.helpstrm() << "\"str1\" \"str2\" GT => int";
@@ -236,7 +236,7 @@ void GT(Machine& machine)
 
 void GTEQ(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "GTEQ: Compare for greater than or equal";
         machine.helpstrm() << "\"str1\" \"str2\" GTEQ => int";
@@ -263,7 +263,7 @@ void GTEQ(Machine& machine)
 
 void AND(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "AND: Logical AND";
         machine.helpstrm() << "\"str1\" \"str2\" AND => int";
@@ -288,7 +288,7 @@ void AND(Machine& machine)
 
 void OR(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "OR: Logical OR";
         machine.helpstrm() << "\"str1\" \"str2\" OR => int";

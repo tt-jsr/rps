@@ -782,7 +782,7 @@ void Parser::Parse(Machine& machine, Source& src)
 
 void Parser::ShellParse(Machine& machine, Source& src)
 {
-    machine.shellExit = false;
+    machine.SetProperty("shellExit", 0);
     std::string savePrompt = src.prompt;
     src.prompt = "$ ";
     while (!src.istrm.eof())
@@ -791,7 +791,7 @@ void Parser::ShellParse(Machine& machine, Source& src)
         src.Read();
         src.it = src.line.end();
         ShellParse(machine, src.line);
-        if (machine.shellExit)
+        if (machine.GetProperty("shellExit", 0))
             break;;
     }
     src.prompt = savePrompt;

@@ -20,7 +20,7 @@ namespace rps
 
 void PRINT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "PRINT: Print the object at L0 according to the rules of TOSTR";
         machine.helpstrm() << "\"str\" => ";
@@ -36,7 +36,7 @@ void PRINT(Machine& machine)
 
 void PROMPT(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "PROMPT: Prompt for user input";
         machine.helpstrm() << "\"prompt\" => \"response\"";
@@ -58,7 +58,7 @@ void PROMPT(Machine& machine)
 
 void PREAD(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "PREAD: Capture process output into a list";
         machine.helpstrm() << "\"command line\" opts PREAD => [dstlist]";
@@ -116,7 +116,7 @@ void PREAD(Machine& machine)
 
 void PWRITE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "PWRITE: Write object at L1 to the commandline on L0";
         machine.helpstrm() << "\"obj\" \"command line\" PWRITE =>";
@@ -163,7 +163,7 @@ void PWRITE(Machine& machine)
 
 void FWRITE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "FWRITE: Write list at L1 to the file on L0";
         machine.helpstrm() << "[list] \"filename\" FWRITE =>";
@@ -203,7 +203,7 @@ void FWRITE(Machine& machine)
 
 void FREAD(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "FREAD: Capture a file into a list";
         machine.helpstrm() << "\"filename\" opts FREAD => [list]";
@@ -261,7 +261,7 @@ void FREAD(Machine& machine)
 
 void FSAVE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "FSAVE: Write obj at L1 to the file on L0";
         machine.helpstrm() << "obj \"filename\" FSAVE =>";
@@ -317,7 +317,7 @@ void FSAVE(Machine& machine)
 
 void FRESTORE(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "FRESTORE: Restore a saved Object";
         machine.helpstrm() << "\"filename\" FRESTORE => obj";
@@ -374,7 +374,7 @@ void FRESTORE(Machine& machine)
 
 void SYSTEM(Machine& machine)
 {
-    if (machine.help)
+    if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "SYSTEM or !: Execute the command at L0";
         machine.helpstrm() << "No output is captured";
