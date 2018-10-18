@@ -23,6 +23,18 @@
 
 namespace rps
 {
+    void stack(Machine&, std::vector<std::string>& args);
+    void echo(Machine&, std::vector<std::string>& args);
+    void swap(Machine&, std::vector<std::string>& args);
+    void drop(Machine&, std::vector<std::string>& args);
+    void dropn(Machine&, std::vector<std::string>& args);
+    void roll(Machine&, std::vector<std::string>& args);
+    void rolld(Machine&, std::vector<std::string>& args);
+    void pick(Machine&, std::vector<std::string>& args);
+    void exit(Machine&, std::vector<std::string>& args);
+    void pwd(Machine&, std::vector<std::string>& args);
+    void cd(Machine&, std::vector<std::string>& args);
+
     static void fd_check(void)
     {
         int fd;
@@ -136,30 +148,27 @@ namespace rps
         {
             CommandItem& cmd = commandLine.commands[idx];
             if (cmd.args[0] == "cd")
-            {
-                if (cmd.args.size() == 1)
-                    return;
-
-               if (chdir(cmd.args[1].c_str()) != 0)
-                   std::cout << "cd: " << cmd.args[1] << ": " << strerror(errno) << std::endl; 
-            }
+                cd(machine, cmd.args);
             else if (cmd.args[0] == "pwd")
-            {
-                char *p = getcwd(nullptr, 0);
-                std::cout << p << std::endl;
-                free(p);
-            }
+                pwd(machine, cmd.args);
             else if (cmd.args[0] == "exit")
-            {
-                machine.SetProperty("shellExit", 1);
-            }
+                exit(machine, cmd.args);
+            else if (cmd.args[0] == "drop")
+                drop(machine, cmd.args);
+            else if (cmd.args[0] == "dropn")
+                dropn(machine, cmd.args);
+            else if (cmd.args[0] == "roll")
+                roll(machine, cmd.args);
+            else if (cmd.args[0] == "rolld")
+                rolld(machine, cmd.args);
+            else if (cmd.args[0] == "pick")
+                pick(machine, cmd.args);
+            else if (cmd.args[0] == "swap")
+                swap(machine, cmd.args);
+            else if (cmd.args[0] == "echo")
+                echo(machine, cmd.args);
             else if (cmd.args[0] == "stack")
-            {
-                int depth(4);
-                if (cmd.args.size() > 1)
-                    depth = std::strtol(cmd.args[1].c_str(), nullptr, 10);
-                VIEW(machine, depth);
-            }
+                stack(machine, cmd.args);
             else
             {
                 pid_t pid = fork();
@@ -260,6 +269,7 @@ namespace rps
     //TODO: Need support for stderror
     void PushWord(Machine& machine, const char *w)
     {
+        //std::cout << "=== PushWord: " << w << std::endl;
         CommandItem& cmd = commandLine.commands.back();
         if (IsFileIn(cmd.redir))
             cmd.file_in = w;
@@ -345,5 +355,157 @@ namespace rps
         Invoke(machine, commandLine, w);
         wait_and_display(w);
         commandLine.reset();
+    }
+
+    void cd(Machine& machine, std::vector<std::string>& args)
+    {
+        if (args.size() == 1)
+            return;
+
+       if (chdir(args[1].c_str()) != 0)
+           std::cout << "cd: " << args[1] << ": " << strerror(errno) << std::endl; 
+    }
+
+    void pwd(Machine& machine, std::vector<std::string>& args)
+    {
+        char *p = getcwd(nullptr, 0);
+        std::cout << p << std::endl;
+        free(p);
+    }
+
+    void exit(Machine& machine, std::vector<std::string>& args)
+    {
+        machine.SetProperty("shellExit", 1);
+    }
+
+    void drop(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            DROP(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void dropn(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+            {
+                std::cout << "usage: dropn <int>" << std::endl;
+                return;
+            }
+            int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
+            machine.push(n);
+            DROPN(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void roll(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+            {
+                std::cout << "usage: roll <int>" << std::endl;
+                return;
+            }
+            int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
+            machine.push(n);
+            ROLL(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void pick(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+            {
+                std::cout << "usage: pick <int>" << std::endl;
+                return;
+            }
+            int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
+            machine.push(n);
+            PICK(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void rolld(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+            {
+                std::cout << "usage: rolld <int>" << std::endl;
+                return;
+            }
+            int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
+            machine.push(n);
+            ROLLD(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void swap(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            SWAP(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void echo(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            for (int i = 1; i < args.size(); ++i)
+            {
+                std::cout << args[i] << " ";
+            }
+            std::cout << std::endl;
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void stack(Machine& machine, std::vector<std::string>& args)
+    {
+        int depth(4);
+        if (args.size() > 1)
+            depth = std::strtol(args[1].c_str(), nullptr, 10);
+        try
+        {
+            VIEW(machine, depth);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
     }
 }

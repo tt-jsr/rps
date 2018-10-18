@@ -120,6 +120,7 @@ void SYSTEM(Machine&);
 
 // String commands
 void FORMAT(Machine&);
+std::string FORMAT(Machine&, const std::string& fmt);
 void CAT(Machine&);
 void JOIN(Machine&);
 void SUBSTR(Machine&);
@@ -153,8 +154,6 @@ void GETNS(Machine&);
 void CD(Machine&);
 void PWD(Machine&);
 void HELP(Machine&);
-void SETPROPERTY(Machine&);
-void GETPROPERTY(Machine&);
 
 
 } // namespace rps

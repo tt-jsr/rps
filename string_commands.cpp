@@ -30,8 +30,13 @@ void FORMAT(Machine& machine)
 
     std::string fmt;
     machine.pop(fmt);
+    std::string s = FORMAT(machine, fmt);
+    machine.push(s);
+}
 
-    char *p = &fmt[0];
+std::string FORMAT(Machine& machine, const std::string& fmt)
+{
+    const char *p = &fmt[0];
     std::stringstream strm;
 
     while (*p)
@@ -93,7 +98,7 @@ void FORMAT(Machine& machine)
             ++p;
         }
     }
-    machine.push(strm.str());
+    return strm.str();
 }
 
 void CAT(Machine& machine)
