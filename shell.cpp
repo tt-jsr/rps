@@ -31,9 +31,11 @@ namespace rps
     void roll(Machine&, std::vector<std::string>& args);
     void rolld(Machine&, std::vector<std::string>& args);
     void pick(Machine&, std::vector<std::string>& args);
+    void get(Machine&, std::vector<std::string>& args);
     void exit(Machine&, std::vector<std::string>& args);
     void pwd(Machine&, std::vector<std::string>& args);
     void cd(Machine&, std::vector<std::string>& args);
+    void dup(Machine&, std::vector<std::string>& args);
 
     static void fd_check(void)
     {
@@ -165,10 +167,14 @@ namespace rps
                 pick(machine, cmd.args);
             else if (cmd.args[0] == "swap")
                 swap(machine, cmd.args);
+            else if (cmd.args[0] == "get")
+                get(machine, cmd.args);
             else if (cmd.args[0] == "echo")
                 echo(machine, cmd.args);
             else if (cmd.args[0] == "stack")
                 stack(machine, cmd.args);
+            else if (cmd.args[0] == "dup")
+                dup(machine, cmd.args);
             else
             {
                 pid_t pid = fork();
@@ -471,6 +477,37 @@ namespace rps
         try
         {
             SWAP(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void get(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+            {
+                std::cout << "usage: get <int>" << std::endl;
+                return;
+            }
+            int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
+            machine.push(n);
+            GET(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void dup(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            DUP(machine);
         }
         catch (std::runtime_error& ex)
         {
