@@ -153,6 +153,8 @@ void SETNS(Machine&);
 void GETNS(Machine&);
 void CD(Machine&);
 void PWD(Machine&);
+void GETPROPERTY(Machine&);
+void SETPROPERTY(Machine&);
 void HELP(Machine&);
 
 
