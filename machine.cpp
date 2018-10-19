@@ -262,7 +262,7 @@ void ShowCategory(Machine& machine, const std::string& cat)
     if (it != machine.categories.end())
     {
         std::cout << cat << std::endl;
-        for (std::string& cmd : it->second)
+        for (const std::string& cmd : it->second)
         {
             std::cout << "    " << GetFunctionSynopsis(machine, cmd) << std::endl;
         }
@@ -369,16 +369,16 @@ void RemoveCommand(Machine& machine, const std::string& name)
 {
     machine.commands.erase(name);
 
-    std::vector<std::string>& vec = machine.categories["RegisteredPrograms"];
-    auto it = std::find(vec.begin(), vec.end(), name);
-    if (it != vec.end())
-        vec.erase(it);
+    std::set<std::string>& st = machine.categories["RegisteredPrograms"];
+    auto it = st.find(name);
+    if (it != st.end())
+        st.erase(it);
 }
 
 void Category(Machine& machine, const std::string& cat, const std::string& name)
 {
-    std::vector<std::string>& vec = machine.categories[cat];
-    vec.push_back(name);
+    std::set<std::string>& st = machine.categories[cat];
+    st.insert(name);
 }
 
 } // namespace rps

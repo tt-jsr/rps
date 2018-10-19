@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
+#include <set>
 #include <sstream>
 
 namespace rps
@@ -49,7 +50,7 @@ public:
     void SetProperty(const std::string& name, ObjectPtr);
 
     std::unordered_map<std::string, CommandPtr> commands;
-    std::unordered_map<std::string, std::vector<std::string>> categories;
+    std::unordered_map<std::string, std::set<std::string>> categories;
     std::unordered_map<std::string, ObjectPtr> properties;
     std::stringstream hstrm;
 };
