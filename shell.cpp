@@ -291,7 +291,10 @@ namespace rps
             wordexp(w, &p, 0);
             exp_words = p.we_wordv;
             for (i = 0; i < p.we_wordc; i++)
+            {
+                //std::cout << "=== PushWord exp_word: " << exp_words[i] << std::endl;
                 commandLine.commands.back().args.emplace_back(exp_words[i]);
+            }
             wordfree(&p);
         }
     }
