@@ -668,6 +668,10 @@ void Parser::Parse(Machine& machine, Source& src)
         {
             if (!optr)
                 continue;
+            if (machine.GetProperty("rpsExit", 0))
+            {
+                return;
+            }
             if (optr->token == TOKEN_EXIT)
             {
                 return;
@@ -792,7 +796,7 @@ void Parser::ShellParse(Machine& machine, Source& src)
         src.it = src.line.end();
         ShellParse(machine, src.line);
         if (machine.GetProperty("shellExit", 0))
-            break;;
+            break;
     }
     src.prompt = savePrompt;
 }
@@ -800,6 +804,21 @@ void Parser::ShellParse(Machine& machine, Source& src)
 void Parser::ShellParse(Machine& machine, const std::string& commandLine)
 {
     std::string word;
+    if (commandLine == "rps\n")
+    {
+        machine.SetProperty("shellExit", 1);
+        return;
+    }
+    if (strncmp(commandLine.c_str(), "rps ", 4) == 0)
+    {
+        std::stringstream strm;
+        strm << commandLine.substr(4) << "\n";
+        Source src(strm);
+        Parser parser(machine);
+        parser.Parse(machine, src);
+        VIEW(machine);
+        return;
+    }
     for (auto it = commandLine.begin(); it != commandLine.end(); ++it)
     {
         if (*it == '%')

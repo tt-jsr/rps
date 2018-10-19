@@ -16,6 +16,7 @@
 #include "module.h"
 #include "machine.h"
 #include "commands.h"
+#include "parser.h"
 
 #define PERM_FILE		(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
@@ -381,6 +382,7 @@ namespace rps
 
     void exit(Machine& machine, std::vector<std::string>& args)
     {
+        machine.SetProperty("rpsExit", 1);
         machine.SetProperty("shellExit", 1);
     }
 
@@ -389,6 +391,7 @@ namespace rps
         try
         {
             DROP(machine);
+            VIEW(machine);
         }
         catch (std::runtime_error& ex)
         {
@@ -408,6 +411,7 @@ namespace rps
             int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
             machine.push(n);
             DROPN(machine);
+            VIEW(machine);
         }
         catch (std::runtime_error& ex)
         {
@@ -427,6 +431,7 @@ namespace rps
             int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
             machine.push(n);
             ROLL(machine);
+            VIEW(machine);
         }
         catch (std::runtime_error& ex)
         {
@@ -446,6 +451,7 @@ namespace rps
             int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
             machine.push(n);
             PICK(machine);
+            VIEW(machine);
         }
         catch (std::runtime_error& ex)
         {
@@ -465,6 +471,7 @@ namespace rps
             int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
             machine.push(n);
             ROLLD(machine);
+            VIEW(machine);
         }
         catch (std::runtime_error& ex)
         {
@@ -477,6 +484,7 @@ namespace rps
         try
         {
             SWAP(machine);
+            VIEW(machine);
         }
         catch (std::runtime_error& ex)
         {
@@ -496,6 +504,7 @@ namespace rps
             int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
             machine.push(n);
             GET(machine);
+            VIEW(machine);
         }
         catch (std::runtime_error& ex)
         {
@@ -508,6 +517,7 @@ namespace rps
         try
         {
             DUP(machine);
+            VIEW(machine);
         }
         catch (std::runtime_error& ex)
         {
