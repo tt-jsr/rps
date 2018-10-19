@@ -110,6 +110,7 @@ void PREAD(Machine& machine)
    {
        std::stringstream strm;
        strm << "Failed to open pipe " << cmd.c_str() << " for reading";
+       pclose(fp);
        throw std::runtime_error(strm.str().c_str());
    }
 }
@@ -157,6 +158,7 @@ void PWRITE(Machine& machine)
    {
        std::stringstream strm;
        strm << "Failed to open pipe " << cmd.c_str() << " for writing";
+       pclose(fp);
        throw std::runtime_error(strm.str().c_str());
    }
 }
@@ -197,8 +199,10 @@ void FWRITE(Machine& machine)
    {
        std::stringstream strm;
        strm << "Failed to open " << file.c_str() << " for writing";
+       fclose(fp);
        throw std::runtime_error(strm.str().c_str());
    }
+   fclose(fp);
 }
 
 void FREAD(Machine& machine)
@@ -255,6 +259,7 @@ void FREAD(Machine& machine)
    {
        std::stringstream strm;
        strm << "Failed to open " << file.c_str() << " for reading";
+       fclose(fp);
        throw std::runtime_error(strm.str().c_str());
    }
 }
@@ -311,6 +316,7 @@ void FSAVE(Machine& machine)
    {
        std::stringstream strm;
        strm << "Failed to open " << file.c_str() << " for writing";
+       fclose(fp);
        throw std::runtime_error(strm.str().c_str());
    }
 }
@@ -368,6 +374,7 @@ void FRESTORE(Machine& machine)
    {
        std::stringstream strm;
        strm << "Failed to open " << file.c_str() << " for reading";
+       fclose(fp);
        throw std::runtime_error(strm.str().c_str());
    }
 }
