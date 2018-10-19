@@ -881,6 +881,8 @@ void Parser::ShellParse(Machine& machine, const std::string& commandLine)
         {
             while (it != commandLine.end() && *it != '\"')
                 word.push_back(*it);
+            PushWord(machine, word.c_str());
+            word.clear();
         }
         else if (*it == '|')
         {
