@@ -1095,10 +1095,10 @@ Parser::Parser(Machine& machine)
     Category(machine, "Functional", "APPLY");
     AddCommand(machine, "APPLY1", &APPLY1);
     Category(machine, "Functional", "APPLY1");
-    AddCommand(machine, "SELECT", &SELECT);
-    Category(machine, "Functional", "SELECT");
-    AddCommand(machine, "SELECT1", &SELECT1);
-    Category(machine, "Functional", "SELECT1");
+    AddCommand(machine, "FILTER", &FILTER);
+    Category(machine, "Functional", "FILTER");
+    AddCommand(machine, "FILTER1", &FILTER1);
+    Category(machine, "Functional", "FILTER1");
     AddCommand(machine, "MAP", &MAP);
     Category(machine, "Functional", "MAP");
     AddCommand(machine, "MAP1", &MAP1);

@@ -109,22 +109,22 @@ void APPLY1(Machine& machine)
     machine.push(result);
 }
 
-void SELECT(Machine& machine)
+void FILTER(Machine& machine)
 {
     if (machine.GetProperty("help", 0))
     {
-        machine.helpstrm() << "SELECT Select items from a list";
-        machine.helpstrm() << "       Returns a list of items selected from the input list.";
-        machine.helpstrm() << "[srclist] <<prog>> SELECT => [dstlist]";
+        machine.helpstrm() << "FILTER Filter items from a list";
+        machine.helpstrm() << "       Returns a list of items removed from the input list.";
+        machine.helpstrm() << "[srclist] <<prog>> FILTER => [dstlist]";
         machine.helpstrm() << "srclist: List of items";
         machine.helpstrm() << "prog: Program to execute. The program will have a list item at L0";
-        machine.helpstrm() << "      the program will return true or false to have the item placed";
+        machine.helpstrm() << "      the program will return true or false to have the item removed";
         machine.helpstrm() << "      on the dest list" << std::endl;
         return;
     }
 
-    stack_required(machine, "SELECT", 2);
-    throw_required(machine, "SELECT", 1, OBJECT_LIST);
+    stack_required(machine, "FILTER", 2);
+    throw_required(machine, "FILTER", 1, OBJECT_LIST);
 
     ListPtr result = MakeList();
     ListPtr lp;
@@ -138,7 +138,7 @@ void SELECT(Machine& machine)
         RCL(machine, name, optr);
     }
     if (optr->type != OBJECT_PROGRAM)
-        throw std::runtime_error("SELECT: Program or program name must be at level 0");
+        throw std::runtime_error("FILTER: Program or program name must be at level 0");
     pptr = std::static_pointer_cast<Program>(optr);
 
     machine.pop(lp);
@@ -150,22 +150,22 @@ void SELECT(Machine& machine)
         machine.push(p);
         EVAL(machine, pptr);
         machine.pop(optr);
-        if (ToBool(machine, optr))
+        if (ToBool(machine, optr) == false)
             result->items.push_back(p);
     }
     machine.push(result);
 }
 
-void SELECT1(Machine& machine)
+void FILTER1(Machine& machine)
 {
     if (machine.GetProperty("help", 0))
     {
-        machine.helpstrm() << "SELECT1 Select items from a list with an argument";
-        machine.helpstrm() << "       Returns a list of items selected from the input list.";
-        machine.helpstrm() << "[srclist] <<prog>> argObj SELECT1 => [dstlist]";
+        machine.helpstrm() << "FILTER1 Remove items from a list with an argument";
+        machine.helpstrm() << "       Returns a list of items removed from the input list.";
+        machine.helpstrm() << "[srclist] <<prog>> argObj FILTER1 => [dstlist]";
         machine.helpstrm() << "srclist: List of items";
         machine.helpstrm() << "prog: Program to execute. The program will have a list item at L1 and argObj at L0";
-        machine.helpstrm() << "      the program will return true or false to have the item placed";
+        machine.helpstrm() << "      the program will return true or false to have the item removed";
         machine.helpstrm() << "      on the dest list" << std::endl;
         return;
     }
@@ -200,7 +200,7 @@ void SELECT1(Machine& machine)
         machine.push(arg);
         EVAL(machine, pptr);
         machine.pop(optr);
-        if (ToBool(machine, optr))
+        if (ToBool(machine, optr) == false)
             result->items.push_back(p);
     }
     machine.push(result);
