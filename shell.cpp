@@ -160,6 +160,9 @@ namespace rps
             CommandItem& cmd = commandLine.commands[idx];
             if (IsListIn(cmd.redir))
             {
+                // We don't want to fork if we are reading into
+                // a list, but we need to allow previous items
+                // in the pipeline to be forked
                 --idx;
                 continue;
             }
