@@ -12,6 +12,7 @@ namespace rps
     void PushGTGT(Machine&);
     void PushAmp(Machine&);
     void PushSemi(Machine&);
+    void PushBang(Machine&);
     void PushNL(Machine&);
 }
 

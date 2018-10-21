@@ -307,7 +307,7 @@ void HELP(Machine& machine)
         std::cout << std::endl << "Command or Category: " << std::flush;
         std::string cmd;
         std::getline(std::cin, cmd);
-        if (cmd == "q")
+        if (cmd.size() == 0)
             return;
         auto it = machine.commands.find(cmd);
         if (it != machine.commands.end())

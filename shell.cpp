@@ -17,6 +17,7 @@
 #include "machine.h"
 #include "commands.h"
 #include "parser.h"
+#include "utilities.h"
 
 #define PERM_FILE		(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
@@ -24,7 +25,9 @@
 
 namespace rps
 {
+
     void stack(Machine&, std::vector<std::string>& args);
+    void clrstk(Machine&, std::vector<std::string>& args);
     void echo(Machine&, std::vector<std::string>& args);
     void swap(Machine&, std::vector<std::string>& args);
     void drop(Machine&, std::vector<std::string>& args);
@@ -37,6 +40,9 @@ namespace rps
     void pwd(Machine&, std::vector<std::string>& args);
     void cd(Machine&, std::vector<std::string>& args);
     void dup(Machine&, std::vector<std::string>& args);
+    void fromlist(Machine&, std::vector<std::string>& args);
+    void tolist(Machine&, std::vector<std::string>& args);
+    void reverse(Machine&, std::vector<std::string>& args);
 
     static void fd_check(void)
     {
@@ -97,12 +103,14 @@ namespace rps
 #define IsPipe(x) ((x&PIPE_IN)!=0 || (x&PIPE_OUT)!=0)
 #define IsFileIn(x) ((x&FILE_IN)!=0)
 #define IsFileOut(x) ((x&FILE_OUT)!=0)
+#define IsListIn(x) ((x&LIST_IN)!=0)
 
     enum redir_t {NONE = 0
                 , PIPE_IN  = 0x01
                 , PIPE_OUT = 0x02
                 , FILE_IN = 0x04
                 , FILE_OUT = 0x08
+                , LIST_IN = 0x10
     };
 
     struct CommandItem
@@ -110,7 +118,7 @@ namespace rps
         CommandItem()
         :fd_in(STDIN_FILENO)
         ,fd_out(STDOUT_FILENO)
-         ,redir(NONE)
+        ,redir(NONE)
         ,append(false)
         ,background(false)
         {}
@@ -150,6 +158,11 @@ namespace rps
         while(idx >= 0)
         {
             CommandItem& cmd = commandLine.commands[idx];
+            if (IsListIn(cmd.redir))
+            {
+                --idx;
+                continue;
+            }
             if (cmd.args[0] == "cd")
                 cd(machine, cmd.args);
             else if (cmd.args[0] == "pwd")
@@ -176,6 +189,14 @@ namespace rps
                 stack(machine, cmd.args);
             else if (cmd.args[0] == "dup")
                 dup(machine, cmd.args);
+            else if (cmd.args[0] == "clrstk")
+                clrstk(machine, cmd.args);
+            else if (cmd.args[0] == "fromlist")
+                fromlist(machine, cmd.args);
+            else if (cmd.args[0] == "tolist")
+                tolist(machine, cmd.args);
+            else if (cmd.args[0] == "reverse")
+                reverse(machine, cmd.args);
             else
             {
                 pid_t pid = fork();
@@ -264,6 +285,7 @@ namespace rps
                 //parent
                 if (waitPid == -1)
                     waitPid = pid;
+
                 if (cmd.fd_in != STDIN_FILENO)
                     close(cmd.fd_in);
                 if (cmd.fd_out != STDOUT_FILENO)
@@ -314,6 +336,54 @@ namespace rps
         cmd2.redir |= PIPE_IN;
     }
 
+    void PushBang(Machine& machine)
+    {
+        CommandItem& cmd = commandLine.commands.back();
+        if (cmd.fd_out < 0)
+            throw std::runtime_error("Output already redirected");
+        int pfd[2];
+        pipe(pfd);
+        cmd.fd_out = pfd[1];
+        cmd.redir |= PIPE_OUT;
+        commandLine.commands.emplace_back(CommandItem());
+        CommandItem& cmd2 = commandLine.commands.back();
+        cmd2.fd_in = pfd[0];
+        cmd2.redir |= LIST_IN;
+
+        pid_t w;
+        Invoke(machine, commandLine, w);
+
+        FILE *fp = fdopen(cmd2.fd_in, "r");
+        if (fp == nullptr)
+            std::cout << "! operator, " <<  strerror(errno) << std::endl;
+        if (fp)
+        {
+            ListPtr ret = MakeList();
+            char buf[10240];
+            int64_t limit(1000000);
+            for (int count = 0; count < limit && !feof(fp); ++count)
+            {
+                if (bInterrupt)
+                    break;
+                if (fgets(buf, sizeof(buf), fp))
+                {
+                    size_t l = strlen(buf);
+                    if (buf[l-1] == '\n')
+                        buf[l-1] = '\0';
+                    StringPtr sp = MakeString();
+                    sp->set(buf);
+                    ret->items.push_back(sp);
+                }
+            }
+            machine.push(ret);
+        }
+        wait_and_display(w);
+        if (fp)
+            fclose(fp);
+        commandLine.reset();
+        VIEW(machine, 4);
+    }
+
     void PushLT(Machine& machine)
     {
         CommandItem& cmd = commandLine.commands.back();
@@ -354,6 +424,7 @@ namespace rps
     {
         pid_t w;
         Invoke(machine, commandLine, w);
+        wait_and_display(w);
         commandLine.reset();
     }
 
@@ -521,6 +592,63 @@ namespace rps
         {
             DUP(machine);
             VIEW(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void fromlist(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            FROMLIST(machine);
+            VIEW(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void tolist(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+            {
+                std::cout << "usage: tolist nitems" << std::endl;
+            }
+            int64_t n = strtoll(args[1].c_str(), nullptr, 10);
+            machine.push(n);
+            TOLIST(machine);
+            VIEW(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void reverse(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            REVERSE(machine);
+            VIEW(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void clrstk(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            CLRSTK(machine);
         }
         catch (std::runtime_error& ex)
         {

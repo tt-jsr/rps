@@ -941,6 +941,15 @@ void Parser::ShellParse(Machine& machine, const std::string& commandLine)
             }
             PushAmp(machine);
         }
+        else if (*it == '!')
+        {
+            if (!word.empty())
+            {
+                PushWord(machine, word.c_str());
+                word.clear();
+            }
+            PushBang(machine);
+        }
         else if (*it == '\n')
         {
             if (!word.empty())

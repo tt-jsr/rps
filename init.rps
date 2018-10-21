@@ -16,6 +16,8 @@ logfile.build RCL &BUILD REGISTER
 logfile.logstart RCL &LOGSTART REGISTER
 logfile.dd RCL &DD REGISTER
 logfile.lslog RCL &LSLOG REGISTER
+std.sstack RCL &SSTACK REGISTER
+std.rstack RCL &RSTACK REGISTER
 
 # format a protobuf
 # "pb" PFMT =>
