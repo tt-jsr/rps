@@ -298,6 +298,12 @@ namespace rps
     //TODO: Need support for stderror
     void PushWord(Machine& machine, const char *w)
     {
+        if (strcmp(w, "\\") == 0)
+        {
+            // wordexp will crash if a '\' is passed with a char
+            // to be escaped
+            return;
+        }
         //std::cout << "=== PushWord: " << w << std::endl;
         CommandItem& cmd = commandLine.commands.back();
         if (IsFileIn(cmd.redir))
