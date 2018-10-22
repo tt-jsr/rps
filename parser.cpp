@@ -113,14 +113,14 @@ void GetToken(Source& src, Token& token)
         token.token = TOKEN_EOF;
         return;
     }
-    if (src.line == "$\n")
+    if (src.line == ".\n")
     {
         token.value.push_back(*src.it);
         token.token = TOKEN_SHELL;
         ++src.it;
         return;
     }
-    if (src.line[0] == '$')
+    if (src.line[0] == '.')
     {
         token.value = src.line.substr(1);
         token.token = TOKEN_SHELL_COMMAND;
@@ -804,15 +804,15 @@ void Parser::ShellParse(Machine& machine, Source& src)
 void Parser::ShellParse(Machine& machine, const std::string& commandLine)
 {
     std::string word;
-    if (commandLine == "rps\n")
+    if (commandLine == ".\n")
     {
         machine.SetProperty("shellExit", 1);
         return;
     }
-    if (strncmp(commandLine.c_str(), "rps ", 4) == 0)
+    if (commandLine[0] == '.')
     {
         std::stringstream strm;
-        strm << commandLine.substr(4) << "\n";
+        strm << commandLine.substr(1) << "\n";
         Source src(strm);
         Parser parser(machine);
         parser.Parse(machine, src);
