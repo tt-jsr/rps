@@ -43,6 +43,13 @@ namespace rps
     void fromlist(Machine&, std::vector<std::string>& args);
     void tolist(Machine&, std::vector<std::string>& args);
     void reverse(Machine&, std::vector<std::string>& args);
+    void size(Machine&, std::vector<std::string>& args);
+    void setns(Machine&, std::vector<std::string>& args);
+    void getns(Machine&, std::vector<std::string>& args);
+    void vars(Machine&, std::vector<std::string>& args);
+    void sto(Machine&, std::vector<std::string>& args);
+    void namespaces(Machine&, std::vector<std::string>& args);
+    void help(Machine&, std::vector<std::string>& args);
 
     static void fd_check(void)
     {
@@ -200,6 +207,20 @@ namespace rps
                 tolist(machine, cmd.args);
             else if (cmd.args[0] == "reverse")
                 reverse(machine, cmd.args);
+            else if (cmd.args[0] == "size")
+                size(machine, cmd.args);
+            else if (cmd.args[0] == "setns")
+                setns(machine, cmd.args);
+            else if (cmd.args[0] == "getns")
+                getns(machine, cmd.args);
+            else if (cmd.args[0] == "vars")
+                vars(machine, cmd.args);
+            else if (cmd.args[0] == "sto")
+                sto(machine, cmd.args);
+            else if (cmd.args[0] == "namespaces")
+                namespaces(machine, cmd.args);
+            else if (cmd.args[0] == "help")
+                help(machine, cmd.args);
             else
             {
                 pid_t pid = fork();
@@ -447,6 +468,8 @@ namespace rps
         commandLine.reset();
     }
 
+/************************************************************/
+// build-in shell commands
     void cd(Machine& machine, std::vector<std::string>& args)
     {
         if (args.size() == 1)
@@ -586,6 +609,7 @@ namespace rps
             }
             int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
             machine.push(n);
+            DUP(machine);
             GET(machine);
             VIEW(machine);
         }
@@ -694,5 +718,156 @@ namespace rps
         {
             std::cout << ex.what() << std::endl;
         }
+    }
+
+    void size(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            DUP(machine);
+            SIZE(machine);
+            PRINT(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void setns(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+            {
+                std::cout << "usage: setns namespace_name" << std::endl;
+                return;
+            }
+            machine.push(args[1]);
+            SETNS(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void getns(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            GETNS(machine);
+            PRINT(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void vars(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+                GETNS(machine);
+            else
+                machine.push(args[1]);
+
+            VARTYPES(machine);
+            ListPtr lp;
+            machine.pop(lp);
+            for (auto& op : lp->items)
+            {
+                std::cout << ToStr(machine, op) << std::endl;
+            }
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void sto(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+            {
+                std::cout << "usage: sto varname" << std::endl;
+                std::cout << "       sto obj varname" << std::endl;
+                return;
+            }
+            if (args.size() == 2)
+            {
+                // save TOS
+                machine.push(args[1]);
+                STO(machine);
+                return;
+            }
+            machine.push(args[1]);  // value
+            machine.push(args[2]);  // varname
+            STO(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void namespaces(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            NAMESPACES(machine);
+            ListPtr lp;
+            machine.pop(lp);
+            for (auto& op : lp->items)
+            {
+                std::cout << ToStr(machine, op) << std::endl;
+            }
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void help(Machine& machine, std::vector<std::string>& args)
+    {
+        std::stringstream strm;
+        strm << "      Stack commands    " << std::endl;
+        strm << "stack - Display the stack" << std::endl;
+        strm << "clrstk - Clear the stack" << std::endl;
+        strm << "echo - Echo arguments" << std::endl;
+        strm << "swap - Swap the top two stack items" << std::endl;
+        strm << "dup - Duplicate the TOS" << std::endl;
+        strm << "drop - Drop the top of the stack" << std::endl;
+        strm << "dropn - Drop n items from the stack" << std::endl;
+        strm << "roll - Roll the nth item on the stack to the top of the stack" << std::endl;
+        strm << "rolld - Roll the top of the stack to the nth position" << std::endl;
+        strm << "pick - Copy the nth item on the stack to the top" << std::endl;
+        strm << "get - Get an item from the list at the TOS" << std::endl;
+        strm << std::endl;
+        strm << "      List commands    " << std::endl;
+        strm << "fromlist - Push tghe items of a list onto the stack" << std::endl;
+        strm << "tolist - Take items from the stack and create a list" << std::endl;
+        strm << "reverse - Reverse the list at the TOS" << std::endl;
+        strm << "size - Show the size of the item at the TOS" << std::endl;
+        strm << std::endl;
+        strm << "      Variable commands    " << std::endl;
+        strm << "namespaces - Show namespaces" << std::endl;
+        strm << "setns - Set the namespace" << std::endl;
+        strm << "getns - Get the namespace" << std::endl;
+        strm << "vars - Show information about the variables in a namespace" << std::endl;
+        strm << "sto - Store the item" << std::endl;
+        strm << std::endl;
+        strm << "      Environment commands    " << std::endl;
+        strm << "exit - Exit" << std::endl;
+        strm << "pwd - Curent directory" << std::endl;
+        strm << "cd - Change directory" << std::endl;
+        machine.push(strm.str());
+        machine.push("less");
+        PWRITE(machine);
     }
 }

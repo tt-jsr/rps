@@ -32,9 +32,8 @@ void STO(Machine& machine)
     if (machine.GetProperty("help", 0))
     {
         machine.helpstrm() << "STO: Store object";
-        machine.helpstrm() << "obj \"name\" opt STO =>";
-        machine.helpstrm() << "obj \"namespace.name\" opt STO =>";
-        machine.helpstrm() << "obj \"name\" opt STO* => obj";
+        machine.helpstrm() << "obj \"name\" STO =>";
+        machine.helpstrm() << "obj \"namespace.name\" STO =>";
         machine.helpstrm() << "Store an object in the given variable name.";
         machine.helpstrm() << "By default objects are stored in the current namespace which";
         machine.helpstrm() << "is usually the module name or set by SETNS";
