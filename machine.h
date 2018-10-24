@@ -48,10 +48,13 @@ public:
     void SetProperty(const std::string& name, int64_t value);
     void SetProperty(const std::string& name, const std::string& value);
     void SetProperty(const std::string& name, ObjectPtr);
+    void AddAlias(const std::string&, const std::vector<std::string>&);
+    std::vector<std::string> * GetAlias(const std::string&);
 
     std::unordered_map<std::string, CommandPtr> commands;
     std::unordered_map<std::string, std::set<std::string>> categories;
     std::unordered_map<std::string, ObjectPtr> properties;
+    std::unordered_map<std::string, std::vector<std::string>> aliases;
     std::stringstream hstrm;
 };
 

@@ -233,6 +233,20 @@ ObjectPtr Machine::GetProperty(const std::string& name)
     return it->second;
 }
 
+void Machine::AddAlias(const std::string& name, const std::vector<std::string>& vec)
+{
+    aliases[name] = vec;
+}
+
+std::vector<std::string> * Machine::GetAlias(const std::string& name)
+{
+    auto it = aliases.find(name);
+    if (it == aliases.end())
+        return nullptr;
+    return &it->second;
+}
+
+
 std::ostream& Machine::helpstrm()
 {
     if (hstrm.str().size())

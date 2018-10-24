@@ -50,6 +50,7 @@ namespace rps
     void sto(Machine&, std::vector<std::string>& args);
     void namespaces(Machine&, std::vector<std::string>& args);
     void help(Machine&, std::vector<std::string>& args);
+    void alias(Machine&, std::vector<std::string>& args);
 
     static void fd_check(void)
     {
@@ -219,6 +220,8 @@ namespace rps
                 sto(machine, cmd.args);
             else if (cmd.args[0] == "namespaces")
                 namespaces(machine, cmd.args);
+            else if (cmd.args[0] == "alias")
+                alias(machine, cmd.args);
             else if (cmd.args[0] == "help")
                 help(machine, cmd.args);
             else
@@ -320,7 +323,7 @@ namespace rps
     }
 
     //TODO: Need support for stderror
-    void PushWord(Machine& machine, const char *w)
+    void PushWordImpl(Machine& machine, const char *w)
     {
         if (strcmp(w, "\\") == 0)
         {
@@ -349,6 +352,18 @@ namespace rps
             }
             wordfree(&p);
         }
+    }
+
+    void PushWord(Machine& machine, const char *w)
+    {
+        std::vector<std::string>* pvec = machine.GetAlias(w);
+        if (!pvec)
+        {
+            PushWordImpl(machine, w);
+            return;
+        }
+        for (auto& s : *pvec)
+            PushWordImpl(machine, s.c_str());
     }
 
     void PushBar(Machine& machine)
@@ -608,8 +623,8 @@ namespace rps
                 return;
             }
             int64_t n = std::strtoull(args[1].c_str(), nullptr, 10);
-            machine.push(n);
             DUP(machine);
+            machine.push(n);
             GET(machine);
             VIEW(machine);
         }
@@ -831,6 +846,21 @@ namespace rps
         {
             std::cout << ex.what() << std::endl;
         }
+    }
+
+    void alias(Machine& machine, std::vector<std::string>& args)
+    {
+        if (args.size() <= 2)
+        {
+            std::cout << "usage: alias name args..." << std::endl;
+            return;
+        }
+        std::vector<std::string> v;
+        for (size_t n = 2; n < args.size(); ++n)
+        {
+            v.push_back(args[n]);
+        }
+        machine.AddAlias(args[1], v);
     }
 
     void help(Machine& machine, std::vector<std::string>& args)
