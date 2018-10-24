@@ -850,6 +850,19 @@ namespace rps
 
     void alias(Machine& machine, std::vector<std::string>& args)
     {
+        if (args.size() == 1)
+        {
+            for (auto& pr : machine.aliases)
+            {
+                std::cout << pr.first << "=";
+                for (auto& s : pr.second)
+                {
+                    std::cout << s << " ";
+                }
+                std::cout << std::endl;
+            }
+            return;
+        }
         if (args.size() <= 2)
         {
             std::cout << "usage: alias name args..." << std::endl;

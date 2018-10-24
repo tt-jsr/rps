@@ -35,3 +35,6 @@ std.rstack RCL &RSTACK REGISTER
 # logfile ERS => [list]
 << "grep -n \"ExecutionReport.*order_id=\" %0" FORMAT SWAP DROP PREAD >> &ERS REGISTER
 
+.alias status git status
+.alias push git push origin
+
