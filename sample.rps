@@ -1,11 +1,18 @@
+<< 
+"/" SPLIT
+-1 GET
+>> "basename" STO
+
+>> "git branch --no-color | sed -e \"/^[^*]/d\" -e \"s/* \(.*\)/\1/\""
+getbranch STO
+
 <<
-counter STOL
-exec_type logfile.getfield CALL
-IF EXEC_TYPE_TRADE EQ
-THEN
-counter RCLL
-INC
-counter STOL
-ENDIF
-counter RCLL
->> countTrades STO
+    "git rev-parse --is-inside-work-tree" PREAD
+    IF "true" EQ
+    THEN
+        "git rev-parse --show-toplevel" PREAD
+        0 GET
+        basename()
+    ENDIF
+>> getrepo STO
+

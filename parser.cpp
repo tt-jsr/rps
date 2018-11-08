@@ -44,7 +44,12 @@ void CollectQuoted(Source& src, Token& token)
             if (*src.it == '\\')
             {
                 ++src.it;
-                token.value.push_back(*src.it);
+                if (*src.it == 'n')
+                    token.value.push_back('\n');
+                else if (*src.it == 't')
+                    token.value.push_back('\t');
+                else
+                    token.value.push_back(*src.it);
             }
             else
             {
@@ -883,12 +888,33 @@ void Parser::ShellParse(Machine& machine, const std::string& commandLine)
             ++it;
             while (it != commandLine.end() && *it != '\"')
             {
-                word.push_back(*it);
+                if (*it == '\\')
+                {
+                    ++it;
+                    if (*it == 'n')
+                        word.push_back('\n');
+                    else if (*it == 't')
+                        word.push_back('\t');
+                    else
+                        word.push_back(*it);
+                }
+                else
+                    word.push_back(*it);
                 ++it;
             }
             word.push_back(*it);
             PushWord(machine, word.c_str());
             word.clear();
+        }
+        else if (*it == '\\')
+        {
+            ++it;
+            if (*it == 'n')
+                word.push_back('\n');
+            else if (*it == 't')
+                word.push_back('\t');
+            else
+                word.push_back(*it);
         }
         else if (*it == '|')
         {

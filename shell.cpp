@@ -51,6 +51,8 @@ namespace rps
     void namespaces(Machine&, std::vector<std::string>& args);
     void help(Machine&, std::vector<std::string>& args);
     void alias(Machine&, std::vector<std::string>& args);
+    void split(Machine&, std::vector<std::string>& args);
+    void join(Machine&, std::vector<std::string>& args);
 
     static void fd_check(void)
     {
@@ -222,6 +224,10 @@ namespace rps
                 namespaces(machine, cmd.args);
             else if (cmd.args[0] == "alias")
                 alias(machine, cmd.args);
+            else if (cmd.args[0] == "split")
+                split(machine, cmd.args);
+            else if (cmd.args[0] == "join")
+                join(machine, cmd.args);
             else if (cmd.args[0] == "help")
                 help(machine, cmd.args);
             else
@@ -710,7 +716,7 @@ namespace rps
         {
             for (int i = 1; i < args.size(); ++i)
             {
-                std::cout << args[i] << " ";
+                std::cout << FORMAT(machine, args[i]) << " ";
             }
             std::cout << std::endl;
         }
@@ -848,6 +854,53 @@ namespace rps
         }
     }
 
+    void split(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() < 2)
+            {
+                std::cout << "usage: split [--n][--collapse] \"delims\"" << std::endl;
+                return;
+            }
+            std::vector<std::string> opts;
+            std::string delims;
+            for (auto& s : args)
+            {
+                if (s[0] == '-')
+                    opts.push_back(s);
+                else
+                    delims = s;
+            }
+            for (auto& o : opts)
+                machine.push(o);
+            machine.push(delims);
+            SPLIT(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void join(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() < 2)
+            {
+                std::cout << "usage: join \"delims\"" << std::endl;
+                return;
+            }
+            machine.push(args[1]);
+            JOIN(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
     void alias(Machine& machine, std::vector<std::string>& args)
     {
         if (args.size() == 1)
@@ -886,24 +939,26 @@ namespace rps
         strm << "swap - Swap the top two stack items" << std::endl;
         strm << "dup - Duplicate the TOS" << std::endl;
         strm << "drop - Drop the top of the stack" << std::endl;
-        strm << "dropn - Drop n items from the stack" << std::endl;
-        strm << "roll - Roll the nth item on the stack to the top of the stack" << std::endl;
-        strm << "rolld - Roll the top of the stack to the nth position" << std::endl;
-        strm << "pick - Copy the nth item on the stack to the top" << std::endl;
-        strm << "get - Get an item from the list at the TOS" << std::endl;
+        strm << "dropn <int> - Drop n items from the stack" << std::endl;
+        strm << "roll <int> - Roll the nth item on the stack to the top of the stack" << std::endl;
+        strm << "rolld <int> - Roll the top of the stack to the nth position" << std::endl;
+        strm << "pick <int> - Copy the nth item on the stack to the top" << std::endl;
+        strm << "get <int> - Get an item from the list at the TOS" << std::endl;
         strm << std::endl;
         strm << "      List commands    " << std::endl;
-        strm << "fromlist - Push tghe items of a list onto the stack" << std::endl;
-        strm << "tolist - Take items from the stack and create a list" << std::endl;
+        strm << "fromlist - Push the items of a list at TOS onto the stack" << std::endl;
+        strm << "tolist <int> - Take n items from the stack and create a list" << std::endl;
         strm << "reverse - Reverse the list at the TOS" << std::endl;
         strm << "size - Show the size of the item at the TOS" << std::endl;
+        strm << "split [--n][--collapse] delims - Split the string at the TOS and push a list" << std::endl;
+        strm << "join delim - Join the list at the TOS into a string" << std::endl;
         strm << std::endl;
         strm << "      Variable commands    " << std::endl;
         strm << "namespaces - Show namespaces" << std::endl;
-        strm << "setns - Set the namespace" << std::endl;
+        strm << "setns name - Set the namespace" << std::endl;
         strm << "getns - Get the namespace" << std::endl;
         strm << "vars - Show information about the variables in a namespace" << std::endl;
-        strm << "sto - Store the item" << std::endl;
+        strm << "sto name - Store the item" << std::endl;
         strm << std::endl;
         strm << "      Environment commands    " << std::endl;
         strm << "exit - Exit" << std::endl;
