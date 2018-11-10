@@ -330,12 +330,13 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
         break;
     case OBJECT_TOKEN:
         {
-            if (optr->token == TOKEN_EOL)
+            if (optr->IsToken(TOKEN_EOL))
                 return "\n";
             else
             {
                 std::stringstream strm;
-                strm << "TOKEN: " << optr->token;
+                Token *pTok = (Token *)optr.get();
+                strm << "TOKEN: " << pTok->value;
                 strm.str();
             }
         }
@@ -346,7 +347,7 @@ std::string ToStr(Machine& machine, ObjectPtr optr)
         }
         break;
     default:
-        std::cout << "=== ToStr: " << optr->token << std::endl;
+        std::cout << "=== ToStr: " << optr->type << std::endl;
         assert(false);
         throw std::runtime_error("ToStr: Unknown type");
         break;
@@ -454,7 +455,7 @@ void split(const std::string& str, std::vector<std::string>& out, const std::str
     }
 }
 
-void Import(Machine& machine, Parser& parser, const std::string& modname)
+void Import(Machine& machine, RPNParser& parser, const std::string& modname)
 {
     const char *rps_path = getenv("RPS_PATH");
     std::vector<std::string> dirs;
@@ -481,7 +482,8 @@ void Import(Machine& machine, Parser& parser, const std::string& modname)
     std::string savename = machine.current_module_;
     machine.current_module_ = modname;
     machine.CreateModule(modname);
-    parser.Parse(machine, srcImport);
+    std::string exit;
+    parser.Parse(machine, srcImport, exit);
     machine.current_module_ = savename;
 }
 

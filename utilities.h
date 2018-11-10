@@ -64,7 +64,7 @@ namespace rps
 {
 
 class Machine;
-class Parser;
+class RPNParser;
 
 StringPtr MakeString();
 IntegerPtr MakeInteger();
@@ -83,7 +83,7 @@ std::string ToType(Machine&, ObjectPtr);
 
 
 void split(const std::string& str, std::vector<std::string>& out, const std::string& delim, bool bCollapse = false);
-void Import(Machine& machine, Parser& parser, const std::string& modname);
+void Import(Machine& machine, RPNParser& parser, const std::string& modname);
 
 } // namespace rps
 

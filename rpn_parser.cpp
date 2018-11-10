@@ -33,9 +33,10 @@ void SkipWhitespace(Source& src)
     }
 }
 
-void CollectQuoted(Source& src, Token& token)
+bool CollectDelimited(Source& src, std::string& out, char delim)
 {
-    assert(*src.it == '\"');
+    out.clear();
+    assert(*src.it == delim);
     ++src.it;
     while(!src.istrm.eof())
     {
@@ -45,226 +46,237 @@ void CollectQuoted(Source& src, Token& token)
             {
                 ++src.it;
                 if (*src.it == 'n')
-                    token.value.push_back('\n');
+                    out.push_back('\n');
                 else if (*src.it == 't')
-                    token.value.push_back('\t');
+                    out.push_back('\t');
                 else
-                    token.value.push_back(*src.it);
+                    out.push_back(*src.it);
+            }
+            else if (*src.it == delim)
+            {
+                ++src.it;
+                return true;
             }
             else
-            {
-                if (*src.it == '\"')
-                {
-                    ++src.it;
-                    return;
-                }
-                token.value.push_back(*src.it);
-            }
-            if (src.it != src.line.end())
-                ++src.it;
+                out.push_back(*src.it);
+            ++src.it;
         }
         src.Read();
     }
+    if (out.size())
+        return true;
+    return false;
 }
 
-void CollectIdentifier(Source& src, Token& token)
+bool CollectIdentifier(Source& src, std::string& out)
 {
-    while (src.it != src.line.end())
+    out.clear();
+    bool collect = false;
+    if (isalpha(*(src.it)))
+        collect = true;
+    else if (*src.it == '-' && isalpha(*(src.it+1)))
     {
-        if (*src.it == '>' || *src.it == '}' || *src.it == ']' || *src.it == '!' 
-                || *src.it == '(' || *src.it == '%' || *src.it == '*')
-            return;
-        if (isalnum(*src.it))
-            token.value.push_back(*src.it);
-        else if (isdigit(*src.it))
-            token.value.push_back(*src.it);
-        else if (*src.it != ' ' && *src.it != '\n')
-            token.value.push_back(*src.it);
-        else if (*src.it == '#')
-        {
-            src.it = src.line.end();
-            return;
-        }
-        else
-        {
-            return;
-        }
+        out.push_back('-');
         ++src.it;
+        collect = true;
     }
+    else if (*src.it == '-' && *(src.it+1) == '-' && isalnum(*(src.it+2)))
+    {
+        out.push_back('-');
+        ++src.it;
+        out.push_back('-');
+        ++src.it;
+        collect = true;
+    }
+    if (collect)
+    {
+        while (src.it != src.line.end())
+        {
+            if (isalnum(*src.it))
+                out.push_back(*src.it);
+            else if (isdigit(*src.it))
+                out.push_back(*src.it);
+            else if (*src.it == '_')
+                out.push_back(*src.it);
+            else
+                break;
+            ++src.it;
+        }
+    }
+    if (out.size())
+        return true;
+    return false;
 }
 
-void CollectInteger(Source& src, Token& token)
+bool CollectInteger(Source& src, std::string& out)
 {
+    out.clear();
+    if (*src.it == '-')
+    {
+        ++src.it;
+        if (isdigit(*src.it) == false)
+        {
+            --src.it;
+            return false;
+        }
+        out.push_back('-');
+    }
     while (src.it != src.line.end())
     {
         if (isdigit(*src.it))
-            token.value.push_back(*src.it);
-        else if (*src.it == '#')
-        {
-            src.it = src.line.end();
-            return;
-        }
+            out.push_back(*src.it);
         else
-            return;
+            break;
         ++src.it;
     }
+    if (out.size())
+        return true;
+    return false;
 }
-void GetToken(Source& src, Token& token)
+
+bool RPNParser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
 {
-    token.value.clear();
+    std::string out;
     SkipWhitespace(src);
     if(src.iseof())
     {
-        token.token = TOKEN_EOF;
-        return;
-    }
-    if (src.line == ".\n")
-    {
-        token.value.push_back(*src.it);
-        token.token = TOKEN_SHELL;
-        ++src.it;
-        return;
-    }
-    if (src.line[0] == '.')
-    {
-        token.value = src.line.substr(1);
-        token.token = TOKEN_SHELL_COMMAND;
-        src.it = src.line.end();
-        return;
-    }
-    if (*src.it == '%')
-    {
-        token.value.push_back(*src.it);
-        token.token = TOKEN_STRING;
-        ++src.it;
-        return;
-    }
-    if (*src.it == '!')
-    {
-        token.value.push_back(*src.it);
-        token.token = TOKEN_SYSTEM;
-        ++src.it;
-        return;
+        return false;
     }
 
     if (*src.it == '\n')
     {
-        token.value.push_back(*src.it);
-        token.token = TOKEN_EOL;
+        optr.reset(new Token(TOKEN_EOL, "\n"));
         ++src.it;
-        return;
+        return true;
     }
     if (*src.it == '\"')
     {
-        CollectQuoted(src, token);
-        token.token = TOKEN_STRING;
-        token.quoted = true;
-        return;
+        CollectDelimited(src, out, '\"');
+        String *sp = new String(out);
+        optr.reset(sp);
+        return true;
+    }
+    if (*src.it == '\'')
+    {
+        CollectDelimited(src, out, '\'');
+        String *sp = new String(out);
+        optr.reset(sp);
+        return true;
     }
     if (*src.it == '[')
     {
-        token.value.push_back(*src.it);
+        optr.reset(new Token(TOKEN_START_LIST, "["));
         ++src.it;
-        token.token = TOKEN_START_LIST;
-        return;
+        return true;
     }
     if (*src.it == '{')
     {
-        token.value.push_back(*src.it);
+        optr.reset(new Token(TOKEN_START_MAP, "{"));
         ++src.it;
-        token.token = TOKEN_START_MAP;
-        return;
+        return true;
     }
     if (*src.it == ']')
     {
-        token.value.push_back(*src.it);
+        optr.reset(new Token(TOKEN_END_LIST, "]"));
         ++src.it;
-        token.token = TOKEN_END_LIST;
-        return;
+        return true;
     }
     if (*src.it == '}')
     {
-        token.value.push_back(*src.it);
+        optr.reset(new Token(TOKEN_END_MAP, "}"));
         ++src.it;
-        token.token = TOKEN_END_MAP;
-        return;
+        return true;
     }
     if (*src.it == '<')
     {
-        token.value.push_back(*src.it);
         ++src.it;
         if (*src.it != '<')
             throw std::runtime_error("Expected \'<\' in input");
-        token.value.push_back(*src.it);
+        optr.reset(new Token(TOKEN_START_PROGRAM, "<<"));
         ++src.it;
-        token.token = TOKEN_START_PROGRAM;
-        return;
+        return true;
     }
     if (*src.it == '>')
     {
-        token.value.push_back(*src.it);
         ++src.it;
         if (*src.it != '>')
             throw std::runtime_error("Expected \'>\' in input");
-        token.value.push_back(*src.it);
         ++src.it;
-        token.token = TOKEN_END_PROGRAM;
-        return;
+        optr.reset(new Token(TOKEN_END_PROGRAM, ">>"));
+        return true;
     }
     if (*src.it == '#')
     {
         src.it = src.line.end();
-        token.token = TOKEN_COMMENT;
-        return;
+        optr.reset(new Token(TOKEN_COMMENT, "#"));
+        return true;
     }
 
-    if (*src.it == '-' && *(src.it+1) == '-' && isalnum(*(src.it+2)))
+    if (CollectIdentifier(src, out))
     {
-        token.value.push_back(*src.it);
-        ++src.it;
-        CollectIdentifier(src, token);
-        token.token = TOKEN_STRING;
-        return;
+        if (out == "None")
+            optr.reset(new None());
+        else if (out == "EXIT")
+            optr.reset(new Token(TOKEN_EXIT, "EXIT"));
+        else if (out == "IF")
+            optr.reset(new Token(TOKEN_IF, "IF"));
+        else if (out == "THEN")
+            optr.reset(new Token(TOKEN_THEN, "THEN"));
+        else if (out == "ELSE")
+            optr.reset(new Token(TOKEN_ELSE, "ELSE"));
+        else if (out == "ENDIF")
+            optr.reset(new Token(TOKEN_ENDIF, "ENDIF"));
+        else if (out == "FOR")
+            optr.reset(new Token(TOKEN_FOR, "FOR"));
+        else if (out == "ENDFOR")
+            optr.reset(new Token(TOKEN_ENDFOR, "ENDFOR"));
+        else if (out == "WHILE")
+            optr.reset(new Token(TOKEN_WHILE, "WHILE"));
+        else if (out == "REPEAT")
+            optr.reset(new Token(TOKEN_REPEAT, "REPEAT"));
+        else if (out == "ENDWHILE")
+            optr.reset(new Token(TOKEN_ENDWHILE, "ENDWHILE"));
+        else if (out == "SHELL")
+            optr.reset(new Token(TOKEN_SHELL, "SHELL"));
+        else
+        {
+            auto it = machine.commands.find(out);
+            if (it != machine.commands.end())
+            {
+                optr = it->second;
+                return true;
+            }
+            optr.reset(new String(out));
+        }
+        return true;
     }
-    if (isdigit(*src.it) || *src.it == '-')
+    if (CollectInteger(src, out))
     {
-        token.value.push_back(*src.it);
-        ++src.it;
-        CollectInteger(src, token);
-        token.token = TOKEN_INTEGER;
-        return;
+        optr.reset(new Integer(strtol(out.c_str(), nullptr, 10)));
+        return true;
     }
-    token.value.push_back(*src.it);
+    std::string s;
+    s.push_back(*src.it);
+    optr.reset(new Token(TOKEN_INVALID, s));
     ++src.it;
-    CollectIdentifier(src, token);
-    token.token = TOKEN_STRING;
+    return false;
 }
 
+/*
 bool Parser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
 {
 
 again:
-    Token token;
+    ParseToken token;
     do {
         GetToken(src, token);
     } while (token.token == TOKEN_COMMENT);
     if (token.token == TOKEN_EOF)
         return false;
+    if (token.token == TOKEN_INVALID)
+        return false;
     //std::cout << "===GetObject: " << token.token << ":\"" << token.value << "\"" << std::endl;
 
-    if (token.token == TOKEN_SHELL)
-    {
-        src.it = src.line.end();
-        ShellParse(machine, src);
-        optr.reset();
-        return true;
-    }
-    if (token.token == TOKEN_SHELL_COMMAND)
-    {
-        ShellParse(machine, token.value);
-        optr.reset();
-        return true;
-    }
     auto it = machine.commands.find(token.value);
     if (it != machine.commands.end())
     {
@@ -276,7 +288,7 @@ again:
         optr.reset(new Integer(strtol(token.value.c_str(), nullptr, 10)));
 
     else if (token.token == TOKEN_START_PROGRAM)
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_PROGRAM));
+        optr.reset(new Token(TOKEN_START_PROGRAM, tok.value));
     else if (token.token == TOKEN_END_PROGRAM)
         optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_PROGRAM));
     else if (token.token == TOKEN_START_LIST)
@@ -318,7 +330,7 @@ again:
         if (token.value == "import")
         {
             std::string filename;
-            Token modulename;
+            ParseToken modulename;
             GetToken(src, modulename);
             Import(machine, *this, modulename.value);
             goto again;
@@ -332,8 +344,9 @@ again:
 
     return true;
 }
+*/
 
-void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
+void RPNParser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
 {
     ObjectPtr optr;
     std::vector<ObjectPtr> *pVec = &ifptr->cond;
@@ -341,21 +354,21 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
     {
         if (bInterrupt)
             return;
-        if (optr->token == TOKEN_ENDIF)
+        if (optr->IsToken(TOKEN_ENDIF))
         {
             return;
         }
-        else if (optr->token == TOKEN_THEN)
+        else if (optr->IsToken(TOKEN_THEN))
         {
             pVec = &ifptr->then;
             src.prompt = "THEN: ";
         }
-        else if (optr->token == TOKEN_ELSE)
+        else if (optr->IsToken(TOKEN_ELSE))
         {
             pVec = &ifptr->els;
             src.prompt = "ELSE: ";
         }
-        else if (optr->token == TOKEN_IF)
+        else if (optr->IsToken(TOKEN_IF))
         {
             IfPtr ifp;
             ifp.reset(new If());
@@ -366,7 +379,7 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
             optr = ifp;
             pVec->push_back(optr);           
         }
-        else if (optr->token == TOKEN_FOR)
+        else if (optr->IsToken(TOKEN_FOR))
         {
             ForPtr forptr;
             forptr.reset(new For());
@@ -377,7 +390,7 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
             optr = forptr;
             pVec->push_back(optr);           
         }
-        else if (optr->token == TOKEN_WHILE)
+        else if (optr->IsToken(TOKEN_WHILE))
         {
             WhilePtr whileptr;
             whileptr.reset(new While());
@@ -388,7 +401,7 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
             optr = whileptr;
             pVec->push_back(optr);           
         }
-        else if (optr->token == TOKEN_START_PROGRAM)
+        else if (optr->IsToken(TOKEN_START_PROGRAM))
         {
             ProgramPtr pptr;
             pptr.reset(new Program());
@@ -403,7 +416,7 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
             optr = pptr;
             pVec->push_back(optr);           
         }
-        else if (optr->token == TOKEN_START_LIST)
+        else if (optr->IsToken(TOKEN_START_LIST))
         {
             ListPtr lp;
             lp.reset(new List());
@@ -419,18 +432,18 @@ void Parser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
     }
 }
 
-void Parser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
+void RPNParser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
 {
     ObjectPtr optr;
     while(GetObject(machine, src, optr))
     {
         if (bInterrupt)
             return;
-        if (optr->token == TOKEN_ENDFOR)
+        if (optr->IsToken(TOKEN_ENDFOR))
         {
             return;
         }
-        else if (optr->token == TOKEN_FOR)
+        else if (optr->IsToken(TOKEN_FOR))
         {
             ForPtr forp;
             forp.reset(new For());
@@ -440,7 +453,7 @@ void Parser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
             src.prompt = savePrompt;
             optr = forp;
         }
-        else if (optr->token == TOKEN_IF)
+        else if (optr->IsToken(TOKEN_IF))
         {
             IfPtr ifp;
             ifp.reset(new If());
@@ -450,7 +463,7 @@ void Parser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
             src.prompt = savePrompt;
             optr = ifp;
         }
-        else if (optr->token == TOKEN_START_PROGRAM)
+        else if (optr->IsToken(TOKEN_START_PROGRAM))
         {
             ProgramPtr pptr;
             pptr.reset(new Program());
@@ -464,7 +477,7 @@ void Parser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
             src.prompt = savePrompt;
             optr = pptr;
         }
-        else if (optr->token == TOKEN_START_LIST)
+        else if (optr->IsToken(TOKEN_START_LIST))
         {
             ListPtr lp;
             lp.reset(new List());
@@ -479,7 +492,7 @@ void Parser::ParseFor(Machine& machine, ForPtr& forptr, Source& src)
     }
 }
 
-void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
+void RPNParser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
 {
     ObjectPtr optr;
     std::vector<ObjectPtr> *pVec = &whileptr->cond;
@@ -487,16 +500,16 @@ void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
     {
         if (bInterrupt)
             return;
-        if (optr->token == TOKEN_ENDWHILE)
+        if (optr->IsToken(TOKEN_ENDWHILE))
         {
             return;
         }
-        else if (optr->token == TOKEN_REPEAT)
+        else if (optr->IsToken(TOKEN_REPEAT))
         {
             pVec = &whileptr->program;
             src.prompt = "REPEAT: ";
         }
-        else if (optr->token == TOKEN_WHILE)
+        else if (optr->IsToken(TOKEN_WHILE))
         {
             WhilePtr whilep;
             whilep.reset(new While());
@@ -507,7 +520,7 @@ void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
             optr = whilep;
             pVec->push_back(optr);
         }
-        else if (optr->token == TOKEN_FOR)
+        else if (optr->IsToken(TOKEN_FOR))
         {
             ForPtr forp;
             forp.reset(new For());
@@ -518,7 +531,7 @@ void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
             optr = forp;
             pVec->push_back(optr);
         }
-        else if (optr->token == TOKEN_IF)
+        else if (optr->IsToken(TOKEN_IF))
         {
             IfPtr ifp;
             ifp.reset(new If());
@@ -529,7 +542,7 @@ void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
             optr = ifp;
             pVec->push_back(optr);
         }
-        else if (optr->token == TOKEN_START_PROGRAM)
+        else if (optr->IsToken(TOKEN_START_PROGRAM))
         {
             ProgramPtr pptr;
             pptr.reset(new Program());
@@ -544,7 +557,7 @@ void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
             optr = pptr;
             pVec->push_back(optr);
         }
-        else if (optr->token == TOKEN_START_LIST)
+        else if (optr->IsToken(TOKEN_START_LIST))
         {
             ListPtr lp;
             lp.reset(new List());
@@ -559,20 +572,21 @@ void Parser::ParseWhile(Machine& machine, WhilePtr& whileptr, Source& src)
             pVec->push_back(optr);           
     }
 }
-void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
+
+void RPNParser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
 {
     ObjectPtr optr;
     while(GetObject(machine, src, optr))
     {
         if (bInterrupt)
             return;
-        if (optr->token == TOKEN_END_LIST)
+        if (optr->IsToken(TOKEN_END_LIST))
         {
             return;
         }
-        else if (optr->token == TOKEN_EOL)
+        else if (optr->IsToken(TOKEN_EOL))
             ;
-        else if (optr->token == TOKEN_START_PROGRAM)
+        else if (optr->IsToken(TOKEN_START_PROGRAM))
         {
             ProgramPtr pptr;
             pptr.reset(new Program());
@@ -586,7 +600,7 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
             optr = pptr;
             lptr->items.push_back(optr);           
         }
-        else if (optr->token == TOKEN_START_LIST)
+        else if (optr->IsToken(TOKEN_START_LIST))
         {
             ListPtr lp;
             lp.reset(new List());
@@ -599,7 +613,7 @@ void Parser::ParseList(Machine& machine, ListPtr& lptr, Source& src)
     }
 }
 
-void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
+void RPNParser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
 {
     ObjectPtr optr;
     pptr->module_name = machine.current_module_;
@@ -607,11 +621,11 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
     {
         if (bInterrupt)
             return;
-        if (optr->token == TOKEN_END_PROGRAM)
+        if (optr->IsToken(TOKEN_END_PROGRAM))
         {
             return;
         }
-        else if (optr->token == TOKEN_START_PROGRAM)
+        else if (optr->IsToken(TOKEN_START_PROGRAM))
         {
             ProgramPtr pp;
             pp.reset(new Program());
@@ -622,7 +636,7 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
             enclosingProgram = pp->enclosingProgram;
             optr = pp;
         }
-        else if (optr->token == TOKEN_START_LIST)
+        else if (optr->IsToken(TOKEN_START_LIST))
         {
             ListPtr lp;
             lp.reset(new List());
@@ -631,7 +645,7 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
             src.prompt = ">> ";
             optr = lp;
         }
-        else if (optr->token == TOKEN_IF)
+        else if (optr->IsToken(TOKEN_IF))
         {
             IfPtr ifp;
             ifp.reset(new If());
@@ -640,7 +654,7 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
             src.prompt = ">> ";
             optr = ifp;
         }
-        else if (optr->token == TOKEN_FOR)
+        else if (optr->IsToken(TOKEN_FOR))
         {
             ForPtr forptr;
             forptr.reset(new For());
@@ -650,7 +664,7 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
             src.prompt = savePrompt;
             optr = forptr;
         }
-        else if (optr->token == TOKEN_WHILE)
+        else if (optr->IsToken(TOKEN_WHILE))
         {
             WhilePtr whileptr;
             whileptr.reset(new While());
@@ -664,8 +678,10 @@ void Parser::ParseProgram(Machine& machine, ProgramPtr& pptr, Source& src)
     }
 }
 
-void Parser::Parse(Machine& machine, Source& src)
+void RPNParser::Parse(Machine& machine, Source& src, std::string& exit)
 {
+    exit.clear();
+    src.prompt = "> ";
     while (!src.istrm.eof())
     {
         ObjectPtr optr;
@@ -673,15 +689,16 @@ void Parser::Parse(Machine& machine, Source& src)
         {
             if (!optr)
                 continue;
-            if (machine.GetProperty("rpsExit", 0))
+            if (optr->IsToken(TOKEN_EXIT))
             {
                 return;
             }
-            if (optr->token == TOKEN_EXIT)
+            if (optr->IsToken(TOKEN_SHELL))
             {
+                exit = "shell";
                 return;
             }
-            if (optr->token == TOKEN_START_LIST)
+            if (optr->IsToken(TOKEN_START_LIST))
             {
                 src.prompt = "[] ";
                 ListPtr lptr;
@@ -690,7 +707,7 @@ void Parser::Parse(Machine& machine, Source& src)
                 src.prompt = "> ";
                 optr = lptr;
             }
-            if (optr->token == TOKEN_START_PROGRAM)
+            if (optr->IsToken(TOKEN_START_PROGRAM))
             {
                 src.prompt = ">> ";
                 ProgramPtr pptr;
@@ -702,9 +719,7 @@ void Parser::Parse(Machine& machine, Source& src)
                 optr = pptr;
             }
 
-
-        // Start of if/else
-            if (optr->token == TOKEN_FOR)
+            if (optr->IsToken(TOKEN_FOR))
             {
                 src.prompt = "FOR: ";
                 ForPtr forptr;
@@ -720,7 +735,7 @@ void Parser::Parse(Machine& machine, Source& src)
                     std::cout << e.what() << std::endl;
                 }
             }
-            if (optr->token == TOKEN_WHILE)
+            if (optr->IsToken(TOKEN_WHILE))
             {
                 src.prompt = "WHILE: ";
                 WhilePtr whileptr;
@@ -737,7 +752,7 @@ void Parser::Parse(Machine& machine, Source& src)
                 }
             }
 
-            else if (optr->token == TOKEN_IF)
+            else if (optr->IsToken(TOKEN_IF))
             {
                 src.prompt = "IF: ";
                 IfPtr ifptr;
@@ -764,7 +779,7 @@ void Parser::Parse(Machine& machine, Source& src)
                     std::cout << e.what() << std::endl;
                 }
             }
-            else if (optr->token == TOKEN_EOL)
+            else if (optr->IsToken(TOKEN_EOL))
             {
                 if (src.interactive )
                 {
@@ -789,208 +804,7 @@ void Parser::Parse(Machine& machine, Source& src)
     }
 }
 
-void Parser::ShellParse(Machine& machine, Source& src)
-{
-    machine.SetProperty("shellExit", 0);
-    std::string savePrompt = src.prompt;
-    src.prompt = "$ ";
-    while (!src.istrm.eof())
-    {
-        src.it = src.line.end();
-        src.Read();
-        src.it = src.line.end();
-        ShellParse(machine, src.line);
-        if (machine.GetProperty("shellExit", 0))
-            break;
-    }
-    src.prompt = savePrompt;
-}
-
-void Parser::ShellParse(Machine& machine, const std::string& commandLine)
-{
-    std::string word;
-    if (commandLine == ".\n")
-    {
-        machine.SetProperty("shellExit", 1);
-        return;
-    }
-    if (commandLine[0] == '.')
-    {
-        std::stringstream strm;
-        strm << commandLine.substr(1) << "\n";
-        Source src(strm);
-        Parser parser(machine);
-        parser.Parse(machine, src);
-        VIEW(machine);
-        return;
-    }
-    for (auto it = commandLine.begin(); it != commandLine.end(); ++it)
-    {
-        if (*it == '%')
-        {
-            std::stringstream strm;
-            std::string spec;
-            ++it;
-            if (*it == '{')
-            {
-                ++it;
-                while(*it != '\n' && *it != '}')
-                {
-                    spec.push_back(*it);
-                    ++it;
-                }
-                if(*it != '\n')
-                    ++it;
-            }
-            else
-            {
-                while(it != commandLine.end() && (isalnum(*it) || *it == '.' || *it == '_'))
-                {
-                    spec.push_back(*it);
-                    ++it;
-                }
-                --it;
-            }
-            if (isdigit(spec[0]))
-            {
-                int n = strtol(spec.c_str(), nullptr, 10);
-                if (n >= machine.stack_.size())
-                    throw std::runtime_error("FORMAT: Stack out of bounds");
-                strm << ToStr(machine, machine.peek(n));
-            }
-            else 
-            {
-                ObjectPtr optr;
-                try 
-                {
-                    RCL(machine, spec, optr);
-                    strm << ToStr(machine, optr);
-                }
-                catch(std::exception&)
-                {
-                    strm << spec;
-                }
-            }
-            word += strm.str();
-            //std::cout << "=== word: " << word <<std::endl;
-        }
-        else if (*it == ' ' || *it == '\t')
-        {
-            if (!word.empty())
-            {
-                PushWord(machine, word.c_str());
-                word.clear();
-            }
-        }
-        else if (*it == '\"')
-        {
-            word.push_back(*it);  // we need to " char
-            ++it;
-            while (it != commandLine.end() && *it != '\"')
-            {
-                if (*it == '\\')
-                {
-                    ++it;
-                    if (*it == 'n')
-                        word.push_back('\n');
-                    else if (*it == 't')
-                        word.push_back('\t');
-                    else
-                        word.push_back(*it);
-                }
-                else
-                    word.push_back(*it);
-                ++it;
-            }
-            word.push_back(*it);
-            PushWord(machine, word.c_str());
-            word.clear();
-        }
-        else if (*it == '\\')
-        {
-            ++it;
-            if (*it == 'n')
-                word.push_back('\n');
-            else if (*it == 't')
-                word.push_back('\t');
-            else
-                word.push_back(*it);
-        }
-        else if (*it == '|')
-        {
-            if (!word.empty())
-            {
-                PushWord(machine, word.c_str());
-                word.clear();
-            }
-            PushBar(machine);
-        }
-        else if (*it == '>')
-        {
-            if (!word.empty())
-            {
-                PushWord(machine, word.c_str());
-                word.clear();
-            }
-            if (*(it+1) == '>')
-            {
-                ++it;
-                PushGTGT(machine);
-            }
-            else
-                PushGT(machine);
-        }
-        else if (*it == '<')
-        {
-            if (!word.empty())
-            {
-                PushWord(machine, word.c_str());
-                word.clear();
-            }
-            PushLT(machine);
-        }
-        else if (*it == ';')
-        {
-            if (!word.empty())
-            {
-                PushWord(machine, word.c_str());
-                word.clear();
-            }
-            PushSemi(machine);
-        }
-        else if (*it == '&')
-        {
-            if (!word.empty())
-            {
-                PushWord(machine, word.c_str());
-                word.clear();
-            }
-            PushAmp(machine);
-        }
-        else if (*it == '!')
-        {
-            if (!word.empty())
-            {
-                PushWord(machine, word.c_str());
-                word.clear();
-            }
-            PushBang(machine);
-        }
-        else if (*it == '\n')
-        {
-            if (!word.empty())
-            {
-                PushWord(machine, word.c_str());
-                word.clear();
-            }
-            PushNL(machine);
-        }
-        else
-            word.push_back(*it);
-    }
-}
-
-Parser::Parser(Machine& machine)
+RPNParser::RPNParser(Machine& machine)
 {
     // Stack commands
     AddCommand(machine, "CLRSTK", &CLRSTK);

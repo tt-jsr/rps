@@ -36,7 +36,6 @@ namespace rps
     void rolld(Machine&, std::vector<std::string>& args);
     void pick(Machine&, std::vector<std::string>& args);
     void get(Machine&, std::vector<std::string>& args);
-    void exit(Machine&, std::vector<std::string>& args);
     void pwd(Machine&, std::vector<std::string>& args);
     void cd(Machine&, std::vector<std::string>& args);
     void dup(Machine&, std::vector<std::string>& args);
@@ -53,6 +52,7 @@ namespace rps
     void alias(Machine&, std::vector<std::string>& args);
     void split(Machine&, std::vector<std::string>& args);
     void join(Machine&, std::vector<std::string>& args);
+    void depth(Machine&, std::vector<std::string>& args);
 
     static void fd_check(void)
     {
@@ -180,8 +180,6 @@ namespace rps
                 cd(machine, cmd.args);
             else if (cmd.args[0] == "pwd")
                 pwd(machine, cmd.args);
-            else if (cmd.args[0] == "exit")
-                exit(machine, cmd.args);
             else if (cmd.args[0] == "drop")
                 drop(machine, cmd.args);
             else if (cmd.args[0] == "dropn")
@@ -228,6 +226,8 @@ namespace rps
                 split(machine, cmd.args);
             else if (cmd.args[0] == "join")
                 join(machine, cmd.args);
+            else if (cmd.args[0] == "depth")
+                depth(machine, cmd.args);
             else if (cmd.args[0] == "help")
                 help(machine, cmd.args);
             else
@@ -505,12 +505,6 @@ namespace rps
         char *p = getcwd(nullptr, 0);
         std::cout << p << std::endl;
         free(p);
-    }
-
-    void exit(Machine& machine, std::vector<std::string>& args)
-    {
-        machine.SetProperty("rpsExit", 1);
-        machine.SetProperty("shellExit", 1);
     }
 
     void drop(Machine& machine, std::vector<std::string>& args)
@@ -929,12 +923,21 @@ namespace rps
         machine.AddAlias(args[1], v);
     }
 
+    void depth(Machine& machine, std::vector<std::string>& args)
+    {
+        DEPTH(machine);
+        int64_t n;
+        machine.pop(n);
+        std::cout << n << std::endl;
+    }
+
     void help(Machine& machine, std::vector<std::string>& args)
     {
         std::stringstream strm;
         strm << "      Stack commands    " << std::endl;
-        strm << "stack - Display the stack" << std::endl;
+        strm << "stack [n] - Display n items of the stack. Default is four" << std::endl;
         strm << "clrstk - Clear the stack" << std::endl;
+        strm << "depth - Number of items on the stack" << std::endl;
         strm << "echo - Echo arguments" << std::endl;
         strm << "swap - Swap the top two stack items" << std::endl;
         strm << "dup - Duplicate the TOS" << std::endl;
@@ -964,6 +967,7 @@ namespace rps
         strm << "exit - Exit" << std::endl;
         strm << "pwd - Curent directory" << std::endl;
         strm << "cd - Change directory" << std::endl;
+        strm << "rpn - Switch to RPN mode" << std::endl;
         machine.push(strm.str());
         machine.push("less");
         PWRITE(machine);

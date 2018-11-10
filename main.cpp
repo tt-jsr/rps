@@ -19,7 +19,8 @@ void my_handler(int s)
 int main(int argc, char *argv[])
 {
     rps::Machine machine;
-    rps::Parser parser(machine);
+    rps::ShellParser sparser(machine);
+    rps::RPNParser rparser(machine);
 
    struct sigaction sigIntHandler;
 
@@ -44,13 +45,18 @@ int main(int argc, char *argv[])
     src.prompt = "> ";
 
     using_history();
-    rps::Import(machine, parser, "init");
+    //rps::Import(machine, rparser, "init");
+    std::string mode("shell");
     while (true)
     {
         try
         {
-            parser.Parse(machine, src);
-            return 0;
+            if (mode == "shell")
+                sparser.Parse(machine, src, mode);
+            else if (mode == "rpn")
+                rparser.Parse(machine, src, mode);
+            else if (mode == "")
+                return 0;
         }
         catch (std::runtime_error& e)
         {

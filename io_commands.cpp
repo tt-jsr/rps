@@ -349,7 +349,7 @@ void FRESTORE(Machine& machine)
             }
         }
         fclose(fp);
-        Parser parser(machine);
+        RPNParser parser(machine);
 
         std::stringstream strm;
         strm.str(data);
@@ -361,7 +361,8 @@ void FRESTORE(Machine& machine)
         {
             try
             {
-                parser.Parse(machine, src);
+                std::string exit;
+                parser.Parse(machine, src, exit);
                 return;
             }
             catch (std::runtime_error& e)

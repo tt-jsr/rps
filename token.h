@@ -29,19 +29,19 @@ enum TokenType
     , TOKEN_EOL
     , TOKEN_EXIT
     , TOKEN_EOF
+    , TOKEN_DOUBLE_QUOTED
+    , TOKEN_SINGLE_QUOTED
     , TOKEN_NONE
+    , TOKEN_INVALID
     , TOKEN_SHELL
-    , TOKEN_SHELL_COMMAND
 };
 
-struct Token
+struct ParseToken
 {
-    Token()
-    :quoted(false)
+    ParseToken()
     {}
     std::string value;
     TokenType token;
-    bool quoted;
 };
 
 enum ObjectType
@@ -71,6 +71,7 @@ static const char *ObjectNames[] = {
     , "If"
     , "For"
     , "While"
+    , "Token"
 };
 
 } // namespace rps
