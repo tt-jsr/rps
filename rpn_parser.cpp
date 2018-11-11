@@ -71,37 +71,30 @@ bool CollectDelimited(Source& src, std::string& out, char delim)
 bool CollectIdentifier(Source& src, std::string& out)
 {
     out.clear();
-    bool collect = false;
-    if (isalpha(*(src.it)))
-        collect = true;
-    else if (*src.it == '-' && isalpha(*(src.it+1)))
+
+    if (*src.it == '(' and *(src.it+1) == ')')
     {
-        out.push_back('-');
-        ++src.it;
-        collect = true;
+        out = "()";
+        src.it += 2;
+        return true;
     }
-    else if (*src.it == '-' && *(src.it+1) == '-' && isalnum(*(src.it+2)))
+    while (src.it != src.line.end())
     {
-        out.push_back('-');
+        if (isalnum(*src.it))
+            out.push_back(*src.it);
+        else if (isdigit(*src.it))
+            out.push_back(*src.it);
+        else if (*src.it == '.')
+            out.push_back(*src.it);
+        else if (*src.it == '_')
+            out.push_back(*src.it);
+        else if (*src.it == '/')
+            out.push_back(*src.it);
+        else if (*src.it == '-')
+            out.push_back(*src.it);
+        else
+            break;
         ++src.it;
-        out.push_back('-');
-        ++src.it;
-        collect = true;
-    }
-    if (collect)
-    {
-        while (src.it != src.line.end())
-        {
-            if (isalnum(*src.it))
-                out.push_back(*src.it);
-            else if (isdigit(*src.it))
-                out.push_back(*src.it);
-            else if (*src.it == '_')
-                out.push_back(*src.it);
-            else
-                break;
-            ++src.it;
-        }
     }
     if (out.size())
         return true;
@@ -261,90 +254,6 @@ bool RPNParser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
     ++src.it;
     return false;
 }
-
-/*
-bool Parser::GetObject(Machine& machine, Source& src, ObjectPtr& optr)
-{
-
-again:
-    ParseToken token;
-    do {
-        GetToken(src, token);
-    } while (token.token == TOKEN_COMMENT);
-    if (token.token == TOKEN_EOF)
-        return false;
-    if (token.token == TOKEN_INVALID)
-        return false;
-    //std::cout << "===GetObject: " << token.token << ":\"" << token.value << "\"" << std::endl;
-
-    auto it = machine.commands.find(token.value);
-    if (it != machine.commands.end())
-    {
-        optr = it->second;
-        return true;
-    }
-
-    if (token.token == TOKEN_INTEGER)
-        optr.reset(new Integer(strtol(token.value.c_str(), nullptr, 10)));
-
-    else if (token.token == TOKEN_START_PROGRAM)
-        optr.reset(new Token(TOKEN_START_PROGRAM, tok.value));
-    else if (token.token == TOKEN_END_PROGRAM)
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_PROGRAM));
-    else if (token.token == TOKEN_START_LIST)
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_LIST));
-    else if (token.token == TOKEN_END_LIST)
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_LIST));
-    else if (token.token == TOKEN_START_MAP)
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_START_MAP));
-    else if (token.token == TOKEN_END_MAP)
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_END_MAP));
-    else if (token.token == TOKEN_SYSTEM)
-        optr.reset(new Command(token.value, &SYSTEM));
-    else if (token.token == TOKEN_EOL)
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_EOL));
-    else if (token.value == "None")
-        optr.reset(new None());
-    else if (token.value == "EXIT")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_EXIT));
-    else if (token.value == "IF")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_IF));
-    else if (token.value == "THEN")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_THEN));
-    else if (token.value == "ELSE")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_ELSE));
-    else if (token.value == "ENDIF")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_ENDIF));
-    else if (token.value == "FOR")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_FOR));
-    else if (token.value == "ENDFOR")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_ENDFOR));
-    else if (token.value == "WHILE")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_WHILE));
-    else if (token.value == "REPEAT")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_REPEAT));
-    else if (token.value == "ENDWHILE")
-        optr.reset(new Object(OBJECT_TOKEN, TOKEN_ENDWHILE));
-    else if (token.token == TOKEN_STRING)
-    {
-        if (token.value == "import")
-        {
-            std::string filename;
-            ParseToken modulename;
-            GetToken(src, modulename);
-            Import(machine, *this, modulename.value);
-            goto again;
-        }
-        else
-        {
-            String *sp = new String(token.value);
-            optr.reset(sp);
-        }
-    }
-
-    return true;
-}
-*/
 
 void RPNParser::ParseIf(Machine& machine, IfPtr& ifptr, Source& src)
 {
@@ -795,6 +704,10 @@ void RPNParser::Parse(Machine& machine, Source& src, std::string& exit)
                 }
                 machine.push(optr);           
             }
+            else if (optr->IsToken(TOKEN_COMMENT))
+            {
+                ;
+            }
             else
             {
                 machine.push(optr);           
@@ -992,6 +905,8 @@ RPNParser::RPNParser(Machine& machine)
     Category(machine, "Environment", "GETPROPERTY");
     AddCommand(machine, "SETPROPERTY", &SETPROPERTY);
     Category(machine, "Environment", "SETPROPERTY");
+    AddCommand(machine, "IMPORT", &IMPORT);
+    Category(machine, "Environment", "IMPORT");
 
     // String
     AddCommand(machine, "FORMAT", &FORMAT);

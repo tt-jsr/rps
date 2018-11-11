@@ -36,14 +36,6 @@ enum TokenType
     , TOKEN_SHELL
 };
 
-struct ParseToken
-{
-    ParseToken()
-    {}
-    std::string value;
-    TokenType token;
-};
-
 enum ObjectType
 {
     OBJECT_STRING
@@ -71,7 +63,6 @@ static const char *ObjectNames[] = {
     , "If"
     , "For"
     , "While"
-    , "Token"
 };
 
 } // namespace rps

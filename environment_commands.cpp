@@ -11,6 +11,7 @@
 #include "machine.h"
 #include "commands.h"
 #include "utilities.h"
+#include "parser.h"
 
 namespace rps
 {
@@ -134,6 +135,25 @@ void GETPROPERTY(Machine& machine)
     ObjectPtr optr = machine.GetProperty(name);
     if (optr)
         machine.push(optr);
+}
+
+void IMPORT(Machine& machine)
+{
+    if (machine.GetProperty("help", 0))
+    {
+        machine.helpstrm() << "IMPORT: Import and execute a file";
+        machine.helpstrm() << "name IMPORT => ";
+        return;
+    }
+
+    stack_required(machine, "IMPORT", 1);
+    throw_required(machine, "IMPORT", 0, OBJECT_STRING);
+
+    std::string name;
+
+    machine.pop(name);
+
+    Import(machine, name);
 }
 
 } // namespace rps

@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     src.prompt = "> ";
 
     using_history();
-    //rps::Import(machine, rparser, "init");
+    rps::Import(machine, "init");
     std::string mode("shell");
     while (true)
     {

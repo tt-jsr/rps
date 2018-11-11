@@ -455,7 +455,7 @@ void split(const std::string& str, std::vector<std::string>& out, const std::str
     }
 }
 
-void Import(Machine& machine, RPNParser& parser, const std::string& modname)
+void Import(Machine& machine, const std::string& modname)
 {
     const char *rps_path = getenv("RPS_PATH");
     std::vector<std::string> dirs;
@@ -482,8 +482,25 @@ void Import(Machine& machine, RPNParser& parser, const std::string& modname)
     std::string savename = machine.current_module_;
     machine.current_module_ = modname;
     machine.CreateModule(modname);
-    std::string exit;
-    parser.Parse(machine, srcImport, exit);
+    RPNParser rparser(machine);
+    ShellParser sparser(machine);
+    std::string mode("rpn");
+    while (true)
+    {
+        try
+        {
+            if (mode == "shell")
+                sparser.Parse(machine, srcImport, mode);
+            else if (mode == "rpn")
+                rparser.Parse(machine, srcImport, mode);
+            else if (mode == "")
+                return;
+        }
+        catch (std::runtime_error& e)
+        {
+            std::cout << e.what() << std::endl;
+        }
+    }
     machine.current_module_ = savename;
 }
 

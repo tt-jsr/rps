@@ -156,6 +156,7 @@ void PWD(Machine&);
 void GETPROPERTY(Machine&);
 void SETPROPERTY(Machine&);
 void HELP(Machine&);
+void IMPORT(Machine&);
 
 
 } // namespace rps

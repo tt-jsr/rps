@@ -36,7 +36,7 @@ l RCLL
 idx RCLL
 GET
 CAT
-!
+SYSTEM
 >>
 less STO
 
@@ -51,7 +51,7 @@ l RCLL
 idx RCLL
 GET
 CAT
-!
+SYSTEM
 l RCLL
 >>
 vim STO

@@ -239,6 +239,13 @@ namespace rps
                     throw std::runtime_error("fork() failed");
                     break;
                 case 0: //child
+                    for (int fd = 3; fd < 20; fd++)
+                    {
+                        if (fcntl(fd, F_GETFL) != -1 || errno != EBADF) 
+                        {
+                            close(fd);
+                        }
+                    }
                     if (IsPipe(cmd.redir))
                     {
                         if ((cmd.redir & PIPE_IN) == PIPE_IN)
