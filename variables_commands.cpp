@@ -341,7 +341,9 @@ void REGISTER(Machine& machine)
         machine.helpstrm() << "REGISTER: Register a user defined program";
         machine.helpstrm() << "<<prog>> \"name\" REGISTER => ";
         machine.helpstrm() << "Registering a program allows the user invoke the program by name";
-        machine.helpstrm() << "rather than having to issue a CALL statement";
+        machine.helpstrm() << "rather than having to issue a CALL statement.";
+        machine.helpstrm() << "name should always be in quotes to force interpretation as a string,";
+        machine.helpstrm() << "otherwise calling REGISTER again could invoke the command rather then setting it.";
         return;
     }
     stack_required(machine, "REGISTER", 2);
