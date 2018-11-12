@@ -76,7 +76,9 @@ void SUBLIST(Machine& machine)
         machine.helpstrm() << "SUBLIST: Push a sublist";
         machine.helpstrm() << "[list] startpos length SUBLIST => [list]";
         machine.helpstrm() << "If startpos is < 0, it is taken from the end of the list";
-        machine.helpstrm() << "If length < 0 or longer then available, copy until the end of the list";
+        machine.helpstrm() << "If length < 0 it is used as the index to copy to.";
+        machine.helpstrm() << "In all cases, if length exceeds the end of the list, copy";
+        machine.helpstrm() << "to the end of the list.";
         return;
     }
 
@@ -97,6 +99,10 @@ void SUBLIST(Machine& machine)
     if (startpos < 0 || startpos >= lp->items.size())
     {
         throw std::runtime_error("SUBLIST: startpos out of range for List");
+    }
+    if (length < 0)
+    {
+        length = lp->items.size() - startpos + length + 1;
     }
     if ((startpos+length) >= lp->items.size())
         length = -1;

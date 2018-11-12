@@ -35,6 +35,9 @@ std.rstack RCL "RSTACK" REGISTER
 # logfile ERS => [list]
 << "grep -n \"ExecutionReport.*order_id=\" %0" FORMAT SWAP DROP PREAD >> "ERS" REGISTER
 
+<<"/" SPLIT -1 GET>> "BASENAME" REGISTER
+<<"/" SPLIT 0 -2 SUBLIST "/" JOIN>> "DIR" REGISTER
+
 "git status" status ALIAS
 "git push origin" push ALIAS
 
