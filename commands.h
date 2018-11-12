@@ -66,6 +66,7 @@ void GTEQ(Machine&);
 void NOT(Machine&);
 void AND(Machine&);
 void OR(Machine&);
+void NOT(Machine&);
 
 /*
  * List commands
@@ -146,6 +147,7 @@ void EVAL(Machine&);
 void EVAL(Machine&, ObjectPtr);
 void CALL(Machine&);
 void INTERRUPT(Machine&);
+void ALIAS(Machine&);
 
 // Environment
 void NAMESPACES(Machine&);

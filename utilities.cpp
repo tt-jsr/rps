@@ -504,7 +504,7 @@ void Import(Machine& machine, const std::string& modname)
     machine.current_module_ = savename;
 }
 
-void GetArgs(Machine& machine, std::vector<std::string>& args)
+void GetArgs(Machine& machine, std::vector<std::string>& args /*out*/)
 {
     ObjectPtr optr;
     while (machine.stack_.size() > 0)

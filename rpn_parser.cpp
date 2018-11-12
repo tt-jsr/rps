@@ -78,6 +78,10 @@ bool CollectIdentifier(Source& src, std::string& out)
         src.it += 2;
         return true;
     }
+    if (*src.it == '-' && isdigit(*(src.it+1)))
+        return false;
+    if (isdigit(*src.it))
+        return false;
     while (src.it != src.line.end())
     {
         if (isalnum(*src.it))
@@ -758,6 +762,8 @@ RPNParser::RPNParser(Machine& machine)
     Category(machine, "Logical", "AND");
     AddCommand(machine, "OR", &OR);
     Category(machine, "Logical", "OR");
+    AddCommand(machine, "NOT", &NOT);
+    Category(machine, "Logical", "NOT");
 
     // Variable commands
     AddCommand(machine, "STO", &STO);
@@ -886,6 +892,8 @@ RPNParser::RPNParser(Machine& machine)
     Category(machine, "Execution", "SYSTEM");
     AddCommand(machine, "INTERRUPT", &INTERRUPT);
     Category(machine, "Execution", "INTERRUPT");
+    AddCommand(machine, "ALIAS", &ALIAS);
+    Category(machine, "Execution", "ALIAS");
 
 
     // Environment

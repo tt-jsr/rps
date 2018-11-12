@@ -225,6 +225,23 @@ void EVAL(Machine& machine)
     EVAL(machine, optr);
 }
 
+void ALIAS(Machine& machine)
+{
+    if (machine.GetProperty("help", 0))
+    {
+        machine.helpstrm() << "ALIAS: Set alias for a shell command";
+        machine.helpstrm() << "\"command\" \"name\" ALIAS => ";
+        return;
+    }
+    std::string name;
+    std::string command;
+    machine.pop(name);
+    machine.pop(command);
+    std::vector<std::string> v;
+    split(command, v, " ", false);
+    machine.AddAlias(name, v);
+}
+
 void CALL(Machine& machine)
 {
     if (machine.GetProperty("help", 0))

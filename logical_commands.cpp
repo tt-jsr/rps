@@ -313,6 +313,27 @@ void OR(Machine& machine)
         throw std::runtime_error("OR: Argument must be String or Integer");
 }
 
+void NOT(Machine& machine)
+{
+    if (machine.GetProperty("help", 0))
+    {
+        machine.helpstrm() << "NOT: Logical NOT";
+        machine.helpstrm() << "int NOT => int";
+        return;
+    }
+
+    stack_required(machine, "NOT", 1);
+    ObjectPtr rhs;
+
+    machine.pop(rhs);
+    if (rhs->type != OBJECT_INTEGER)
+    {
+        throw std::runtime_error("NOT: Argument must be of type integer");
+    }
+    int64_t n = !((Integer *)rhs.get())->value;
+    machine.push(n);
+}
+
 
 } // namespace rps
 
