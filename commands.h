@@ -157,6 +157,7 @@ void CD(Machine&);
 void PWD(Machine&);
 void GETPROPERTY(Machine&);
 void SETPROPERTY(Machine&);
+void LISTPROPERTIES(Machine&);
 void HELP(Machine&);
 void IMPORT(Machine&);
 

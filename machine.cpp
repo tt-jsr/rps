@@ -23,7 +23,6 @@ Machine::Machine()
     SetProperty("viewwidth", 120);
     SetProperty("debug", 0);
     SetProperty("help", 0);
-    SetProperty("shellExit", 0);
 }
 
 void Machine::CreateModule(const std::string& name)

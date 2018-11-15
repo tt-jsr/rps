@@ -137,6 +137,25 @@ void GETPROPERTY(Machine& machine)
         machine.push(optr);
 }
 
+void LISTPROPERTIES(Machine& machine)
+{
+    if (machine.GetProperty("help", 0))
+    {
+        machine.helpstrm() << "LISTPROPERTIES: List properties";
+        machine.helpstrm() << "LISTPROPERTIES => [list]";
+        return;
+    }
+
+    ListPtr lp = MakeList();
+    for (auto& pr : machine.properties)
+    {
+        StringPtr sp = MakeString();
+        sp->set(pr.first);
+        lp->items.push_back(sp);
+    }
+    machine.push(lp);
+}
+
 void IMPORT(Machine& machine)
 {
     if (machine.GetProperty("help", 0))

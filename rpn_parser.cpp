@@ -913,6 +913,8 @@ RPNParser::RPNParser(Machine& machine)
     Category(machine, "Environment", "GETPROPERTY");
     AddCommand(machine, "SETPROPERTY", &SETPROPERTY);
     Category(machine, "Environment", "SETPROPERTY");
+    AddCommand(machine, "LISTPROPERTIES", &LISTPROPERTIES);
+    Category(machine, "Environment", "LISTPROPERTIES");
     AddCommand(machine, "IMPORT", &IMPORT);
     Category(machine, "Environment", "IMPORT");
 
