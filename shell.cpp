@@ -47,6 +47,7 @@ namespace rps
     void getns(Machine&, std::vector<std::string>& args);
     void vars(Machine&, std::vector<std::string>& args);
     void sto(Machine&, std::vector<std::string>& args);
+    void rcl(Machine&, std::vector<std::string>& args);
     void namespaces(Machine&, std::vector<std::string>& args);
     void help(Machine&, std::vector<std::string>& args);
     void alias(Machine&, std::vector<std::string>& args);
@@ -196,8 +197,8 @@ namespace rps
                 get(machine, cmd.args);
             else if (cmd.args[0] == "echo")
                 echo(machine, cmd.args);
-            else if (cmd.args[0] == "stack")
-                stack(machine, cmd.args);
+            else if (cmd.args[0] == "view")
+                view(machine, cmd.args);
             else if (cmd.args[0] == "dup")
                 dup(machine, cmd.args);
             else if (cmd.args[0] == "clrstk")
@@ -218,6 +219,8 @@ namespace rps
                 vars(machine, cmd.args);
             else if (cmd.args[0] == "sto")
                 sto(machine, cmd.args);
+            else if (cmd.args[0] == "rcl")
+                rcl(machine, cmd.args);
             else if (cmd.args[0] == "namespaces")
                 namespaces(machine, cmd.args);
             else if (cmd.args[0] == "alias")
@@ -729,7 +732,7 @@ namespace rps
         }
     }
 
-    void stack(Machine& machine, std::vector<std::string>& args)
+    void view(Machine& machine, std::vector<std::string>& args)
     {
         int depth(4);
         if (args.size() > 1)
@@ -832,6 +835,24 @@ namespace rps
             machine.push(args[1]);  // value
             machine.push(args[2]);  // varname
             STO(machine);
+        }
+        catch (std::runtime_error& ex)
+        {
+            std::cout << ex.what() << std::endl;
+        }
+    }
+
+    void rcl(Machine& machine, std::vector<std::string>& args)
+    {
+        try
+        {
+            if (args.size() == 1)
+            {
+                std::cout << "usage: rcl varname" << std::endl;
+                return;
+            }
+            machine.push(args[1]);  // varname
+            RCL(machine);
         }
         catch (std::runtime_error& ex)
         {
@@ -944,7 +965,7 @@ namespace rps
     {
         std::stringstream strm;
         strm << "      Stack commands    " << std::endl;
-        strm << "stack [n] - Display n items of the stack. Default is four" << std::endl;
+        strm << "view [n] - Display n items of the stack. Default is four" << std::endl;
         strm << "clrstk - Clear the stack" << std::endl;
         strm << "depth - Number of items on the stack" << std::endl;
         strm << "echo - Echo arguments" << std::endl;
@@ -971,6 +992,7 @@ namespace rps
         strm << "getns - Get the namespace" << std::endl;
         strm << "vars - Show information about the variables in a namespace" << std::endl;
         strm << "sto name - Store the item" << std::endl;
+        strm << "rcl name - recall variable" << std::endl;
         strm << std::endl;
         strm << "      Environment commands    " << std::endl;
         strm << "exit - Exit" << std::endl;
