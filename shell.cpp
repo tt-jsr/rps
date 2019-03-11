@@ -26,7 +26,7 @@
 namespace rps
 {
 
-    void stack(Machine&, std::vector<std::string>& args);
+    void view(Machine&, std::vector<std::string>& args);
     void clrstk(Machine&, std::vector<std::string>& args);
     void echo(Machine&, std::vector<std::string>& args);
     void swap(Machine&, std::vector<std::string>& args);
